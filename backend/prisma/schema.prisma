@@ -1,0 +1,479 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  COORDINATOR
+  FACULTY
+  PANEL
+  STUDENT
+}
+
+enum ProjectStatus {
+  DRAFT
+  ABSTRACT_SUBMITTED
+  ABSTRACT_APPROVED
+  ABSTRACT_REJECTED
+  IN_PROGRESS
+  UNDER_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum MilestoneStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  REVISION_NEEDED
+}
+
+enum TeamStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ReviewStageType {
+  ABSTRACT_REVIEW
+  REVIEW_1
+  REVIEW_2
+  REVIEW_3
+  PRE_SUBMISSION
+  FINAL_SUBMISSION
+}
+
+enum ScheduleMode {
+  ONLINE
+  OFFLINE
+}
+
+enum NotificationType {
+  DEADLINE_REMINDER
+  STATUS_CHANGE
+  FEEDBACK
+  ANNOUNCEMENT
+  GENERAL
+}
+
+enum GuidePreferenceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  STATUS_CHANGE
+  LOGIN
+  LOGOUT
+  FILE_UPLOAD
+  MARKS_LOCK
+  MARKS_ENTRY
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  studentProfile   StudentProfile?
+  facultyProfile   FacultyProfile?
+  notifications    Notification[]
+  announcements    Announcement[]
+  auditLogs        AuditLog[]
+  submittedFiles   File[]
+  submissions      Submission[]
+  evaluationsLocked Evaluation[] @relation("LockedBy")
+  guideAssignments GuideAssignment[]
+  teamsApproved    Team[] @relation("ApprovedBy")
+}
+
+model Department {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  code        String   @unique
+  description String?
+  hodId       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  batches          Batch[]
+  facultyProfiles  FacultyProfile[]
+  reviewStages     ReviewStage[]
+}
+
+model AcademicYear {
+  id        String   @id @default(uuid())
+  startYear Int
+  endYear   Int
+  label     String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  batches Batch[]
+}
+
+model Batch {
+  id             String   @id @default(uuid())
+  departmentId   String
+  academicYearId String
+  name           String
+  isActive       Boolean  @default(true)
+
+  department     Department   @relation(fields: [departmentId], references: [id])
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  semesters      Semester[]
+  studentProfiles StudentProfile[]
+
+  @@unique([departmentId, academicYearId])
+}
+
+model Semester {
+  id        String   @id @default(uuid())
+  batchId   String
+  number    Int
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+  isCurrent Boolean  @default(false)
+
+  batch        Batch         @relation(fields: [batchId], references: [id])
+  projects     Project[]
+  reviewStages ReviewStage[]
+  teams        Team[]
+}
+
+model StudentProfile {
+  id               String  @id @default(uuid())
+  userId           String  @unique
+  studentId        String  @unique
+  batchId          String
+  currentSemesterId String?
+  phone            String?
+
+  user      User             @relation(fields: [userId], references: [id])
+  batch     Batch            @relation(fields: [batchId], references: [id])
+  teamMembers TeamMember[]
+}
+
+model FacultyProfile {
+  id             String  @id @default(uuid())
+  userId         String  @unique
+  facultyId      String  @unique
+  departmentId   String
+  designation    String?
+  specialization String?
+  phone          String?
+
+  user             User               @relation(fields: [userId], references: [id])
+  department       Department         @relation(fields: [departmentId], references: [id])
+  guideAssignments GuideAssignment[]
+  panelAssignments PanelAssignment[]
+  evaluations      Evaluation[]
+  guidePreferences GuidePreference[]
+}
+
+model Team {
+  id              String     @id @default(uuid())
+  name            String
+  semesterId      String
+  status          TeamStatus @default(PENDING)
+  approvedById    String?
+  approvedAt      DateTime?
+  rejectionReason String?
+  createdAt       DateTime   @default(now())
+
+  semester Semester     @relation(fields: [semesterId], references: [id])
+  approvedBy User?      @relation("ApprovedBy", fields: [approvedById], references: [id])
+  members  TeamMember[]
+  project  Project?
+}
+
+model TeamMember {
+  id               String  @id @default(uuid())
+  teamId           String
+  studentProfileId String
+  isLeader         Boolean @default(false)
+
+  team           Team           @relation(fields: [teamId], references: [id])
+  studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id])
+
+  @@unique([teamId, studentProfileId])
+}
+
+model Project {
+  id              String        @id @default(uuid())
+  title           String
+  abstract        String?
+  domain          String?
+  keywords        String[]
+  status          ProjectStatus @default(DRAFT)
+  semesterId      String
+  teamId          String        @unique
+  githubLink      String?
+  plagiarismScore Decimal?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  semester        Semester         @relation(fields: [semesterId], references: [id])
+  team            Team             @relation(fields: [teamId], references: [id])
+  guideAssignment GuideAssignment?
+  milestones      Milestone[]
+  evaluations     Evaluation[]
+  files           File[]
+  schedules       ReviewSchedule[]
+  guidePreferences GuidePreference[]
+}
+
+model GuideAssignment {
+  id               String   @id @default(uuid())
+  projectId        String   @unique
+  facultyProfileId String
+  assignedById     String
+  assignedAt       DateTime @default(now())
+  isActive         Boolean  @default(true)
+
+  project        Project        @relation(fields: [projectId], references: [id])
+  facultyProfile FacultyProfile @relation(fields: [facultyProfileId], references: [id])
+  assignedBy     User           @relation(fields: [assignedById], references: [id])
+}
+
+model GuidePreference {
+  id               String                @id @default(uuid())
+  projectId        String
+  facultyProfileId String
+  rank             Int
+  status           GuidePreferenceStatus @default(PENDING)
+  reviewedById     String?
+  reviewedAt       DateTime?
+  note             String?
+
+  project        Project        @relation(fields: [projectId], references: [id])
+  facultyProfile FacultyProfile @relation(fields: [facultyProfileId], references: [id])
+
+  @@unique([projectId, facultyProfileId])
+}
+
+model ReviewStageTemplate {
+  id           String          @id @default(uuid())
+  name         String
+  type         ReviewStageType
+  description  String?
+  order        Int
+  isDefault    Boolean         @default(false)
+  departmentId String?
+}
+
+model ReviewStage {
+  id           String          @id @default(uuid())
+  templateId   String
+  semesterId   String
+  departmentId String
+  name         String
+  type         ReviewStageType
+  order        Int
+  deadline     DateTime?
+  isActive     Boolean         @default(true)
+
+  semester   Semester              @relation(fields: [semesterId], references: [id])
+  department Department            @relation(fields: [departmentId], references: [id])
+  schedules  ReviewSchedule[]
+  criteria   EvaluationCriteria[]
+  evaluations Evaluation[]
+}
+
+model ReviewSchedule {
+  id            String       @id @default(uuid())
+  reviewStageId String
+  projectId     String
+  scheduledAt   DateTime
+  venue         String?
+  mode          ScheduleMode
+  notes         String?
+  isCompleted   Boolean      @default(false)
+
+  reviewStage      ReviewStage       @relation(fields: [reviewStageId], references: [id])
+  project          Project           @relation(fields: [projectId], references: [id])
+  panelAssignments PanelAssignment[]
+}
+
+model PanelAssignment {
+  id               String   @id @default(uuid())
+  scheduleId       String
+  facultyProfileId String
+  isPresent        Boolean?
+
+  schedule       ReviewSchedule @relation(fields: [scheduleId], references: [id])
+  facultyProfile FacultyProfile @relation(fields: [facultyProfileId], references: [id])
+
+  @@unique([scheduleId, facultyProfileId])
+}
+
+model EvaluationCriteria {
+  id            String   @id @default(uuid())
+  reviewStageId String
+  name          String
+  description   String?
+  maxMarks      Decimal
+  order         Int
+
+  reviewStage ReviewStage       @relation(fields: [reviewStageId], references: [id])
+  scores      EvaluationScore[]
+}
+
+// NOTE: DB-level marks lock should be enforced by a trigger.
+// CREATE OR REPLACE FUNCTION check_evaluation_locked() RETURNS TRIGGER AS $$
+// BEGIN
+//   IF OLD."isLocked" = true THEN
+//     RAISE EXCEPTION 'Cannot update a locked evaluation';
+//   END IF;
+//   RETURN NEW;
+// END;
+// $$ LANGUAGE plpgsql;
+// CREATE TRIGGER evaluation_lock_check BEFORE UPDATE ON evaluations FOR EACH ROW EXECUTE FUNCTION check_evaluation_locked();
+
+model Evaluation {
+  id            String   @id @default(uuid())
+  projectId     String
+  reviewStageId String
+  evaluatorId   String
+  totalMarks    Decimal?
+  grade         String?
+  feedback      String?
+  isLocked      Boolean  @default(false)
+  lockedAt      DateTime?
+  lockedById    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  project     Project           @relation(fields: [projectId], references: [id])
+  reviewStage ReviewStage       @relation(fields: [reviewStageId], references: [id])
+  evaluator   FacultyProfile    @relation(fields: [evaluatorId], references: [id])
+  lockedBy    User?             @relation("LockedBy", fields: [lockedById], references: [id])
+  scores      EvaluationScore[]
+
+  @@unique([projectId, reviewStageId, evaluatorId])
+  @@map("evaluations")
+}
+
+model EvaluationScore {
+  id           String  @id @default(uuid())
+  evaluationId String
+  criteriaId   String
+  marks        Decimal
+  remarks      String?
+
+  evaluation Evaluation         @relation(fields: [evaluationId], references: [id])
+  criteria   EvaluationCriteria @relation(fields: [criteriaId], references: [id])
+
+  @@unique([evaluationId, criteriaId])
+}
+
+model Milestone {
+  id                String          @id @default(uuid())
+  projectId         String
+  reviewStageId     String?
+  name              String
+  description       String?
+  deadline          DateTime
+  status            MilestoneStatus @default(NOT_STARTED)
+  requiredDocuments String[]
+  order             Int
+  updatedAt         DateTime        @updatedAt
+
+  project     Project      @relation(fields: [projectId], references: [id])
+  submissions Submission[]
+}
+
+model Submission {
+  id            String   @id @default(uuid())
+  milestoneId   String
+  submittedById String
+  submittedAt   DateTime @default(now())
+  notes         String?
+  version       Int      @default(1)
+
+  milestone   Milestone @relation(fields: [milestoneId], references: [id])
+  submittedBy User      @relation(fields: [submittedById], references: [id])
+  files       File[]
+}
+
+model File {
+  id           String   @id @default(uuid())
+  submissionId String?
+  projectId    String?
+  originalName String
+  storagePath  String
+  mimeType     String
+  sizeBytes    Int
+  uploadedById String
+  uploadedAt   DateTime @default(now())
+
+  submission Submission? @relation(fields: [submissionId], references: [id])
+  project    Project?    @relation(fields: [projectId], references: [id])
+  uploadedBy User        @relation(fields: [uploadedById], references: [id])
+}
+
+model Notification {
+  id               String           @id @default(uuid())
+  userId           String
+  title            String
+  message          String
+  type             NotificationType
+  isRead           Boolean          @default(false)
+  relatedProjectId String?
+  createdAt        DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Announcement {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  createdById String
+  createdAt   DateTime @default(now())
+
+  createdBy User @relation(fields: [createdById], references: [id])
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  userId     String?
+  action     AuditAction
+  entityType String
+  entityId   String?
+  oldValue   Json?
+  newValue   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime    @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+}
+
+model Settings {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+}
