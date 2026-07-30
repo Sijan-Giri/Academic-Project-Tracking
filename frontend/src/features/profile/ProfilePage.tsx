@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/store/auth.store';
-import { updateProfile, changePassword } from '@/api/profile.api';
+import { updateProfile, changePassword } from '@/api/auth.api';
 import StatusBadge from '@/components/shared/StatusBadge';
 
 const profileSchema = z.object({

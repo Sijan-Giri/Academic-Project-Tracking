@@ -1,17 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { Download, FileText, ChevronDown } from 'lucide-react';
-import { getMySubmissions } from '@/api/student.api';
+import { getSubmissions } from '@/api/submissions.api';
 import { Button } from '@/components/ui/button';
 
 export default function SubmissionsPage() {
   const { data: res, isLoading } = useQuery({
     queryKey: ['my-submissions'],
-    queryFn: getMySubmissions
+    queryFn: getSubmissions
   });
 
   if (isLoading) return <div className="animate-pulse h-64 bg-white/5 rounded-2xl border border-white/10" />;
 
-  const submissions = res?.data || [];
+  const submissions = (res as any)?.data?.items || (res as any)?.items || (res as any)?.data || (Array.isArray(res) ? res : []);
 
   return (
     <div className="max-w-6xl mx-auto">

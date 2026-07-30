@@ -1,8 +1,8 @@
 import prisma from '../../config/database';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { UnauthorizedError, NotFoundError } from '../../shared/errors';
-import { auditService } from '../audit/audit.service';
+import { createAuditLog } from '../audit/audit.service';
 import { Role } from '@prisma/client';
 
 export const authService = {
@@ -13,10 +13,10 @@ export const authService = {
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) throw new UnauthorizedError('Invalid credentials');
 
-    const accessToken = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET || 'secret', { expiresIn: '15m' });
+    const accessToken = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_ACCESS_SECRET || 'secret', { expiresIn: '15m' });
     const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_REFRESH_SECRET || 'refresh-secret', { expiresIn: '7d' });
 
-    await auditService.createAuditLog('LOGIN', 'User', user.id, user.id, { ipAddress, userAgent });
+    await createAuditLog({ userId: user.id, action: 'LOGIN', entityType: 'User', entityId: user.id, newValue: { ipAddress, userAgent }, ipAddress, userAgent });
 
     const { password: _, ...userWithoutPassword } = user;
     return { user: userWithoutPassword, accessToken, refreshToken };
@@ -77,7 +77,7 @@ export const authService = {
       }
     });
 
-    await auditService.createAuditLog('CREATE', 'User', user.id, user.id, {});
+    await createAuditLog({ userId: user.id, action: 'CREATE', entityType: 'User', entityId: user.id, newValue: { email: user.email, role: user.role } });
     const { password, ...rest } = user;
     return rest;
   },

@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Download, FileText, FileSpreadsheet, ShieldAlert } from 'lucide-react';
-import { downloadReport } from '@/api/reports';
+import { downloadReport } from '@/api/reports.api';
 
 export default function ReportsPage() {
   const [format, setFormat] = useState('pdf');

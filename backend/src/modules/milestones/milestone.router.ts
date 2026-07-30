@@ -8,7 +8,7 @@ import * as controller from './milestone.controller';
 const router = Router();
 router.use(authenticate);
 router.get('/', controller.getMilestonesHandler);
-router.get('/:id', controller.getMilestoneHandler);
+router.get('/:id', controller.getMilestoneByIdHandler);
 router.post('/', requireRoles('COORDINATOR', 'ADMIN', 'FACULTY'), validate(schema.createMilestoneSchema), controller.createMilestoneHandler);
 router.put('/:id', requireRoles('COORDINATOR', 'ADMIN', 'FACULTY'), validate(schema.updateMilestoneSchema), controller.updateMilestoneHandler);
 router.delete('/:id', requireRoles('ADMIN'), controller.deleteMilestoneHandler);

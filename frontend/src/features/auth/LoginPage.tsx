@@ -27,10 +27,15 @@ export default function LoginPage() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: login,
-    onSuccess: (data) => {
-      setUser(data.data.user);
-      toast.success(`Welcome back, ${data.data.user.name}!`);
-      navigate('/dashboard');
+    onSuccess: (response: any) => {
+      const user = response?.user || response?.data?.user;
+      if (user) {
+        setUser(user);
+        toast.success(`Welcome back, ${user.name}!`);
+        navigate('/dashboard');
+      } else {
+        toast.error('Unexpected login response format.');
+      }
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || 'Login failed. Please check your credentials.');

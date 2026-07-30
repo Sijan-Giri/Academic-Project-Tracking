@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import StatusBadge from '@/components/shared/StatusBadge';
-import { getMyTeam, createTeam, inviteMember, leaveTeam } from '@/api/student.api';
+import { getMyTeam, createTeam, inviteMember, leaveTeam } from '@/api/teams.api';
 import { useAuthStore } from '@/store/auth.store';
 
 export default function MyTeamPage() {
@@ -100,12 +100,12 @@ export default function MyTeamPage() {
         <div>
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
             {team.name}
-            <StatusBadge status={team.status} />
+            <StatusBadge status={team.status} type="team" />
           </h1>
           <p className="text-gray-400 mt-1">Manage your team members and status.</p>
         </div>
         {(!isLeader || team.status === 'PENDING') && (
-          <Button variant="danger" onClick={() => leaveMut.mutate()} disabled={leaveMut.isPending} className="bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/20">
+          <Button variant="destructive" onClick={() => leaveMut.mutate(team.id)} disabled={leaveMut.isPending} className="bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/20">
             <LogOut className="w-4 h-4 mr-2" /> Leave Team
           </Button>
         )}

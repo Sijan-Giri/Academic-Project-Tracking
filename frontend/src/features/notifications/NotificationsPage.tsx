@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Bell, Clock, CheckCircle, MessageSquare, Megaphone, Check } from 'lucide-react';
-import { getNotifications, markAllRead, markRead } from '@/api/notifications';
+import { getNotifications, markAllRead, markRead } from '@/api/notifications.api';
 import { formatDistanceToNow } from 'date-fns';
 
 const ICONS: Record<string, React.ReactNode> = {

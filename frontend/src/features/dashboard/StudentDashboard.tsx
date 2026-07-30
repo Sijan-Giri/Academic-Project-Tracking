@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, Circle, Clock, Calendar, AlertCircle } from 'lucide-react';
-import { getMyProjects } from '@/api/projects';
-import { getMyTeam } from '@/api/teams';
-import { getAnnouncements } from '@/api/announcements';
+import { getMyProjects } from '@/api/projects.api';
+import { getMyTeam } from '@/api/teams.api';
+import { getAnnouncements } from '@/api/announcements.api';
 import { formatDistanceToNow, differenceInDays } from 'date-fns';
 
 const STAGES = [

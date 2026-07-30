@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { FileText, AlertCircle, CheckCircle2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
-import { getMyProjects } from '@/api/project.api';
+import { getMyProjects } from '@/api/projects.api';
 import { useNavigate } from 'react-router-dom';
 
 export default function AbstractPage() {
@@ -14,10 +14,10 @@ export default function AbstractPage() {
 
   if (isLoading) return <div className="animate-pulse h-64 bg-white/5 rounded-2xl border border-white/10" />;
 
-  const project = projectRes?.data;
-  if (!project) return <div>No project found. Create one first.</div>;
+  const project = Array.isArray(projectRes?.data) ? projectRes?.data[0] : (projectRes?.data || (Array.isArray(projectRes) ? projectRes[0] : projectRes));
+  if (!project) return <div className="text-gray-400 p-6 text-center">No project found. Create one first.</div>;
 
-  const isRejectedOrRevision = project.abstractStatus === 'REVISION_NEEDED' || project.abstractStatus === 'ABSTRACT_REJECTED';
+  const isRejectedOrRevision = project.status === 'ABSTRACT_REJECTED' || project.abstractStatus === 'REVISION_NEEDED';
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -26,7 +26,7 @@ export default function AbstractPage() {
           <h1 className="text-2xl font-bold text-white mb-2">Project Abstract</h1>
           <p className="text-gray-400">Current submission status</p>
         </div>
-        <StatusBadge status={project.abstractStatus || 'ABSTRACT_SUBMITTED'} />
+        <StatusBadge status={project.status || project.abstractStatus || 'ABSTRACT_SUBMITTED'} type="project" />
       </div>
 
       {isRejectedOrRevision && (

@@ -4,7 +4,7 @@ import { GraduationCap, Github, Crown, ExternalLink, ChevronRight, FileText, Che
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
-import { getMyProjects } from '@/api/project.api';
+import { getMyProjects } from '@/api/projects.api';
 import { cn } from '@/lib/utils';
 
 export default function MyProjectPage() {
@@ -15,7 +15,7 @@ export default function MyProjectPage() {
     queryFn: getMyProjects
   });
 
-  const project = projectResponse?.data;
+  const project = Array.isArray(projectResponse?.data) ? projectResponse?.data[0] : (projectResponse?.data || (Array.isArray(projectResponse) ? projectResponse[0] : projectResponse));
 
   if (isLoading) {
     return (

@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, PieChart, Pie, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend } from 'recharts';
 import { Users, Book, Percent, CheckCircle } from 'lucide-react';
-import { getAllProjects, getDefaulters } from '@/api/projects';
-import { getAnnouncements } from '@/api/announcements';
+import { getAllProjects, getDefaulters } from '@/api/projects.api';
+import { getAnnouncements } from '@/api/announcements.api';
 import { format } from 'date-fns';
 
 const COLORS = {

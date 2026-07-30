@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:5000/api';
+export const API_BASE_URL = 'http://localhost:4000/api';
 
 export const PROJECT_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   DRAFT: { label: 'Draft', color: 'text-gray-400', bg: 'bg-gray-500/20' },

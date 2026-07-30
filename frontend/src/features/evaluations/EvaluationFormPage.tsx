@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { ArrowLeft, Lock, Save, AlertTriangle } from 'lucide-react';
-import { getSchedule, getStageCriteria, getEvaluations, createEvaluation, updateEvaluation, lockEvaluation } from '@/api/evaluations';
+import { getSchedule, getStageCriteria, getEvaluations, createEvaluation, updateEvaluation, lockEvaluation } from '@/api/evaluations.api';
 import { format } from 'date-fns';
 import { useAuthStore } from '@/store/auth.store';
 

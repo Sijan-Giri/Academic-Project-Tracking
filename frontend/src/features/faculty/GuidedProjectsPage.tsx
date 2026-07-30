@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Search, Eye, MessageSquare, FileText } from 'lucide-react';
-import { getGuidedProjects } from '@/api/projects';
+import { getGuidedProjects } from '@/api/projects.api';
 
 export default function GuidedProjectsPage() {
   const { data: projects = [] } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });

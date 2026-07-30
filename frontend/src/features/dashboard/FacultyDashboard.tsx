@@ -5,8 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { BookOpen, Calendar, CheckSquare, Clock } from 'lucide-react';
-import { getGuidedProjects } from '@/api/projects';
-import { getMySchedules } from '@/api/schedules';
+import { getGuidedProjects } from '@/api/projects.api';
+import { getMySchedules } from '@/api/schedules.api';
 import { format } from 'date-fns';
 
 export default function FacultyDashboard() {

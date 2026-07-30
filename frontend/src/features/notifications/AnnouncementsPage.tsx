@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Megaphone, Calendar } from 'lucide-react';
-import { getAnnouncements } from '@/api/announcements';
+import { getAnnouncements } from '@/api/announcements.api';
 import { format } from 'date-fns';
 
 export default function AnnouncementsPage() {

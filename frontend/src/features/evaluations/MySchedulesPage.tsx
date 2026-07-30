@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { MapPin, Users, CalendarDays, ExternalLink } from 'lucide-react';
-import { getMySchedules } from '@/api/schedules';
+import { getMySchedules } from '@/api/schedules.api';
 import { format, isPast, isFuture, parseISO } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 

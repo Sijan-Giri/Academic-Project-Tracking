@@ -16,3 +16,13 @@ export const getMe = async () => {
   const res = await api.get<User>('/auth/me');
   return res.data;
 };
+
+export const changePassword = async (data: any) => {
+  const res = await api.post('/auth/change-password', data);
+  return res.data;
+};
+
+export const updateProfile = async (data: any) => {
+  const res = await api.put('/users/profile', data);
+  return res.data;
+};

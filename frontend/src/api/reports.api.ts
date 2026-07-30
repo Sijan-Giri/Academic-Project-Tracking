@@ -34,3 +34,11 @@ export const downloadAuditLog = async (params?: any) => {
   const response = await api.get('/reports/audit-log', { params, responseType: 'blob' });
   downloadBlob(response, 'audit-log.csv');
 };
+
+export const downloadReport = async (type: string, params?: any) => {
+  if (type === 'dept-summary') return downloadDeptSummary(params);
+  if (type === 'project-status') return downloadProjectStatus(params);
+  if (type === 'defaulters') return downloadDefaulters(params);
+  if (type === 'evaluation-marks') return downloadEvaluationMarks(params);
+  return downloadAuditLog(params);
+};

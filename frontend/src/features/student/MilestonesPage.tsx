@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Calendar, Upload, FileText, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
-import { getProjectMilestones, createSubmission } from '@/api/student.api';
+import { getMilestones } from '@/api/milestones.api';
+import { createSubmission } from '@/api/submissions.api';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
 import toast from 'react-hot-toast';
@@ -12,7 +13,7 @@ export default function MilestonesPage() {
   
   const { data: res, isLoading } = useQuery({
     queryKey: ['my-milestones'],
-    queryFn: getProjectMilestones
+    queryFn: getMilestones
   });
 
   const uploadMut = useMutation({
@@ -27,7 +28,7 @@ export default function MilestonesPage() {
 
   if (isLoading) return <div className="animate-pulse h-64 bg-white/5 rounded-2xl border border-white/10" />;
 
-  const milestones = res?.data || [];
+  const milestones = (res as any)?.data?.items || (res as any)?.items || (res as any)?.data || (Array.isArray(res) ? res : []);
 
   if (milestones.length === 0) {
     return (
@@ -65,7 +66,7 @@ export default function MilestonesPage() {
                         {isOverdue ? <AlertCircle className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
                         {new Date(m.deadline).toLocaleDateString()}
                       </span>
-                      <StatusBadge status={m.status} />
+                      <StatusBadge status={m.status} type="milestone" />
                     </div>
                   </div>
                   {m.status !== 'COMPLETED' && (

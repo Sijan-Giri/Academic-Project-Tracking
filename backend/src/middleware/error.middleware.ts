@@ -22,5 +22,9 @@ export const errorHandler = (err: unknown, req: Request, res: Response, next: Ne
     return res.status(400).json({ success: false, message: 'Invalid JSON', code: 'BAD_REQUEST' });
   }
 
+  if (err instanceof Prisma.PrismaClientInitializationError) {
+    return res.status(500).json({ success: false, message: 'Database connection failed. Please ensure PostgreSQL is running.', code: 'DATABASE_CONNECTION_ERROR' });
+  }
+
   return res.status(500).json({ success: false, message: 'Internal server error', code: 'INTERNAL_ERROR' });
 };

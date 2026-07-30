@@ -1,6 +1,6 @@
 import prisma from '../../config/database';
 import { NotFoundError } from '../../shared/errors';
-import { auditService } from '../audit/audit.service';
+import { createAuditLog } from '../audit/audit.service';
 import { ReviewStageType } from '@prisma/client';
 
 export const reviewService = {
@@ -18,13 +18,13 @@ export const reviewService = {
 
   async createTemplate(data: any, userId: string) {
     const template = await prisma.reviewStageTemplate.create({ data });
-    await auditService.createAuditLog('CREATE', 'ReviewStageTemplate', template.id, userId, { data });
+    await createAuditLog({ userId, action: 'CREATE', entityType: 'ReviewStageTemplate', entityId: template.id, newValue: data });
     return template;
   },
 
   async updateTemplate(id: string, data: any, userId: string) {
     const template = await prisma.reviewStageTemplate.update({ where: { id }, data });
-    await auditService.createAuditLog('UPDATE', 'ReviewStageTemplate', template.id, userId, { data });
+    await createAuditLog({ userId, action: 'UPDATE', entityType: 'ReviewStageTemplate', entityId: template.id, newValue: data });
     return template;
   },
 

@@ -30,9 +30,9 @@ async function main() {
 
   // Academic Year
   const ay = await prisma.academicYear.upsert({
-    where: { label: '2023-2027' },
+    where: { id: 'seed-ay-2023-2027' },
     update: {},
-    create: { startYear: 2023, endYear: 2027, label: '2023-2027' },
+    create: { id: 'seed-ay-2023-2027', startYear: 2023, endYear: 2027, label: '2023-2027' },
   });
 
   // Coordinator
@@ -75,10 +75,10 @@ async function main() {
   await prisma.studentProfile.upsert({ where: { userId: s3.id }, update: {}, create: { userId: s3.id, studentId: 'CS2023003', batchId: batch.id, currentSemesterId: sem5.id } });
 
   // Settings
-  await prisma.setting.upsert({ where: { key: 'max_team_size' }, update: {}, create: { key: 'max_team_size', value: '4' } });
-  await prisma.setting.upsert({ where: { key: 'min_team_size' }, update: {}, create: { key: 'min_team_size', value: '1' } });
-  await prisma.setting.upsert({ where: { key: 'abstract_max_words' }, update: {}, create: { key: 'abstract_max_words', value: '500' } });
-  await prisma.setting.upsert({ where: { key: 'plagiarism_threshold' }, update: {}, create: { key: 'plagiarism_threshold', value: '30' } });
+  await prisma.settings.upsert({ where: { key: 'max_team_size' }, update: {}, create: { key: 'max_team_size', value: '4' } });
+  await prisma.settings.upsert({ where: { key: 'min_team_size' }, update: {}, create: { key: 'min_team_size', value: '1' } });
+  await prisma.settings.upsert({ where: { key: 'abstract_max_words' }, update: {}, create: { key: 'abstract_max_words', value: '500' } });
+  await prisma.settings.upsert({ where: { key: 'plagiarism_threshold' }, update: {}, create: { key: 'plagiarism_threshold', value: '30' } });
 
   console.log('Seed data inserted successfully.');
 }

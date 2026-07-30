@@ -10,7 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { getMyTeam, getAvailableGuides, createProject } from '@/api/student.api';
+import { createProject } from '@/api/projects.api';
+import { getMyTeam } from '@/api/teams.api';
+import { getAvailableGuides } from '@/api/guides.api';
 import { cn } from '@/lib/utils';
 
 const projectInfoSchema = z.object({

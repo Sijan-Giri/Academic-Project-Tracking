@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthRequest } from '../../shared/types';
 import { evaluationService } from './evaluation.service';
 import { submitEvaluationSchema, updateEvaluationSchema } from './evaluation.schema';
 
 export const evaluationController = {
-  submitEvaluation: async (req: Request, res: Response, next: NextFunction) => {
+  submitEvaluation: async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const data = submitEvaluationSchema.parse(req.body);
       const evaluation = await evaluationService.submitEvaluation(data, req.user!.userId);
@@ -13,7 +14,7 @@ export const evaluationController = {
     }
   },
 
-  getEvaluations: async (req: Request, res: Response, next: NextFunction) => {
+  getEvaluations: async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const filters = {
         projectId: req.query.projectId as string,
@@ -27,7 +28,7 @@ export const evaluationController = {
     }
   },
 
-  getEvaluationById: async (req: Request, res: Response, next: NextFunction) => {
+  getEvaluationById: async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const evaluation = await evaluationService.getEvaluationById(req.params.id);
       res.json(evaluation);
@@ -36,7 +37,7 @@ export const evaluationController = {
     }
   },
 
-  updateEvaluation: async (req: Request, res: Response, next: NextFunction) => {
+  updateEvaluation: async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const data = updateEvaluationSchema.parse(req.body);
       const evaluation = await evaluationService.updateEvaluation(req.params.id, data, req.user!.userId);
@@ -46,7 +47,7 @@ export const evaluationController = {
     }
   },
 
-  lockEvaluation: async (req: Request, res: Response, next: NextFunction) => {
+  lockEvaluation: async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const evaluation = await evaluationService.lockEvaluation(req.params.id, req.user!.userId);
       res.json(evaluation);
@@ -55,7 +56,7 @@ export const evaluationController = {
     }
   },
 
-  getProjectEvaluationSummary: async (req: Request, res: Response, next: NextFunction) => {
+  getProjectEvaluationSummary: async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const summary = await evaluationService.getProjectEvaluationSummary(req.params.projectId);
       res.json(summary);

@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { authController } from './auth.controller';
-import { authenticate, requireRoles } from '../../shared/middlewares/auth.middleware';
+import { authenticate } from '../../middleware/auth.middleware';
+import { requireRoles } from '../../middleware/rbac.middleware';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });

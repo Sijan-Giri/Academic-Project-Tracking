@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthRequest } from '../../shared/types';
 import { scheduleService } from './schedule.service';
 import { createScheduleSchema, updateScheduleSchema, addPanelSchema, attendanceSchema } from './schedule.schema';
 
