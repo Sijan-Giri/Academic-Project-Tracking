@@ -3,30 +3,74 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth.store';
 import { Role } from '@/types';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import { getMe } from '@/api/auth.api';
+import { refreshToken, getMe } from '@/api/auth.api';
 
-interface RoleGuardProps { allowedRoles?: Role[]; }
+interface RoleGuardProps {
+  allowedRoles?: Role[];
+}
 
 export default function RoleGuard({ allowedRoles }: RoleGuardProps) {
-  const { isAuthenticated, user, isLoading, setUser, logout } = useAuthStore();
+  const { isAuthenticated, user, accessToken, isLoading, setAuth, setAccessToken, setUser, setLoading, clearAuth } = useAuthStore();
 
   useEffect(() => {
-    // Validate session with backend on mount
-    getMe()
-      .then((data: any) => {
-        const u = data?.user || data?.data?.user || data?.data || data;
-        if (u && u.id) {
-          setUser(u);
+    let isMounted = true;
+
+    async function initSession() {
+      // If we already have in-memory auth state, finish loading
+      if (isAuthenticated && user && accessToken) {
+        if (isMounted) setLoading(false);
+        return;
+      }
+
+      try {
+        // Step 1: Call refresh token API
+        const refreshData = await refreshToken();
+        const newAccessToken = refreshData?.accessToken;
+
+        // Step 2: Check if there is accessToken
+        if (!newAccessToken) {
+          if (isMounted) clearAuth();
+          return;
         }
-      })
-      .catch(() => {
-        // If 401 or network error, logout
-        logout();
-      });
+
+        // Step 3: Save token in memory
+        setAccessToken(newAccessToken);
+
+        // Step 4: Call getMe API
+        const meData: any = await getMe();
+        const userObj = meData?.user || meData?.data || meData;
+
+        if (isMounted) {
+          if (userObj && userObj.id) {
+            setAuth(userObj, newAccessToken);
+          } else {
+            clearAuth();
+          }
+        }
+      } catch (error) {
+        // If refresh fails or 401, clear auth state and redirect to login
+        if (isMounted) clearAuth();
+      }
+    }
+
+    initSession();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  if (isLoading) return <LoadingSpinner className="min-h-screen" />;
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (allowedRoles && user && !allowedRoles.includes(user.role)) return <Navigate to="/dashboard" replace />;
+  if (isLoading) {
+    return <LoadingSpinner className="min-h-screen bg-[#0f1117]" message="Authenticating session..." />;
+  }
+
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return <Outlet />;
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
@@ -10,16 +10,63 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { loginSchema } from '@/lib/validators';
-import { login } from '@/api/auth.api';
+import { login, refreshToken, getMe } from '@/api/auth.api';
 import { useAuthStore } from '@/store/auth.store';
-import { cn } from '@/lib/utils';
 
 type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const navigate = useNavigate();
-  const setUser = useAuthStore(s => s.setUser);
+  const setAuth = useAuthStore((s) => s.setAuth);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function checkSessionOnMount() {
+      // If access token already exists in memory, send user to dashboard immediately
+      const state = useAuthStore.getState();
+      if (state.accessToken && state.user) {
+        if (isMounted) {
+          navigate('/dashboard', { replace: true });
+        }
+        return;
+      }
+
+      try {
+        // Step 1: Call refresh API to verify if access token can be created from session
+        const refreshRes = await refreshToken();
+        const token = refreshRes?.accessToken;
+
+        // Step 2: If there is access token, store it, call getMe, and send user to dashboard
+        if (token) {
+          useAuthStore.getState().setAccessToken(token);
+          const meData: any = await getMe();
+          const userObj = meData?.user || meData?.data || meData;
+
+          if (isMounted && userObj && userObj.id) {
+            setAuth(userObj, token);
+            toast.success(`Welcome back, ${userObj.name}!`);
+            navigate('/dashboard', { replace: true });
+            return;
+          }
+        }
+      } catch (_) {
+        // No valid token found, user must log in
+      } finally {
+        if (isMounted) {
+          setCheckingSession(false);
+        }
+      }
+    }
+
+    checkSessionOnMount();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate, setAuth]);
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -29,10 +76,11 @@ export default function LoginPage() {
     mutationFn: login,
     onSuccess: (response: any) => {
       const user = response?.user || response?.data?.user;
+      const accessToken = response?.accessToken || response?.data?.accessToken;
       if (user) {
-        setUser(user);
+        setAuth(user, accessToken || null);
         toast.success(`Welcome back, ${user.name}!`);
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       } else {
         toast.error('Unexpected login response format.');
       }
@@ -41,6 +89,15 @@ export default function LoginPage() {
       toast.error(error?.response?.data?.message || 'Login failed. Please check your credentials.');
     },
   });
+
+  if (checkingSession) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 text-center space-y-4">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+        <p className="text-sm text-gray-400">Authenticating session...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

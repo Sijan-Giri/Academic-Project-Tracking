@@ -4,7 +4,12 @@ import { z } from 'zod';
 import { User } from '../types';
 
 export const login = async (data: z.infer<typeof loginSchema>) => {
-  const res = await api.post<{ user: User; token: string }>('/auth/login', data);
+  const res = await api.post<{ user: User; accessToken: string; refreshToken: string }>('/auth/login', data);
+  return res.data;
+};
+
+export const refreshToken = async () => {
+  const res = await api.post<{ accessToken: string }>('/auth/refresh');
   return res.data;
 };
 

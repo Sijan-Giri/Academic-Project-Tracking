@@ -5,7 +5,10 @@ import { verifyToken } from '../shared/utils';
 import { env } from '../config/env';
 
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = req.cookies?.access_token;
+  const authHeader = req.headers.authorization;
+  const bearerToken = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
+  const token = req.cookies?.access_token || bearerToken;
+
   if (!token) throw new UnauthorizedError('No access token provided');
   req.user = verifyToken(token, env.JWT_ACCESS_SECRET);
   next();

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getUnreadCount } from '@/api/notifications.api';
 import { useAuthStore } from '@/store/auth.store';
+import { logout as logoutApi } from '@/api/auth.api';
 import { useSidebar } from '@/layouts/DashboardLayout';
 import {
   DropdownMenu,
@@ -20,7 +21,7 @@ interface HeaderProps { className?: string; }
 
 export default function Header({ className }: HeaderProps) {
   const { toggle } = useSidebar();
-  const { user, logout } = useAuthStore();
+  const { user, clearAuth } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -86,7 +87,14 @@ export default function Header({ className }: HeaderProps) {
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => { logout(); navigate('/login'); }} className="text-red-400 focus:bg-red-500/10 focus:text-red-400">
+            <DropdownMenuItem
+              onClick={async () => {
+                try { await logoutApi(); } catch (_) {}
+                clearAuth();
+                navigate('/login');
+              }}
+              className="text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer"
+            >
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { UnauthorizedError, NotFoundError } from '../../shared/errors';
 import { createAuditLog } from '../audit/audit.service';
 import { Role } from '@prisma/client';
+import { env } from '../../config/env';
 
 export const authService = {
   async login(email: string, password: string, ipAddress?: string, userAgent?: string) {
@@ -13,8 +14,8 @@ export const authService = {
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) throw new UnauthorizedError('Invalid credentials');
 
-    const accessToken = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_ACCESS_SECRET || 'secret', { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_REFRESH_SECRET || 'refresh-secret', { expiresIn: '7d' });
+    const accessToken = jwt.sign({ userId: user.id, role: user.role }, env.JWT_ACCESS_SECRET, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ userId: user.id }, env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
     await createAuditLog({ userId: user.id, action: 'LOGIN', entityType: 'User', entityId: user.id, newValue: { ipAddress, userAgent }, ipAddress, userAgent });
 
@@ -24,11 +25,11 @@ export const authService = {
 
   async refreshAccessToken(refreshToken: string) {
     try {
-      const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'refresh-secret') as any;
+      const payload = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET) as any;
       const user = await prisma.user.findUnique({ where: { id: payload.userId } });
       if (!user) throw new UnauthorizedError('User not found');
       
-      const accessToken = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET || 'secret', { expiresIn: '15m' });
+      const accessToken = jwt.sign({ userId: user.id, role: user.role }, env.JWT_ACCESS_SECRET, { expiresIn: '15m' });
       return accessToken;
     } catch (e) {
       throw new UnauthorizedError('Invalid refresh token');

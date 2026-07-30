@@ -1,13 +1,14 @@
 import { NavLink } from 'react-router-dom';
 import { GraduationCap, LayoutDashboard, Building2, Calendar, Users, Settings, FileText, ClipboardList, BookOpen, Clock, Bell, UserCircle2, LogOut, Megaphone } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
+import { logout as logoutApi } from '@/api/auth.api';
 import { cn } from '@/lib/utils';
 import { Role } from '@/types';
 
 interface SidebarProps { className?: string; }
 
 export default function Sidebar({ className }: SidebarProps) {
-  const { user, logout } = useAuthStore();
+  const { user, clearAuth } = useAuthStore();
 
   const NAV_ITEMS = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', roles: ['ADMIN', 'COORDINATOR', 'FACULTY', 'PANEL', 'STUDENT'] },
@@ -83,7 +84,14 @@ export default function Sidebar({ className }: SidebarProps) {
             <p className="truncate text-sm font-medium text-white">{user?.name}</p>
             <p className="truncate text-xs text-gray-400">{user?.role}</p>
           </div>
-          <button onClick={logout} className="p-2 text-gray-400 hover:text-red-400 transition-colors lg:opacity-0 lg:group-hover:opacity-100">
+          <button
+            onClick={async () => {
+              try { await logoutApi(); } catch (_) {}
+              clearAuth();
+              window.location.href = '/login';
+            }}
+            className="p-2 text-gray-400 hover:text-red-400 transition-colors lg:opacity-0 lg:group-hover:opacity-100"
+          >
             <LogOut className="h-5 w-5 shrink-0" />
           </button>
         </div>
