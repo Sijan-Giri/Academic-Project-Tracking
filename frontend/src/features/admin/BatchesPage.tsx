@@ -73,6 +73,8 @@ export default function BatchesPage() {
     },
   ];
 
+  const batchList = Array.isArray(batches?.data) ? batches.data : (Array.isArray(batches) ? batches : ((batches as any)?.data?.items || []));
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -85,7 +87,7 @@ export default function BatchesPage() {
         }
       />
       <div className="bg-[#1a1d27] rounded-xl border border-white/10 p-4">
-        <DataTable columns={columns} data={batches || []} isisLoading={isLoading} />
+        <DataTable columns={columns} data={batchList} isLoading={isLoading} />
       </div>
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>

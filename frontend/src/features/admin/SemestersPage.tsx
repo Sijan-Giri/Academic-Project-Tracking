@@ -85,6 +85,8 @@ export default function SemestersPage() {
     },
   ];
 
+  const semesterList = Array.isArray(semesters?.data) ? semesters.data : (Array.isArray(semesters) ? semesters : ((semesters as any)?.data?.items || []));
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -97,7 +99,7 @@ export default function SemestersPage() {
         }
       />
       <div className="bg-[#1a1d27] rounded-xl border border-white/10 p-4">
-        <DataTable columns={columns} data={semesters || []} isisLoading={isLoading} />
+        <DataTable columns={columns} data={semesterList} isLoading={isLoading} />
       </div>
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>

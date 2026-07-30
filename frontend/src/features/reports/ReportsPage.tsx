@@ -12,13 +12,7 @@ export default function ReportsPage() {
 
   const handleDownload = async (reportType: string, params: any) => {
     try {
-      const blob = await downloadReport(reportType, { ...params, format });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${reportType}-${Date.now()}.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
-      a.click();
-      window.URL.revokeObjectURL(url);
+      await downloadReport(reportType, { ...params, format });
     } catch (error) {
       console.error('Download failed', error);
     }

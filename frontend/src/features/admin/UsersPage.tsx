@@ -122,14 +122,16 @@ export default function UsersPage() {
     },
   ];
 
+  const userList = Array.isArray((users as any)?.data?.items) ? (users as any).data.items : (Array.isArray((users as any)?.data) ? (users as any).data : (Array.isArray(users) ? users : ((users as any)?.items || [])));
+
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Users Management"
-        subtitle="Manage students, faculty, and administrators"
+        title="Users"
+        subtitle="Manage students, faculty, and coordinators"
         actions={
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setImportOpen(true)} className="border-white/10 text-white hover:bg-white/5">
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setImportOpen(true)} className="border-white/10">
               <Upload className="w-4 h-4 mr-2" /> Bulk Import
             </Button>
             <Button onClick={() => setCreateOpen(true)} className="bg-indigo-600 hover:bg-indigo-700">
@@ -164,7 +166,7 @@ export default function UsersPage() {
       </div>
 
       <div className="bg-[#1a1d27] rounded-xl border border-white/10 p-4">
-        <DataTable columns={columns} data={users || []} isisLoading={isLoading} />
+        <DataTable columns={columns} data={userList} isLoading={isLoading} />
       </div>
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>

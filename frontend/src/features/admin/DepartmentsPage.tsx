@@ -131,6 +131,8 @@ export default function DepartmentsPage() {
     },
   ];
 
+  const deptList = Array.isArray(departments?.data) ? departments.data : (Array.isArray(departments) ? departments : ((departments as any)?.data?.items || []));
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -144,7 +146,7 @@ export default function DepartmentsPage() {
       />
 
       <div className="bg-[#1a1d27] rounded-xl border border-white/10 p-4">
-        <DataTable columns={columns} data={departments || []} isisLoading={isLoading} />
+        <DataTable columns={columns} data={deptList} isLoading={isLoading} />
       </div>
 
       <Dialog open={createOpen || !!editItem} onOpenChange={(open) => {
