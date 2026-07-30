@@ -132,7 +132,7 @@ npm run seed
 npm run dev
 ```
 
-Backend runs at **http://localhost:5000**
+Backend runs at **http://localhost:4000**
 
 ### 6. Install & Start Frontend
 
