@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { User, Lock, Save, Loader2, Eye, EyeOff } from 'lucide-react';
+import { User, Lock, Save, Loader2, Eye, EyeOff, BookOpen, GraduationCap, Building2, BadgeCheck, Hash } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +28,21 @@ const passwordSchema = z.object({
   path: ['confirmPassword']
 });
 
+function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value?: string | null }) {
+  if (!value) return null;
+  return (
+    <div className="flex items-start gap-3 py-3 border-b border-white/5 last:border-0">
+      <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">
+        <Icon className="w-4 h-4 text-indigo-400" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-xs text-gray-500 mb-0.5">{label}</p>
+        <p className="text-white font-medium text-sm break-all">{value}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function ProfilePage() {
   const user = useAuthStore(s => s.user);
   const setUser = useAuthStore(s => s.setUser);
@@ -36,13 +51,16 @@ export default function ProfilePage() {
   const [showNewPw, setShowNewPw] = useState(false);
   const [showConfirmPw, setShowConfirmPw] = useState(false);
 
+  const studentProfile = (user as any)?.studentProfile;
+  const facultyProfile = (user as any)?.facultyProfile;
+
   const { register: regProfile, handleSubmit: submitProfile, formState: { errors: errProfile } } = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: user?.name || '',
-      phone: user?.phone || '',
-      designation: user?.designation || '',
-      specialization: user?.specialization || ''
+      phone: studentProfile?.phone || facultyProfile?.phone || (user as any)?.phone || '',
+      designation: facultyProfile?.designation || '',
+      specialization: facultyProfile?.specialization || ''
     }
   });
 
@@ -70,110 +88,222 @@ export default function ProfilePage() {
 
   if (!user) return null;
 
+  const isStudent = user.role === 'STUDENT';
+  const isFaculty = user.role === 'FACULTY' || user.role === 'COORDINATOR' || user.role === 'PANEL';
+
   return (
-    <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       
-      {/* Profile Section */}
-      <div className="lg:col-span-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8">
-        <div className="flex items-center gap-6 mb-8 pb-8 border-b border-white/10">
+      {/* Avatar + Identity Banner */}
+      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-indigo-500/20 shrink-0">
-            {user.name.charAt(0)}
+            {user.name.charAt(0).toUpperCase()}
           </div>
-          <div>
+          <div className="text-center sm:text-left flex-1">
             <h1 className="text-2xl font-bold text-white mb-1">{user.name}</h1>
-            <p className="text-gray-400 mb-2">{user.email}</p>
-            <StatusBadge status={user.role} />
+            <p className="text-gray-400 mb-3">{user.email}</p>
+            <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+              <StatusBadge status={user.role} />
+              {isStudent && studentProfile?.studentId && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/20 text-violet-300 text-sm font-semibold border border-violet-500/30">
+                  <Hash className="w-3.5 h-3.5" />
+                  {studentProfile.studentId}
+                </span>
+              )}
+              {isFaculty && facultyProfile?.facultyId && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-sm font-semibold border border-blue-500/30">
+                  <BadgeCheck className="w-3.5 h-3.5" />
+                  {facultyProfile.facultyId}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* Left — Edit Form */}
+        <div className="lg:col-span-2 space-y-6">
+
+          {/* Profile Info Form */}
+          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8">
+            <form onSubmit={submitProfile(d => updateProfileMut.mutate(d))} className="space-y-5">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <User className="w-5 h-5 text-indigo-400" /> Profile Information
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Full Name</Label>
+                  <Input {...regProfile('name')} className="bg-white/5 border-white/10 text-white" />
+                  {errProfile.name && <p className="text-red-400 text-xs">{errProfile.name.message as string}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Phone Number</Label>
+                  <Input {...regProfile('phone')} placeholder="+1 234 567 8900" className="bg-white/5 border-white/10 text-white" />
+                </div>
+                
+                {isFaculty && (
+                  <>
+                    <div className="space-y-2">
+                      <Label className="text-gray-300">Designation</Label>
+                      <Input {...regProfile('designation')} className="bg-white/5 border-white/10 text-white" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-gray-300">Specialization</Label>
+                      <Input {...regProfile('specialization')} className="bg-white/5 border-white/10 text-white" />
+                    </div>
+                  </>
+                )}
+              </div>
+              
+              <div className="pt-4 flex justify-end">
+                <Button type="submit" disabled={updateProfileMut.isPending} className="bg-indigo-500 hover:bg-indigo-600 text-white">
+                  {updateProfileMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                  Save Changes
+                </Button>
+              </div>
+            </form>
+          </div>
+
+          {/* Change Password */}
+          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8">
+            <form onSubmit={submitPw(d => changePwMut.mutate(d))} className="space-y-5">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <Lock className="w-5 h-5 text-violet-400" /> Change Password
+              </h3>
+              
+              <div className="space-y-2">
+                <Label className="text-gray-300">Current Password</Label>
+                <div className="relative">
+                  <Input type={showOldPw ? 'text' : 'password'} {...regPw('currentPassword')} className="bg-white/5 border-white/10 text-white pr-10" />
+                  <button type="button" onClick={() => setShowOldPw(!showOldPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                    {showOldPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {errPw.currentPassword && <p className="text-red-400 text-xs">{errPw.currentPassword.message as string}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">New Password</Label>
+                <div className="relative">
+                  <Input type={showNewPw ? 'text' : 'password'} {...regPw('newPassword')} className="bg-white/5 border-white/10 text-white pr-10" />
+                  <button type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                    {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {errPw.newPassword && <p className="text-red-400 text-xs">{errPw.newPassword.message as string}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300">Confirm Password</Label>
+                <div className="relative">
+                  <Input type={showConfirmPw ? 'text' : 'password'} {...regPw('confirmPassword')} className="bg-white/5 border-white/10 text-white pr-10" />
+                  <button type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                    {showConfirmPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {errPw.confirmPassword && <p className="text-red-400 text-xs">{errPw.confirmPassword.message as string}</p>}
+              </div>
+              
+              <div className="pt-2">
+                <Button type="submit" disabled={changePwMut.isPending} className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20">
+                  {changePwMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                  Update Password
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
 
-        <form onSubmit={submitProfile(d => updateProfileMut.mutate(d))} className="space-y-5">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <User className="w-5 h-5 text-indigo-400" /> Profile Information
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label className="text-gray-300">Full Name</Label>
-              <Input {...regProfile('name')} className="bg-white/5 border-white/10 text-white" />
-              {errProfile.name && <p className="text-red-400 text-xs">{errProfile.name.message as string}</p>}
-            </div>
-            <div className="space-y-2">
-              <Label className="text-gray-300">Phone Number</Label>
-              <Input {...regProfile('phone')} placeholder="+1 234 567 8900" className="bg-white/5 border-white/10 text-white" />
-            </div>
-            
-            {user.role === 'FACULTY' && (
-              <>
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Designation</Label>
-                  <Input {...regProfile('designation')} className="bg-white/5 border-white/10 text-white" />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Specialization</Label>
-                  <Input {...regProfile('specialization')} className="bg-white/5 border-white/10 text-white" />
-                </div>
-              </>
+        {/* Right — Account Details Sidebar */}
+        <div className="space-y-6">
+          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
+            <h3 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
+              <BadgeCheck className="w-4 h-4 text-indigo-400" /> Account Details
+            </h3>
+
+            {/* Student-specific info */}
+            {isStudent && (
+              <div className="divide-y divide-white/5">
+                <InfoRow
+                  icon={Hash}
+                  label="Roll Number / Student ID"
+                  value={studentProfile?.studentId}
+                />
+                <InfoRow
+                  icon={BookOpen}
+                  label="Batch"
+                  value={studentProfile?.batch?.name}
+                />
+                <InfoRow
+                  icon={Building2}
+                  label="Department"
+                  value={studentProfile?.batch?.department?.name}
+                />
+              </div>
+            )}
+
+            {/* Faculty-specific info */}
+            {isFaculty && (
+              <div className="divide-y divide-white/5">
+                <InfoRow
+                  icon={Hash}
+                  label="Faculty ID"
+                  value={facultyProfile?.facultyId}
+                />
+                <InfoRow
+                  icon={Building2}
+                  label="Department"
+                  value={facultyProfile?.department?.name}
+                />
+                <InfoRow
+                  icon={GraduationCap}
+                  label="Designation"
+                  value={facultyProfile?.designation}
+                />
+                <InfoRow
+                  icon={BookOpen}
+                  label="Specialization"
+                  value={facultyProfile?.specialization}
+                />
+              </div>
+            )}
+
+            {/* Admin has no special profile */}
+            {user.role === 'ADMIN' && (
+              <p className="text-gray-500 text-sm text-center py-4">System Administrator</p>
             )}
           </div>
-          
-          <div className="pt-4 flex justify-end">
-            <Button type="submit" disabled={updateProfileMut.isPending} className="bg-indigo-500 hover:bg-indigo-600 text-white">
-              {updateProfileMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-              Save Changes
-            </Button>
+
+          {/* Read-only account meta */}
+          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
+            <h3 className="text-base font-semibold text-white mb-4">Account Info</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500">Role</span>
+                <StatusBadge status={user.role} />
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500">Status</span>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${(user as any).isActive !== false ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                  {(user as any).isActive !== false ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500">Member since</span>
+                <span className="text-gray-300">
+                  {(user as any).createdAt
+                    ? new Date((user as any).createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                    : '—'}
+                </span>
+              </div>
+            </div>
           </div>
-        </form>
+        </div>
       </div>
-
-      {/* Password Section */}
-      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8 h-fit">
-        <form onSubmit={submitPw(d => changePwMut.mutate(d))} className="space-y-5">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Lock className="w-5 h-5 text-violet-400" /> Change Password
-          </h3>
-          
-          <div className="space-y-2">
-            <Label className="text-gray-300">Current Password</Label>
-            <div className="relative">
-              <Input type={showOldPw ? 'text' : 'password'} {...regPw('currentPassword')} className="bg-white/5 border-white/10 text-white pr-10" />
-              <button type="button" onClick={() => setShowOldPw(!showOldPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
-                {showOldPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            {errPw.currentPassword && <p className="text-red-400 text-xs">{errPw.currentPassword.message as string}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-gray-300">New Password</Label>
-            <div className="relative">
-              <Input type={showNewPw ? 'text' : 'password'} {...regPw('newPassword')} className="bg-white/5 border-white/10 text-white pr-10" />
-              <button type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
-                {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            {errPw.newPassword && <p className="text-red-400 text-xs">{errPw.newPassword.message as string}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-gray-300">Confirm Password</Label>
-            <div className="relative">
-              <Input type={showConfirmPw ? 'text' : 'password'} {...regPw('confirmPassword')} className="bg-white/5 border-white/10 text-white pr-10" />
-              <button type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
-                {showConfirmPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            {errPw.confirmPassword && <p className="text-red-400 text-xs">{errPw.confirmPassword.message as string}</p>}
-          </div>
-          
-          <div className="pt-2">
-            <Button type="submit" disabled={changePwMut.isPending} className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20">
-              {changePwMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-              Update Password
-            </Button>
-          </div>
-        </form>
-      </div>
-
     </div>
   );
 }

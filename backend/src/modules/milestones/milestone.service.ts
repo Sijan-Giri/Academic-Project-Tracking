@@ -83,7 +83,7 @@ export const updateMilestoneStatus = async (id: string, status: MilestoneStatus,
         member.studentProfile.userId,
         `Milestone Status: ${status}`,
         `The status of milestone "${milestone.name}" is now ${status}.`,
-        'SYSTEM'
+        'GENERAL'
       );
     }
   }

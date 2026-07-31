@@ -169,9 +169,11 @@ model StudentProfile {
   currentSemesterId String?
   phone            String?
 
-  user      User             @relation(fields: [userId], references: [id])
-  batch     Batch            @relation(fields: [batchId], references: [id])
-  teamMembers TeamMember[]
+  user             User             @relation(fields: [userId], references: [id])
+  batch            Batch            @relation(fields: [batchId], references: [id])
+  teamMembers      TeamMember[]
+  invitationsReceived TeamInvitation[]
+  invitationsSent     TeamInvitation[] @relation("InvitedByProfile")
 }
 
 model FacultyProfile {
@@ -203,8 +205,9 @@ model Team {
 
   semester Semester     @relation(fields: [semesterId], references: [id])
   approvedBy User?      @relation("ApprovedBy", fields: [approvedById], references: [id])
-  members  TeamMember[]
-  project  Project?
+  members     TeamMember[]
+  invitations TeamInvitation[]
+  project     Project?
 }
 
 model TeamMember {
@@ -215,6 +218,29 @@ model TeamMember {
 
   team           Team           @relation(fields: [teamId], references: [id])
   studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id])
+
+  @@unique([teamId, studentProfileId])
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model TeamInvitation {
+  id               String           @id @default(uuid())
+  teamId           String
+  studentProfileId String
+  invitedById      String
+  status           InvitationStatus @default(PENDING)
+  message          String?
+  createdAt        DateTime         @default(now())
+  respondedAt      DateTime?
+
+  team           Team           @relation(fields: [teamId], references: [id])
+  studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id])
+  invitedBy      StudentProfile @relation("InvitedByProfile", fields: [invitedById], references: [id])
 
   @@unique([teamId, studentProfileId])
 }

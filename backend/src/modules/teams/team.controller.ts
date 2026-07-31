@@ -23,9 +23,34 @@ export const updateTeamHandler = async (req: AuthRequest, res: Response) => {
   res.json(team);
 };
 
+// Send an invitation (does NOT immediately add the member)
 export const inviteMemberHandler = async (req: AuthRequest, res: Response) => {
-  const member = await teamService.inviteMember(req.params.id, req.body.studentId, req.user!.userId);
-  res.status(201).json(member);
+  const invitation = await teamService.inviteMember(req.params.id, req.body.studentId, req.user!.userId);
+  res.status(201).json(invitation);
+};
+
+// Accept a pending invitation
+export const acceptInvitationHandler = async (req: AuthRequest, res: Response) => {
+  const result = await teamService.acceptInvitation(req.params.invitationId, req.user!.userId);
+  res.json(result);
+};
+
+// Decline a pending invitation
+export const declineInvitationHandler = async (req: AuthRequest, res: Response) => {
+  const result = await teamService.declineInvitation(req.params.invitationId, req.user!.userId);
+  res.json(result);
+};
+
+// Get all pending invitations for the logged-in student
+export const getMyInvitationsHandler = async (req: AuthRequest, res: Response) => {
+  const invitations = await teamService.getMyInvitations(req.user!.userId);
+  res.json(invitations);
+};
+
+// Get all invitations sent by a team (leader only)
+export const getTeamInvitationsHandler = async (req: AuthRequest, res: Response) => {
+  const invitations = await teamService.getTeamInvitations(req.params.id, req.user!.userId);
+  res.json(invitations);
 };
 
 export const removeMemberHandler = async (req: AuthRequest, res: Response) => {

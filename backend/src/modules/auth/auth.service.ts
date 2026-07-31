@@ -40,7 +40,11 @@ export const authService = {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
-        studentProfile: { include: { batch: true } },
+        studentProfile: {
+          include: {
+            batch: { include: { department: true } },
+          }
+        },
         facultyProfile: { include: { department: true } }
       }
     });

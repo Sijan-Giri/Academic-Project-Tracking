@@ -19,12 +19,12 @@ export default function Sidebar({ className }: SidebarProps) {
     { label: 'Users', icon: UserCircle2, path: '/admin/users', roles: ['ADMIN'] },
     { label: 'Review Templates', icon: FileText, path: '/admin/review-templates', roles: ['ADMIN'] },
     
-    { label: 'Projects', icon: BookOpen, path: '/coordinator/projects', roles: ['COORDINATOR'] },
-    { label: 'Teams', icon: Users, path: '/coordinator/teams', roles: ['COORDINATOR'] },
-    { label: 'Guide Allocation', icon: UserCircle2, path: '/coordinator/guides', roles: ['COORDINATOR'] },
-    { label: 'Review Stages', icon: ClipboardList, path: '/coordinator/review-stages', roles: ['COORDINATOR'] },
-    { label: 'Schedules', icon: Clock, path: '/coordinator/schedules', roles: ['COORDINATOR'] },
-    { label: 'Announcements', icon: Megaphone, path: '/coordinator/announcements', roles: ['COORDINATOR'] },
+    { label: 'Projects', icon: BookOpen, path: '/coordinator/projects', roles: ['COORDINATOR', 'ADMIN'] },
+    { label: 'Teams', icon: Users, path: '/coordinator/teams', roles: ['COORDINATOR', 'ADMIN'] },
+    { label: 'Guide Allocation', icon: UserCircle2, path: '/coordinator/guides', roles: ['COORDINATOR', 'ADMIN'] },
+    { label: 'Review Stages', icon: ClipboardList, path: '/coordinator/review-stages', roles: ['COORDINATOR', 'ADMIN'] },
+    { label: 'Schedules', icon: Clock, path: '/coordinator/schedules', roles: ['COORDINATOR', 'ADMIN'] },
+    { label: 'Announcements', icon: Megaphone, path: '/coordinator/announcements', roles: ['COORDINATOR', 'ADMIN'] },
 
     { label: 'Guided Projects', icon: BookOpen, path: '/faculty/projects', roles: ['FACULTY'] },
 

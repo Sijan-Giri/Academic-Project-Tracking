@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { GraduationCap, Github, Crown, ExternalLink, ChevronRight, FileText, CheckCircle2, Clock } from 'lucide-react';
+import { GraduationCap, Github, Crown, ExternalLink, ChevronRight, FileText, CheckCircle2, Clock, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
@@ -15,7 +15,10 @@ export default function MyProjectPage() {
     queryFn: getMyProjects
   });
 
-  const project = Array.isArray(projectResponse?.data) ? projectResponse?.data[0] : (projectResponse?.data || (Array.isArray(projectResponse) ? projectResponse[0] : projectResponse));
+  // getMyProjects returns ApiResponse<Project[]> or Project[] directly — handle both
+  const raw = projectResponse as any;
+  const projectList: any[] = Array.isArray(raw) ? raw : Array.isArray(raw?.data) ? raw.data : [];
+  const project = projectList[0] ?? null;
 
   if (isLoading) {
     return (
@@ -44,8 +47,22 @@ export default function MyProjectPage() {
     );
   }
 
-  const stages = ['Abstract Submission', 'Abstract Review', 'Guide Assignment', 'Requirements', 'Design', 'Implementation', 'Final Submission'];
-  const currentStageIndex = stages.findIndex(s => s === (project.currentStage || 'Abstract Submission'));
+  // Guide info is nested in guideAssignment.facultyProfile.user
+  const guide = project.guideAssignment?.facultyProfile;
+  const guideUser = guide?.user;
+
+  const stages = ['Abstract Submission', 'Abstract Review', 'Guide Assignment', 'Review 1', 'Review 2', 'Pre-Submission', 'Final Submission'];
+  const statusToStageMap: Record<string, number> = {
+    DRAFT: 0,
+    ABSTRACT_SUBMITTED: 1,
+    ABSTRACT_APPROVED: 2,
+    ABSTRACT_REJECTED: 1,
+    IN_PROGRESS: 3,
+    UNDER_REVIEW: 4,
+    COMPLETED: 6,
+    CANCELLED: 0,
+  };
+  const currentStageIndex = statusToStageMap[project.status] ?? 0;
 
   return (
     <div className="space-y-6">
@@ -61,8 +78,8 @@ export default function MyProjectPage() {
             </div>
             <h1 className="text-3xl font-bold text-white">{project.title}</h1>
           </div>
-          {project.githubUrl && (
-            <a href={project.githubUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-300 transition-colors border border-white/10">
+          {(project.githubLink || project.githubUrl) && (
+            <a href={project.githubLink ?? project.githubUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-300 transition-colors border border-white/10">
               <Github className="w-5 h-5" />
               <span>Repository</span>
               <ExternalLink className="w-4 h-4 ml-1 opacity-50" />
@@ -99,14 +116,17 @@ export default function MyProjectPage() {
               <GraduationCap className="w-5 h-5 text-indigo-400" />
               Project Guide
             </h3>
-            {project.guide ? (
+            {guideUser ? (
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                  {project.guide.name.charAt(0)}
+                  {guideUser.name?.charAt(0) ?? 'G'}
                 </div>
                 <div>
-                  <h4 className="text-white font-medium text-lg">{project.guide.name}</h4>
-                  <p className="text-gray-400 text-sm">{project.guide.designation} • {project.guide.department}</p>
+                  <h4 className="text-white font-medium text-lg">{guideUser.name}</h4>
+                  <p className="text-gray-400 text-sm">
+                    {guide.designation ?? 'Faculty'}
+                    {guide.department?.name ? ` • ${guide.department.name}` : ''}
+                  </p>
                   <span className="inline-flex items-center gap-1 mt-2 px-2 py-1 rounded-md bg-green-500/20 text-green-400 text-xs font-medium">
                     <CheckCircle2 className="w-3 h-3" /> Assigned
                   </span>
@@ -129,25 +149,30 @@ export default function MyProjectPage() {
               <Crown className="w-5 h-5 text-indigo-400" />
               Team: {project.team?.name || 'Unnamed Team'}
             </h3>
-            {project.team && <StatusBadge status={project.team.status} />}
+            {project.team && <StatusBadge status={project.team.status} type="team" />}
           </div>
           <div className="space-y-3">
-            {project.team?.members?.map((member: any) => (
-              <div key={member.id} className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white">
-                    {member.name.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="text-white text-sm font-medium flex items-center gap-2">
-                      {member.name}
-                      {member.isLeader && <Crown className="w-3.5 h-3.5 text-yellow-500" />}
-                    </p>
-                    <p className="text-gray-500 text-xs">{member.rollNumber}</p>
+            {project.team?.members?.map((member: any) => {
+              const memberUser = member.studentProfile?.user;
+              const displayName = memberUser?.name ?? 'Unknown';
+              const rollNumber = member.studentProfile?.studentId ?? '';
+              return (
+                <div key={member.id} className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white">
+                      {displayName.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-white text-sm font-medium flex items-center gap-2">
+                        {displayName}
+                        {member.isLeader && <Crown className="w-3.5 h-3.5 text-yellow-500" />}
+                      </p>
+                      {rollNumber && <p className="text-gray-500 text-xs">{rollNumber}</p>}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

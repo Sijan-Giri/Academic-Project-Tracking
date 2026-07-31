@@ -50,7 +50,7 @@ export const createSubmission = async (data: { milestoneId: string; notes?: stri
         guideProfile.userId,
         'New Milestone Submission',
         `A new submission was made for milestone: ${milestone.name}`,
-        'SYSTEM'
+        'GENERAL'
       );
     }
   }

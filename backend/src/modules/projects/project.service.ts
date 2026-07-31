@@ -147,7 +147,7 @@ export const submitAbstract = async (id: string, userId: string) => {
       coord.id,
       'Abstract Submitted',
       `Project ${project.title} has submitted its abstract`,
-      'SYSTEM'
+      'GENERAL'
     );
   }
 
@@ -185,7 +185,7 @@ export const reviewAbstract = async (id: string, data: { status: string; comment
       member.studentProfile.userId,
       'Abstract Review Updated',
       `Your project abstract has been reviewed. Status: ${finalStatus}. Comments: ${data.comments}`,
-      'SYSTEM'
+      'GENERAL'
     );
   }
 

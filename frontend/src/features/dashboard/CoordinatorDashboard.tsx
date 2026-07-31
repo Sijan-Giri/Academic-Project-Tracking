@@ -108,7 +108,9 @@ export default function CoordinatorDashboard() {
       {/* Row 1: Key Performance Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard title="Total Projects" value={totalProjects} icon={<Book className="text-indigo-400 h-5 w-5" />} />
-        <StatsCard title="Pending Team Approvals" value={pendingTeams} icon={<Users className="text-yellow-400 h-5 w-5" />} subtitle={`${teamsList.length} total teams`} />
+        <a href="/coordinator/teams" className="block hover:opacity-90 transition-opacity">
+          <StatsCard title="Pending Team Approvals" value={pendingTeams} icon={<Users className="text-yellow-400 h-5 w-5" />} subtitle={`${teamsList.length} total teams · Click to review`} />
+        </a>
         <StatsCard title="Guide Assigned Rate" value={`${guideAssignedPercent}%`} icon={<Percent className="text-blue-400 h-5 w-5" />} subtitle={`${guidedProjects} assigned`} />
         <StatsCard title="Completed Projects" value={completedProjects} icon={<CheckCircle className="text-emerald-400 h-5 w-5" />} />
       </div>

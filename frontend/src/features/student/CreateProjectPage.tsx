@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { X, Plus, ChevronRight, ChevronLeft, Loader2, Save } from 'lucide-react';
+import { X, Plus, ChevronRight, ChevronLeft, Loader2, Save, CheckCircle2, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,7 +41,12 @@ export default function CreateProjectPage() {
     }
   });
 
-  const { data: teamRes } = useQuery({ queryKey: ['my-team'], queryFn: getMyTeam });
+  const { data: teamRes, isLoading: teamLoading } = useQuery({
+    queryKey: ['my-team'],
+    queryFn: getMyTeam,
+    retry: false,
+  });
+
   const { data: guidesRes } = useQuery({ queryKey: ['available-guides'], queryFn: getAvailableGuides });
 
   const { mutate, isPending } = useMutation({
@@ -55,11 +60,29 @@ export default function CreateProjectPage() {
     }
   });
 
-  const onSubmit = (data: any) => {
+  // Extract the actual team object — the API may wrap it in { data: ... }
+  const team = (teamRes as any)?.data ?? teamRes ?? null;
+
+  const onSubmit = (formData: any) => {
+    if (!team?.id) {
+      toast.error('You must be part of an approved team to create a project');
+      setStep(2);
+      return;
+    }
+    if (team.status !== 'APPROVED') {
+      toast.error('Your team must be approved before creating a project');
+      setStep(2);
+      return;
+    }
     mutate({
-      ...data,
+      title: formData.title,
+      domain: formData.domain,
+      abstract: formData.abstract,
+      githubLink: formData.githubUrl || undefined,
       keywords,
-      guidePreferences: guidePrefs.filter(Boolean)
+      teamId: team.id,
+      semesterId: team.semesterId,
+      guidePreferences: guidePrefs.filter(Boolean).map((id, idx) => ({ facultyProfileId: id, rank: idx + 1 })),
     });
   };
 
@@ -74,6 +97,8 @@ export default function CreateProjectPage() {
   const removeKeyword = (kw: string) => {
     setKeywords(keywords.filter(k => k !== kw));
   };
+
+  const canProceedFromStep2 = team?.status === 'APPROVED';
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -152,27 +177,45 @@ export default function CreateProjectPage() {
 
           {step === 2 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 text-center py-6">
-              {!teamRes?.data ? (
+              {teamLoading ? (
+                <div className="flex flex-col items-center gap-3">
+                  <Loader2 className="w-10 h-10 text-indigo-400 animate-spin" />
+                  <p className="text-gray-400">Loading team info...</p>
+                </div>
+              ) : !team ? (
                 <div>
                   <div className="w-16 h-16 bg-orange-500/20 text-orange-400 rounded-full flex items-center justify-center mx-auto mb-4">
                     <X className="w-8 h-8" />
                   </div>
                   <h3 className="text-xl font-semibold text-white mb-2">No Team Found</h3>
-                  <p className="text-gray-400 mb-6 max-w-md mx-auto">You need to be part of a team to create a project.</p>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button type="button" variant="outline" onClick={() => navigate('/student/team')} className="bg-white/5 text-white border-white/10 hover:bg-white/10">
-                      Create a Team
-                    </Button>
-                    <span className="text-gray-500">or contact your team leader</span>
-                  </div>
+                  <p className="text-gray-400 mb-6 max-w-md mx-auto">You need to be part of an <strong>approved</strong> team to create a project.</p>
+                  <Button type="button" variant="outline" onClick={() => navigate('/student/team')} className="bg-white/5 text-white border-white/10 hover:bg-white/10">
+                    Create a Team
+                  </Button>
                 </div>
-              ) : teamRes.data.status === 'PENDING' ? (
+              ) : team.status === 'PENDING' ? (
                 <div>
                   <div className="w-16 h-16 bg-yellow-500/20 text-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Loader2 className="w-8 h-8 animate-spin" />
+                    <AlertTriangle className="w-8 h-8" />
                   </div>
                   <h3 className="text-xl font-semibold text-white mb-2">Team Pending Approval</h3>
-                  <p className="text-gray-400 mb-6">Your team <strong>{teamRes.data.name}</strong> is currently pending coordinator approval. You can proceed with creating the project, but it will only be processed once your team is approved.</p>
+                  <p className="text-gray-400 mb-4">Your team <strong className="text-white">{team.name}</strong> is waiting for coordinator approval.</p>
+                  <p className="text-sm text-yellow-400/80 bg-yellow-500/10 border border-yellow-500/20 rounded-lg px-4 py-3 max-w-md mx-auto">
+                    You cannot create a project until your team is approved. Please contact your coordinator.
+                  </p>
+                </div>
+              ) : team.status === 'REJECTED' ? (
+                <div>
+                  <div className="w-16 h-16 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <X className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-2">Team Rejected</h3>
+                  <p className="text-gray-400 mb-2">Your team was rejected.</p>
+                  {team.rejectionReason && (
+                    <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2 max-w-md mx-auto">
+                      Reason: {team.rejectionReason}
+                    </p>
+                  )}
                 </div>
               ) : (
                 <div>
@@ -180,7 +223,17 @@ export default function CreateProjectPage() {
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <h3 className="text-xl font-semibold text-white mb-2">Team Ready!</h3>
-                  <p className="text-gray-400">Your team <strong>{teamRes.data.name}</strong> is approved. You can proceed.</p>
+                  <p className="text-gray-400">Your team <strong className="text-white">{team.name}</strong> is approved. You can proceed to create your project.</p>
+                  <div className="mt-4 grid grid-cols-2 gap-3 max-w-xs mx-auto text-sm">
+                    <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                      <p className="text-gray-500 text-xs mb-1">Members</p>
+                      <p className="text-white font-semibold">{team.members?.length ?? '—'}</p>
+                    </div>
+                    <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                      <p className="text-gray-500 text-xs mb-1">Status</p>
+                      <p className="text-emerald-400 font-semibold">Approved</p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -206,8 +259,8 @@ export default function CreateProjectPage() {
                     className="flex h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="" className="bg-gray-900 text-gray-400">Select Faculty</option>
-                    {guidesRes?.data?.map((g: any) => (
-                      <option key={g.id} value={g.id} className="bg-gray-900 text-white">{g.name} - {g.designation}</option>
+                    {(Array.isArray(guidesRes?.data) ? guidesRes.data : []).map((g: any) => (
+                      <option key={g.id} value={g.id} className="bg-gray-900 text-white">{g.user?.name ?? g.name} {g.designation ? `- ${g.designation}` : ''}</option>
                     ))}
                   </select>
                 </div>
@@ -221,8 +274,14 @@ export default function CreateProjectPage() {
             </Button>
             
             {step < 3 ? (
-              <Button type="submit" className="bg-indigo-500 hover:bg-indigo-600 text-white">
-                Next <ChevronRight className="w-4 h-4 ml-2" />
+              <Button
+                type="submit"
+                disabled={step === 2 && !canProceedFromStep2}
+                className="bg-indigo-500 hover:bg-indigo-600 text-white disabled:opacity-40"
+              >
+                {step === 2 && !canProceedFromStep2 && !teamLoading
+                  ? 'Team must be approved'
+                  : <>Next <ChevronRight className="w-4 h-4 ml-2" /></>}
               </Button>
             ) : (
               <Button type="submit" disabled={isPending} className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white">

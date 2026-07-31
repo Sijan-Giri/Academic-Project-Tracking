@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const createTeamSchema = z.object({
   name: z.string().min(3).max(100),
-  semesterId: z.string().uuid(),
+  semesterId: z.string().optional(),
 });
 
 export const inviteMemberSchema = z.object({

@@ -86,7 +86,7 @@ export const approvePreference = async (preferenceId: string, reviewerId: string
         member.studentProfile.userId,
         'Guide Assigned',
         'A guide has been assigned to your project based on preferences.',
-        'SYSTEM'
+        'GENERAL'
       );
     }
   }
@@ -96,7 +96,7 @@ export const approvePreference = async (preferenceId: string, reviewerId: string
       faculty.userId,
       'Project Assigned',
       'You have been assigned as a guide to a new project.',
-      'SYSTEM'
+      'GENERAL'
     );
   }
 
@@ -161,7 +161,7 @@ export const assignGuide = async (data: { projectId: string; facultyProfileId: s
         member.studentProfile.userId,
         'Guide Assigned',
         'A guide has been assigned to your project.',
-        'SYSTEM'
+        'GENERAL'
       );
     }
   }
@@ -171,7 +171,7 @@ export const assignGuide = async (data: { projectId: string; facultyProfileId: s
       faculty.userId,
       'Project Assigned',
       'You have been assigned as a guide to a new project.',
-      'SYSTEM'
+      'GENERAL'
     );
   }
 

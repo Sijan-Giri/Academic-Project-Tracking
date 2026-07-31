@@ -26,7 +26,7 @@ export const scheduleService = {
             assignment.facultyProfile.user.id,
             'New Review Scheduled',
             `You have been assigned to a review panel for project ${schedule.projectId}`,
-            'SYSTEM'
+            'GENERAL'
           );
         }
       }
@@ -94,7 +94,7 @@ export const scheduleService = {
         assignment.facultyProfile.user.id,
         'Added to Review Panel',
         'You have been added to a review schedule panel.',
-        'SYSTEM'
+        'GENERAL'
       );
     }
     return assignment;
