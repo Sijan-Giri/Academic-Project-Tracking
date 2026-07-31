@@ -8,6 +8,11 @@ export const login = async (data: z.infer<typeof loginSchema>) => {
   return res.data;
 };
 
+export const signup = async (data: any) => {
+  const res = await api.post<{ user: User; accessToken: string; refreshToken: string }>('/auth/signup', data);
+  return res.data;
+};
+
 export const refreshToken = async () => {
   const res = await api.post<{ accessToken: string }>('/auth/refresh');
   return res.data;

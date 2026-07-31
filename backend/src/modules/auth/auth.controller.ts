@@ -17,6 +17,20 @@ export const authController = {
     }
   },
 
+  signupHandler: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = registerSchema.parse(req.body);
+      const result = await authService.signup(data, req.ip, req.headers['user-agent']);
+
+      res.cookie('access_token', result.accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+      res.cookie('refresh_token', result.refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+
+      res.status(201).json({ user: result.user, accessToken: result.accessToken, refreshToken: result.refreshToken });
+    } catch (error) {
+      next(error);
+    }
+  },
+
   logoutHandler: async (req: Request, res: Response) => {
     res.clearCookie('access_token');
     res.clearCookie('refresh_token');

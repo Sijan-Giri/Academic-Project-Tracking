@@ -61,7 +61,7 @@ export const authService = {
   },
 
   async createUser(data: any) {
-    const { role, departmentId, batchId, studentId, facultyId, phone, designation, specialization, ...userData } = data;
+    const { role = Role.STUDENT, departmentId, batchId, studentId, facultyId, phone, designation, specialization, ...userData } = data;
     const hashedPassword = await bcrypt.hash(userData.password, 10);
 
     const user = await prisma.user.create({
@@ -70,10 +70,10 @@ export const authService = {
         password: hashedPassword,
         role,
         studentProfile: role === Role.STUDENT ? {
-          create: { studentId: studentId!, phone, batchId: batchId! }
+          create: { studentId: studentId || `STU${Date.now().toString().slice(-6)}`, phone, batchId: batchId || 'seed-batch-cse' }
         } : undefined,
         facultyProfile: (role === Role.FACULTY || role === Role.COORDINATOR || role === Role.PANEL) ? {
-          create: { facultyId: facultyId!, phone, designation, specialization, departmentId: departmentId! }
+          create: { facultyId: facultyId || `FAC${Date.now().toString().slice(-6)}`, phone, designation: designation || 'Assistant Professor', specialization, departmentId: departmentId || 'seed-dept-cse' }
         } : undefined
       }
     });
@@ -81,6 +81,22 @@ export const authService = {
     await createAuditLog({ userId: user.id, action: 'CREATE', entityType: 'User', entityId: user.id, newValue: { email: user.email, role: user.role } });
     const { password, ...rest } = user;
     return rest;
+  },
+
+  async signup(data: any, ipAddress?: string, userAgent?: string) {
+    const existing = await prisma.user.findUnique({ where: { email: data.email } });
+    if (existing) {
+      throw new UnauthorizedError('An account with this email address already exists');
+    }
+
+    const createdUser = await this.createUser(data);
+
+    const accessToken = jwt.sign({ userId: createdUser.id, role: createdUser.role }, env.JWT_ACCESS_SECRET, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ userId: createdUser.id }, env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+
+    await createAuditLog({ userId: createdUser.id, action: 'SIGNUP', entityType: 'User', entityId: createdUser.id, newValue: { ipAddress, userAgent }, ipAddress, userAgent });
+
+    return { user: createdUser, accessToken, refreshToken };
   },
 
   async bulkImportStudents(rows: any[], batchId: string) {

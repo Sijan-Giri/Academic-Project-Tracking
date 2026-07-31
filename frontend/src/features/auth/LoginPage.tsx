@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
@@ -129,7 +129,13 @@ export default function LoginPage() {
           {isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Signing in...</> : 'Sign In'}
         </Button>
       </form>
-      <p className="mt-6 text-center text-xs text-gray-500">Default admin: admin@apts.edu / Admin@123</p>
+      <p className="mt-6 text-center text-sm text-gray-400">
+        Don't have an account?{' '}
+        <Link to="/register" className="text-indigo-400 hover:text-indigo-300 font-semibold underline">
+          Sign Up
+        </Link>
+      </p>
+      <p className="mt-4 text-center text-xs text-gray-500">Default admin: admin@apts.edu / Admin@123</p>
     </div>
   );
 }

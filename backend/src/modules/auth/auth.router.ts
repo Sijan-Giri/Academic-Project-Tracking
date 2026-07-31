@@ -8,6 +8,7 @@ const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.post('/login', authController.loginHandler);
+router.post('/signup', authController.signupHandler);
 router.post('/logout', authenticate, authController.logoutHandler);
 router.post('/refresh', authController.refreshHandler);
 router.get('/me', authenticate, authController.getMeHandler);

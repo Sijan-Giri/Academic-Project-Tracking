@@ -7,14 +7,15 @@ import { createBatchSchema, updateBatchSchema } from './batch.schema';
 
 const router = Router();
 
-router.use(authenticate);
-
+// Public routes for selection (Registration, etc.)
 router.get('/', batchController.getBatches);
 router.get('/:id', batchController.getBatchById);
-router.post('/', requireRoles('ADMIN'), validate(createBatchSchema), batchController.createBatch);
-router.put('/:id', requireRoles('ADMIN'), validate(updateBatchSchema), batchController.updateBatch);
-router.delete('/:id', requireRoles('ADMIN'), batchController.deleteBatch);
 router.get('/:id/semesters', batchController.getBatchSemesters);
-router.get('/:id/students', requireRoles('COORDINATOR', 'ADMIN'), batchController.getBatchStudents);
+
+// Protected routes
+router.post('/', authenticate, requireRoles('ADMIN'), validate(createBatchSchema), batchController.createBatch);
+router.put('/:id', authenticate, requireRoles('ADMIN'), validate(updateBatchSchema), batchController.updateBatch);
+router.delete('/:id', authenticate, requireRoles('ADMIN'), batchController.deleteBatch);
+router.get('/:id/students', authenticate, requireRoles('COORDINATOR', 'ADMIN'), batchController.getBatchStudents);
 
 export default router;

@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 // Lazy load ALL pages
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
+const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'));
 const DashboardIndex = lazy(() => import('@/features/dashboard/DashboardIndex'));
 
 // Admin pages
@@ -56,6 +57,14 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <AuthLayout>{wrap(<LoginPage />)}</AuthLayout>,
+  },
+  {
+    path: '/register',
+    element: <AuthLayout>{wrap(<RegisterPage />)}</AuthLayout>,
+  },
+  {
+    path: '/signup',
+    element: <AuthLayout>{wrap(<RegisterPage />)}</AuthLayout>,
   },
   {
     element: <RoleGuard />,

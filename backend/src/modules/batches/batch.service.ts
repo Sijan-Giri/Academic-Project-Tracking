@@ -10,7 +10,7 @@ export const getBatches = async (departmentId?: string) => {
       department: true,
       academicYear: true,
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { name: 'asc' },
   });
 };
 
