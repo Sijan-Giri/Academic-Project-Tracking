@@ -95,7 +95,17 @@ export default function StudentDashboard() {
             <CardContent>
               <div className="flex flex-col space-y-4 relative before:absolute before:inset-0 before:ml-5 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-indigo-500/50 before:via-violet-500/30 before:to-slate-800">
                 {STAGES.map((stage, i) => {
-                  const currentStatusIndex = currentProject?.status === 'COMPLETED' ? 7 : (currentProject?.status === 'IN_PROGRESS' ? 2 : 1);
+                  const statusMap: Record<string, number> = {
+                    DRAFT: 0,
+                    ABSTRACT_SUBMITTED: 0,
+                    ABSTRACT_APPROVED: 1,
+                    ABSTRACT_REJECTED: 0,
+                    IN_PROGRESS: 2,
+                    UNDER_REVIEW: 3,
+                    COMPLETED: 6,
+                    CANCELLED: 0,
+                  };
+                  const currentStatusIndex = statusMap[currentProject?.status || 'DRAFT'] ?? 0;
                   const isDone = i < currentStatusIndex;
                   const isCurrent = i === currentStatusIndex;
 
@@ -107,7 +117,15 @@ export default function StudentDashboard() {
                       <div className="flex-1 p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
                         <span className={`font-medium ${isCurrent ? 'text-indigo-400 font-bold' : isDone ? 'text-gray-300' : 'text-gray-500'}`}>{stage}</span>
                         {isDone && <span className="text-xs text-emerald-400 font-medium bg-emerald-500/10 px-2 py-0.5 rounded">Completed</span>}
-                        {isCurrent && <span className="text-xs text-indigo-400 font-medium bg-indigo-500/10 px-2 py-0.5 rounded">In Progress</span>}
+                        {isCurrent && (
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                            currentProject?.status === 'ABSTRACT_APPROVED'
+                              ? 'text-emerald-400 bg-emerald-500/10'
+                              : 'text-indigo-400 bg-indigo-500/10'
+                          }`}>
+                            {currentProject?.status === 'ABSTRACT_APPROVED' ? 'Approved' : 'Current Stage'}
+                          </span>
+                        )}
                       </div>
                     </div>
                   );

@@ -8,6 +8,7 @@ import { getProjects } from '@/api/projects.api';
 import { getTeams } from '@/api/teams.api';
 import { getAnnouncements } from '@/api/announcements.api';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 const COLORS: Record<string, string> = {
   DRAFT: '#6b7280',
@@ -94,6 +95,8 @@ export default function CoordinatorDashboard() {
     { name: 'Week 4', count: Math.max(totalProjects, 10) },
   ];
 
+  const navigation = useNavigate();
+
   return (
     <div className="space-y-6 text-white min-h-screen p-6 bg-[#0f1117]">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -108,9 +111,9 @@ export default function CoordinatorDashboard() {
       {/* Row 1: Key Performance Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard title="Total Projects" value={totalProjects} icon={<Book className="text-indigo-400 h-5 w-5" />} />
-        <a href="/coordinator/teams" className="block hover:opacity-90 transition-opacity">
+        <div onClick={() => navigation('/coordinator/teams')} className="block hover:opacity-90 transition-opacity">
           <StatsCard title="Pending Team Approvals" value={pendingTeams} icon={<Users className="text-yellow-400 h-5 w-5" />} subtitle={`${teamsList.length} total teams · Click to review`} />
-        </a>
+        </div>
         <StatsCard title="Guide Assigned Rate" value={`${guideAssignedPercent}%`} icon={<Percent className="text-blue-400 h-5 w-5" />} subtitle={`${guidedProjects} assigned`} />
         <StatsCard title="Completed Projects" value={completedProjects} icon={<CheckCircle className="text-emerald-400 h-5 w-5" />} />
       </div>

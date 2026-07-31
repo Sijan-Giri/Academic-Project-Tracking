@@ -104,7 +104,7 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-bold text-white mb-1">{user.name}</h1>
             <p className="text-gray-400 mb-3">{user.email}</p>
             <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-              <StatusBadge status={user.role} />
+              <StatusBadge className="text-white" status={user.role} />
               {isStudent && studentProfile?.studentId && (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/20 text-violet-300 text-sm font-semibold border border-violet-500/30">
                   <Hash className="w-3.5 h-3.5" />
@@ -142,7 +142,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-gray-300">Phone Number</Label>
-                  <Input {...regProfile('phone')} placeholder="+1 234 567 8900" className="bg-white/5 border-white/10 text-white" />
+                  <Input {...regProfile('phone')} placeholder="+977 9847583758" className="bg-white/5 border-white/10 text-white" />
                 </div>
                 
                 {isFaculty && (
@@ -284,7 +284,7 @@ export default function ProfilePage() {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Role</span>
-                <StatusBadge status={user.role} />
+                <StatusBadge className="text-white" status={user.role} />
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Status</span>

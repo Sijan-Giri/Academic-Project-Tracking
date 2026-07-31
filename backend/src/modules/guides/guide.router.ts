@@ -8,6 +8,7 @@ import * as controller from './guide.controller';
 const router = Router();
 router.use(authenticate);
 router.get('/available', controller.getAvailableGuidesHandler);
+router.get('/preferences/all', requireRoles('COORDINATOR', 'ADMIN'), controller.getAllGuidePreferencesHandler);
 router.post('/preferences', requireRoles('STUDENT'), validate(schema.submitPreferencesSchema), controller.submitPreferencesHandler);
 router.get('/preferences/:projectId', requireRoles('COORDINATOR', 'ADMIN', 'FACULTY'), controller.getGuidePreferencesHandler);
 router.patch('/preferences/:id/approve', requireRoles('COORDINATOR', 'ADMIN'), controller.approvePreferenceHandler);

@@ -1,7 +1,7 @@
 export const API_BASE_URL = 'http://localhost:4000/api';
 
 export const PROJECT_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  DRAFT: { label: 'Draft', color: 'text-gray-400', bg: 'bg-gray-500/20' },
+  DRAFT: { label: 'Draft', color: 'text-white', bg: 'bg-gray-500/20' },
   ABSTRACT_SUBMITTED: { label: 'Abstract Submitted', color: 'text-blue-400', bg: 'bg-blue-500/20' },
   ABSTRACT_APPROVED: { label: 'Abstract Approved', color: 'text-green-400', bg: 'bg-green-500/20' },
   ABSTRACT_REJECTED: { label: 'Abstract Rejected', color: 'text-red-400', bg: 'bg-red-500/20' },

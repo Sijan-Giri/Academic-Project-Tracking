@@ -85,7 +85,7 @@ app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().
 app.use(errorHandler);
 
 app.listen(env.PORT, () => {
-  console.log(`🚀 APTS Server running on port ${env.PORT} [${env.NODE_ENV}]`);
+  console.log(`APTS Server running on port ${env.PORT} [${env.NODE_ENV}]`);
 });
 
 export default app;

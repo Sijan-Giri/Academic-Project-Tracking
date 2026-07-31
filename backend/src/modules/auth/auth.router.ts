@@ -13,6 +13,7 @@ router.post('/logout', authenticate, authController.logoutHandler);
 router.post('/refresh', authController.refreshHandler);
 router.get('/me', authenticate, authController.getMeHandler);
 router.put('/change-password', authenticate, authController.changePasswordHandler);
+router.post('/change-password', authenticate, authController.changePasswordHandler);
 router.post('/register', authenticate, requireRoles('ADMIN'), authController.registerHandler);
 router.post('/bulk-import/students', authenticate, requireRoles('ADMIN', 'COORDINATOR'), upload.single('file'), authController.bulkImportStudentsHandler);
 router.post('/bulk-import/faculty', authenticate, requireRoles('ADMIN'), upload.single('file'), authController.bulkImportFacultyHandler);

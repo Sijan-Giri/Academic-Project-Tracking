@@ -1,14 +1,19 @@
 import { z } from 'zod';
-import { ProjectStatus } from '@prisma/client';
 
 export const createProjectSchema = z.object({
   title: z.string().min(5).max(200),
   abstract: z.string().min(50).optional(),
   domain: z.string().optional(),
   keywords: z.array(z.string()).default([]),
-  teamId: z.string().uuid(),
-  semesterId: z.string().uuid(),
+  teamId: z.string().min(1, 'Team ID is required'),
+  semesterId: z.string().optional(),
   githubLink: z.string().url().optional().or(z.literal('')),
+  guidePreferences: z.array(
+    z.object({
+      facultyProfileId: z.string(),
+      rank: z.number(),
+    })
+  ).optional(),
 });
 
 export const updateProjectSchema = z.object({

@@ -10,3 +10,4 @@ export const submitAbstract = async (id: string) => (await api.post<ApiResponse<
 export const reviewAbstract = async (id: string, data: { status: string, comments: string }) => (await api.post<ApiResponse<Project>>(`/projects/${id}/abstract/review`, data)).data;
 export const getMyProjects = async () => (await api.get<ApiResponse<Project[]>>('/projects/my-projects')).data;
 export const getGuidedProjects = async () => (await api.get<ApiResponse<Project[]>>('/projects/guided')).data;
+export const updateProjectStatus = async (id: string, status: string) => (await api.patch<ApiResponse<Project>>(`/projects/${id}/status`, { status })).data;

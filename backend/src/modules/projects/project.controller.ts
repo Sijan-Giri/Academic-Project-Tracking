@@ -42,6 +42,11 @@ export const reviewAbstractHandler = async (req: AuthRequest, res: Response) => 
   res.json(project);
 };
 
+export const updateProjectStatusHandler = async (req: AuthRequest, res: Response) => {
+  const project = await projectService.updateProjectStatus(req.params.id, req.body.status, req.user!.userId);
+  res.json(project);
+};
+
 export const getMyProjectsHandler = async (req: AuthRequest, res: Response) => {
   const projects = await projectService.getMyProjects(req.user!.userId);
   res.json(projects);

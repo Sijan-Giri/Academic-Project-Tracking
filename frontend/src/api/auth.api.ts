@@ -28,7 +28,12 @@ export const getMe = async () => {
 };
 
 export const changePassword = async (data: any) => {
-  const res = await api.post('/auth/change-password', data);
+  const payload = {
+    oldPassword: data.oldPassword || data.currentPassword,
+    currentPassword: data.currentPassword || data.oldPassword,
+    newPassword: data.newPassword,
+  };
+  const res = await api.put('/auth/change-password', payload);
   return res.data;
 };
 

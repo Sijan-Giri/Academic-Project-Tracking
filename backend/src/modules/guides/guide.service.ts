@@ -43,6 +43,17 @@ export const getGuidePreferences = async (projectId: string) => {
   return preferences;
 };
 
+export const getAllGuidePreferences = async () => {
+  const preferences = await prisma.guidePreference.findMany({
+    include: {
+      project: { select: { id: true, title: true } },
+      facultyProfile: { include: { user: true } },
+    },
+    orderBy: { rank: 'asc' },
+  });
+  return preferences;
+};
+
 export const approvePreference = async (preferenceId: string, reviewerId: string) => {
   const preference = await prisma.guidePreference.findUnique({ where: { id: preferenceId } });
   if (!preference) throw new NotFoundError('Preference not found');

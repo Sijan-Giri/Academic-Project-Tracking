@@ -81,7 +81,7 @@ export default function CreateProjectPage() {
       githubLink: formData.githubUrl || undefined,
       keywords,
       teamId: team.id,
-      semesterId: team.semesterId,
+      semesterId: team.semesterId || undefined,
       guidePreferences: guidePrefs.filter(Boolean).map((id, idx) => ({ facultyProfileId: id, rank: idx + 1 })),
     });
   };

@@ -5,17 +5,36 @@ import * as notificationService from '../notifications/notification.service';
 import { ProjectStatus, AuditAction, TeamStatus } from '@prisma/client';
 
 export const createProject = async (data: any, userId: string) => {
-  const team = await prisma.team.findUnique({ where: { id: data.teamId } });
+  const { guidePreferences, ...projectFields } = data;
+
+  const team = await prisma.team.findUnique({ where: { id: projectFields.teamId } });
   if (!team) throw new NotFoundError('Team not found');
   if (team.status !== TeamStatus.APPROVED) throw new ValidationError('Team must be approved to create a project');
 
-  const existingProject = await prisma.project.findUnique({ where: { teamId: data.teamId } });
+  const existingProject = await prisma.project.findUnique({ where: { teamId: projectFields.teamId } });
   if (existingProject) throw new ValidationError('Team already has a project');
+
+  // Auto-resolve semesterId from team if omitted or empty
+  const targetSemesterId = projectFields.semesterId || team.semesterId;
+  if (!targetSemesterId) throw new ValidationError('Semester ID could not be determined');
 
   const project = await prisma.project.create({
     data: {
-      ...data,
+      ...projectFields,
+      semesterId: targetSemesterId,
       status: ProjectStatus.DRAFT,
+      guidePreferences: guidePreferences && guidePreferences.length > 0 ? {
+        createMany: {
+          data: guidePreferences.map((gp: any) => ({
+            facultyProfileId: gp.facultyProfileId,
+            rank: gp.rank,
+          })),
+        },
+      } : undefined,
+    },
+    include: {
+      team: true,
+      guidePreferences: true,
     },
   });
 
@@ -188,6 +207,27 @@ export const reviewAbstract = async (id: string, data: { status: string; comment
       'GENERAL'
     );
   }
+
+  return updatedProject;
+};
+
+export const updateProjectStatus = async (id: string, status: ProjectStatus, userId: string) => {
+  const project = await prisma.project.findUnique({ where: { id } });
+  if (!project) throw new NotFoundError('Project not found');
+
+  const updatedProject = await prisma.project.update({
+    where: { id },
+    data: { status },
+  });
+
+  await auditService.createAuditLog({
+    action: AuditAction.STATUS_CHANGE,
+    entityType: 'PROJECT',
+    entityId: id,
+    userId,
+    oldValue: project.status,
+    newValue: status,
+  });
 
   return updatedProject;
 };

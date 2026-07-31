@@ -92,9 +92,8 @@ export default function LoginPage() {
 
   if (checkingSession) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center space-y-4">
+      <div className="flex flex-col items-center justify-center p-8 text-center min-h-[200px]">
         <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
-        <p className="text-sm text-gray-400">Authenticating session...</p>
       </div>
     );
   }

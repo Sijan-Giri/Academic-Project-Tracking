@@ -62,7 +62,7 @@ export const authController = {
     try {
       const data = changePasswordSchema.parse(req.body);
       await authService.changePassword(req.user!.userId, data.oldPassword, data.newPassword);
-      res.status(204).send();
+      res.json({ message: 'Password changed successfully' });
     } catch (error) {
       next(error);
     }

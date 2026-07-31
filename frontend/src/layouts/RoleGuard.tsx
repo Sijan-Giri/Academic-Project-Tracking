@@ -61,7 +61,7 @@ export default function RoleGuard({ allowedRoles }: RoleGuardProps) {
   }, []);
 
   if (isLoading) {
-    return <LoadingSpinner className="min-h-screen bg-[#0f1117]" message="Authenticating session..." />;
+    return <LoadingSpinner className="min-h-screen bg-[#0f1117]" />;
   }
 
   if (!isAuthenticated || !user) {

@@ -21,6 +21,10 @@ export const registerSchema = z.object({
 });
 
 export const changePasswordSchema = z.object({
-  oldPassword: z.string(),
-  newPassword: z.string().min(6),
-});
+  oldPassword: z.string().optional(),
+  currentPassword: z.string().optional(),
+  newPassword: z.string().min(6, 'Password must be at least 6 characters'),
+}).transform(data => ({
+  oldPassword: data.oldPassword || data.currentPassword || '',
+  newPassword: data.newPassword,
+}));

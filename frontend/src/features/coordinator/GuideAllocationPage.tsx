@@ -6,8 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, UserPlus, Link, Loader2, User } from 'lucide-react';
+import { CheckCircle, XCircle, UserPlus, Loader2, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import PageHeader from '@/components/shared/PageHeader';

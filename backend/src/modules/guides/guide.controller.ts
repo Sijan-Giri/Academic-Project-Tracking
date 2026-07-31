@@ -12,6 +12,11 @@ export const getGuidePreferencesHandler = async (req: AuthRequest, res: Response
   res.json(prefs);
 };
 
+export const getAllGuidePreferencesHandler = async (req: AuthRequest, res: Response) => {
+  const prefs = await guideService.getAllGuidePreferences();
+  res.json(prefs);
+};
+
 export const approvePreferenceHandler = async (req: AuthRequest, res: Response) => {
   const pref = await guideService.approvePreference(req.params.id, req.user!.userId);
   res.json(pref);
