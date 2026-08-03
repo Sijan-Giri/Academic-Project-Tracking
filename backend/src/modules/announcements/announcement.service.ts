@@ -1,6 +1,7 @@
 import { Role } from '@prisma/client';
 import prisma from '../../config/database';
 import { sendNotification } from '../notifications/notification.service';
+import { broadcastEvent } from '../../config/socket';
 
 export const createAnnouncement = async (data: any, createdById: string) => {
   const announcement = await prisma.announcement.create({
@@ -9,9 +10,15 @@ export const createAnnouncement = async (data: any, createdById: string) => {
       content: data.content,
       createdById,
     },
+    include: { createdBy: { select: { name: true, role: true } } },
   });
 
-  // Sending notifications to relevant users (simplified to all for schema compatibility)
+  // Real-time socket broadcast
+  try {
+    broadcastEvent('announcement:new', announcement);
+  } catch (_) {}
+
+  // Sending notifications to relevant users
   const users = await prisma.user.findMany({ where: { isActive: true } });
   for (const user of users) {
     await sendNotification(user.id, `New Announcement: ${data.title}`, data.content, 'GENERAL');
@@ -56,5 +63,12 @@ export const deleteAnnouncement = async (id: string, userId: string, userRole: R
   if (announcement.createdById !== userId && userRole !== Role.ADMIN) {
     throw new Error('Forbidden');
   }
-  return prisma.announcement.delete({ where: { id } });
+  const deleted = await prisma.announcement.delete({ where: { id } });
+
+  // Real-time socket broadcast
+  try {
+    broadcastEvent('announcement:deleted', { id });
+  } catch (_) {}
+
+  return deleted;
 };

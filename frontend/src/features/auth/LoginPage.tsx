@@ -134,7 +134,6 @@ export default function LoginPage() {
           Sign Up
         </Link>
       </p>
-      <p className="mt-4 text-center text-xs text-gray-500">Default admin: admin@apts.edu / Admin@123</p>
     </div>
   );
 }

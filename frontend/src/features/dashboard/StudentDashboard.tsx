@@ -27,7 +27,6 @@ export default function StudentDashboard() {
   const { data: teamRes } = useQuery({ queryKey: ['my-team'], queryFn: getMyTeam });
   const { data: announcementsRes } = useQuery({ queryKey: ['announcements'], queryFn: () => getAnnouncements() });
 
-  // Safe unwrapping
   const projectList = Array.isArray((projectsRes as any)?.data?.items)
     ? (projectsRes as any).data.items
     : (Array.isArray((projectsRes as any)?.data) ? (projectsRes as any).data : (Array.isArray(projectsRes) ? projectsRes : []));
@@ -65,7 +64,6 @@ export default function StudentDashboard() {
         )}
       </div>
 
-      {/* Row 1 — Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard title="Project Status" value={currentProject?.status ? <StatusBadge status={currentProject.status} type="project" /> : 'No Project'} icon={<FileText className="text-indigo-400" />} />
         <StatsCard title="Current Milestone" value={inProgressMilestone?.name || 'None'} icon={<Circle className="text-violet-400" />} />
@@ -77,12 +75,9 @@ export default function StudentDashboard() {
         <StatsCard title="Faculty Guide" value={currentProject?.guideAssignment?.facultyProfile?.user?.name || currentProject?.guide?.name || 'Unassigned'} icon={<Calendar className="text-emerald-400" />} />
       </div>
 
-      {/* Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Lifecycle Timeline Card */}
           <Card className="bg-white/5 backdrop-blur-md border-white/10">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-white text-base font-semibold">Project Lifecycle Progress</CardTitle>
@@ -134,7 +129,6 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
 
-          {/* Team Card */}
           <Card className="bg-white/5 backdrop-blur-md border-white/10">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-white text-base font-semibold">Team Details</CardTitle>
@@ -168,9 +162,7 @@ export default function StudentDashboard() {
           </Card>
         </div>
 
-        {/* Right Column */}
         <div className="space-y-6">
-          {/* Deadlines Card */}
           <Card className="bg-white/5 backdrop-blur-md border-white/10">
             <CardHeader>
               <CardTitle className="text-white text-base font-semibold">Upcoming Deadlines</CardTitle>
@@ -195,7 +187,6 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
 
-          {/* Announcements Card */}
           <Card className="bg-white/5 backdrop-blur-md border-white/10">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-white text-base font-semibold">Announcements</CardTitle>

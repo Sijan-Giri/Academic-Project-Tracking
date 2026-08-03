@@ -215,22 +215,50 @@ export const removeGuideAssignment = async (assignmentId: string, userId: string
 };
 
 export const getAvailableGuides = async () => {
-  const guides = await prisma.user.findMany({
-    where: { role: Role.FACULTY },
-    select: {
-      id: true,
-      name: true,
-      email: true,
+  const facultyUsers = await prisma.user.findMany({
+    where: { role: { in: [Role.FACULTY, Role.COORDINATOR] }, isActive: true },
+    include: {
       facultyProfile: {
-        select: {
-          id: true,
-          facultyId: true,
-          designation: true,
-          specialization: true,
-          department: { select: { name: true } },
-        },
+        include: { department: { select: { name: true } } },
       },
     },
+    orderBy: { name: 'asc' },
   });
-  return guides;
+
+  const defaultDept = await prisma.department.findFirst();
+
+  const formattedGuides = [];
+  for (const user of facultyUsers) {
+    let profile = user.facultyProfile;
+    if (!profile && defaultDept) {
+      profile = await prisma.facultyProfile.create({
+        data: {
+          userId: user.id,
+          facultyId: `FAC-${user.name.replace(/\s+/g, '').toUpperCase().slice(0, 6)}`,
+          departmentId: defaultDept.id,
+          designation: 'Faculty / Guide',
+        },
+        include: { department: { select: { name: true } } },
+      });
+    }
+
+    formattedGuides.push({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      facultyProfileId: profile?.id,
+      facultyProfile: profile
+        ? {
+            id: profile.id,
+            facultyId: profile.facultyId,
+            designation: profile.designation,
+            specialization: profile.specialization,
+            department: profile.department,
+          }
+        : null,
+    });
+  }
+
+  return formattedGuides;
 };

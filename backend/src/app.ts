@@ -82,9 +82,15 @@ app.use('/api/audit', auditRouter);
 
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
+import { createServer } from 'http';
+import { initSocket } from './config/socket';
+
 app.use(errorHandler);
 
-app.listen(env.PORT, () => {
+const httpServer = createServer(app);
+initSocket(httpServer);
+
+httpServer.listen(env.PORT, () => {
   console.log(`APTS Server running on port ${env.PORT} [${env.NODE_ENV}]`);
 });
 

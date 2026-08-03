@@ -3,6 +3,7 @@ import { ValidationError, NotFoundError, ForbiddenError } from '../../shared/err
 import * as auditService from '../audit/audit.service';
 import * as notificationService from '../notifications/notification.service';
 import { TeamStatus, AuditAction, Role } from '@prisma/client';
+import { emitToUser, emitToRole, emitToTeam, broadcastEvent } from '../../config/socket';
 
 export const createTeam = async (data: { name: string; semesterId?: string }, userId: string) => {
   const profile = await prisma.studentProfile.findUnique({ where: { userId } });
@@ -116,12 +117,16 @@ export const updateTeam = async (id: string, data: { name: string }, userId: str
 
   const team = await prisma.team.findUnique({ where: { id } });
   if (!team) throw new NotFoundError('Team not found');
-  if (team.status !== TeamStatus.PENDING) throw new ValidationError('Only pending teams can be updated');
+  if (team.status === TeamStatus.REJECTED) throw new ValidationError('Cannot update a rejected team');
 
   const updatedTeam = await prisma.team.update({
     where: { id },
     data: { name: data.name },
   });
+
+  try {
+    broadcastEvent('team:updated', updatedTeam);
+  } catch (_) {}
 
   return updatedTeam;
 };
@@ -141,7 +146,7 @@ export const inviteMember = async (teamId: string, studentIdRollNumber: string, 
     include: { members: true },
   });
   if (!team) throw new NotFoundError('Team not found');
-  if (team.status !== TeamStatus.PENDING) throw new ValidationError('Cannot modify members of a non-pending team');
+  if (team.status === TeamStatus.REJECTED) throw new ValidationError('Cannot modify members of a rejected team');
 
   const invitedStudent = await prisma.studentProfile.findUnique({
     where: { studentId: studentIdRollNumber },
@@ -187,6 +192,11 @@ export const inviteMember = async (teamId: string, studentIdRollNumber: string, 
       studentProfile: { include: { user: true } },
     },
   });
+
+  // Real-time socket emission
+  try {
+    emitToUser(invitedStudent.userId, 'invitation:new', invitation);
+  } catch (_) {}
 
   // Notify the invited student
   await notificationService.sendNotification(
@@ -244,6 +254,9 @@ export const acceptInvitation = async (invitationId: string, userId: string) => 
     include: { studentProfile: { include: { user: true } } },
   });
   if (leaderMember) {
+    try {
+      emitToUser(leaderMember.studentProfile.userId, 'team:updated', updatedInvitation);
+    } catch (_) {}
     await notificationService.sendNotification(
       leaderMember.studentProfile.userId,
       'Invitation Accepted',
@@ -341,13 +354,18 @@ export const removeMember = async (teamId: string, memberId: string, userId: str
 
   const team = await prisma.team.findUnique({ where: { id: teamId } });
   if (!team) throw new NotFoundError('Team not found');
-  if (team.status !== TeamStatus.PENDING) throw new ValidationError('Cannot modify members of a non-pending team');
+  if (team.status === TeamStatus.REJECTED) throw new ValidationError('Cannot modify members of a rejected team');
 
   const memberToRemove = await prisma.teamMember.findUnique({ where: { id: memberId } });
   if (!memberToRemove) throw new NotFoundError('Member not found');
   if (memberToRemove.isLeader) throw new ValidationError('Cannot remove the team leader');
 
   await prisma.teamMember.delete({ where: { id: memberId } });
+
+  try {
+    broadcastEvent('team:updated', team);
+  } catch (_) {}
+
   return { message: 'Member removed' };
 };
 
@@ -406,6 +424,9 @@ export const approveTeam = async (id: string, userId: string) => {
   });
 
   for (const member of team.members) {
+    try {
+      emitToUser(member.studentProfile.userId, 'team:updated', team);
+    } catch (_) {}
     await notificationService.sendNotification(
       member.studentProfile.userId,
       'Team Approved',
@@ -413,6 +434,9 @@ export const approveTeam = async (id: string, userId: string) => {
       'GENERAL'
     );
   }
+  try {
+    broadcastEvent('team:updated', team);
+  } catch (_) {}
 
   await auditService.createAuditLog({
     action: AuditAction.STATUS_CHANGE,

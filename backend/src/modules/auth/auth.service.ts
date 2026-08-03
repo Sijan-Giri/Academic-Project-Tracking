@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { UnauthorizedError, NotFoundError } from '../../shared/errors';
 import { createAuditLog } from '../audit/audit.service';
+import { sendNotification } from '../notifications/notification.service';
 import { Role } from '@prisma/client';
 import { env } from '../../config/env';
 
@@ -62,6 +63,13 @@ export const authService = {
 
     const hashed = await bcrypt.hash(newPassword, 10);
     await prisma.user.update({ where: { id: userId }, data: { password: hashed } });
+
+    await sendNotification(
+      userId,
+      'Password Changed',
+      'Your account password was updated successfully. If you did not perform this change, please contact support.',
+      'STATUS_CHANGE'
+    );
   },
 
   async createUser(data: any) {

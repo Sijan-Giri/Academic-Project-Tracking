@@ -29,16 +29,25 @@ export default function NotificationsPage() {
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [unreadOnly, setUnreadOnly] = useState(false);
 
-  const { data: notifications = [] } = useQuery({ queryKey: ['notifications'], queryFn: getNotifications });
+  const { data: rawNotifs } = useQuery({ queryKey: ['notifications'], queryFn: getNotifications });
+  const notifications: any[] = Array.isArray(rawNotifs) ? rawNotifs : ((rawNotifs as any)?.items ?? (rawNotifs as any)?.data?.items ?? []);
 
   const markAllMutation = useMutation({
     mutationFn: markAllRead,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
+      queryClient.invalidateQueries({ queryKey: ['my-notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    }
   });
 
   const markReadMutation = useMutation({
     mutationFn: markRead,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
+      queryClient.invalidateQueries({ queryKey: ['my-notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    }
   });
 
   const filtered = notifications.filter((n: any) => {

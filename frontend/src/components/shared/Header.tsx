@@ -1,7 +1,6 @@
-import { Menu, Bell } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getUnreadCount } from '@/api/notifications.api';
+import NotificationDropdown from '@/components/shared/NotificationDropdown';
 import { useAuthStore } from '@/store/auth.store';
 import { logout as logoutApi } from '@/api/auth.api';
 import { useSidebar } from '@/layouts/DashboardLayout';
@@ -25,15 +24,6 @@ export default function Header({ className }: HeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { data } = useQuery({
-    queryKey: ['unread-count'],
-    queryFn: getUnreadCount,
-    refetchInterval: 30000,
-  });
-
-  const unreadCount = (data as any)?.data?.count || (data as any)?.count || 0;
-
-  // Simple title generator based on path
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === '/dashboard') return 'Dashboard';
@@ -55,38 +45,33 @@ export default function Header({ className }: HeaderProps) {
       </div>
 
       <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="icon" className="relative text-gray-400 hover:text-white" onClick={() => navigate('/notifications')}>
-          <Bell className="h-5 w-5" />
-          {unreadCount > 0 && (
-            <span className="absolute right-2 top-2 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-[#0f1117]" />
-          )}
-        </Button>
+        <NotificationDropdown />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
               <Avatar className="h-8 w-8">
-                <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuContent className="w-56 bg-[#14161f] border-white/10 text-white" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none text-white">{user?.name}</p>
                 <p className="text-xs leading-none text-gray-400">{user?.email}</p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate('/profile')}>
+            <DropdownMenuSeparator className="bg-white/10" />
+            <DropdownMenuItem onClick={() => navigate('/profile')} className="hover:bg-white/5 cursor-pointer">
               Profile
             </DropdownMenuItem>
             {user?.role === 'ADMIN' && (
-              <DropdownMenuItem onClick={() => navigate('/admin/settings')}>
+              <DropdownMenuItem onClick={() => navigate('/admin/settings')} className="hover:bg-white/5 cursor-pointer">
                 Settings
               </DropdownMenuItem>
             )}
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="bg-white/10" />
             <DropdownMenuItem
               onClick={async () => {
                 try { await logoutApi(); } catch (_) {}

@@ -31,9 +31,28 @@ export default function GuideAllocationPage() {
     queryFn: () => api.get('/guides/preferences/all').then(r => r.data).catch(() => ({ data: [] })),
   });
 
-  const projects = projectsData?.data?.items || projectsData?.data || [];
-  const guides = guidesData?.data || [];
-  const preferences = prefsData?.data || [];
+  const rawProjects = projectsData as any;
+  const projects: any[] = Array.isArray(rawProjects)
+    ? rawProjects
+    : Array.isArray(rawProjects?.data?.items)
+    ? rawProjects.data.items
+    : Array.isArray(rawProjects?.data)
+    ? rawProjects.data
+    : [];
+
+  const rawGuides = guidesData as any;
+  const guides: any[] = Array.isArray(rawGuides)
+    ? rawGuides
+    : Array.isArray(rawGuides?.data)
+    ? rawGuides.data
+    : [];
+
+  const rawPrefs = prefsData as any;
+  const preferences: any[] = Array.isArray(rawPrefs)
+    ? rawPrefs
+    : Array.isArray(rawPrefs?.data)
+    ? rawPrefs.data
+    : [];
 
   const approveMutation = useMutation({
     mutationFn: (id: string) => approvePreference(id),
@@ -154,11 +173,14 @@ export default function GuideAllocationPage() {
                   <SelectValue placeholder="Choose a faculty member…" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#1a1a2e] border-white/10">
-                  {guides.map((g: any) => (
-                    <SelectItem key={g.facultyProfile?.id || g.id} value={g.facultyProfile?.id || g.id} className="text-gray-300">
-                      {g.name} — {g.facultyProfile?.designation || 'Faculty'}
-                    </SelectItem>
-                  ))}
+                  {guides.map((g: any) => {
+                    const profId = g.facultyProfileId || g.facultyProfile?.id || g.id;
+                    return (
+                      <SelectItem key={profId} value={profId} className="text-gray-300">
+                        {g.name} — {g.facultyProfile?.designation || 'Faculty'}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>

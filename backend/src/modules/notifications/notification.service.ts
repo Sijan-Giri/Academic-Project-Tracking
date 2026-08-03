@@ -1,6 +1,7 @@
 import { NotificationType } from '@prisma/client';
 import prisma from '../../config/database';
 import { sendEmail } from '../../config/mailer';
+import { emitToUser } from '../../config/socket';
 
 export const sendNotification = async (
   userId: string,
@@ -9,18 +10,28 @@ export const sendNotification = async (
   type: NotificationType = 'GENERAL',
   relatedProjectId?: string
 ) => {
-  await prisma.notification.create({
+  const notification = await prisma.notification.create({
     data: { userId, title, message, type, relatedProjectId },
   });
-  // Also send email if user has email
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true } });
-  if (user) {
-    await sendEmail(
-      user.email,
-      `APTS: ${title}`,
-      `<h3>Hello ${user.name}</h3><p>${message}</p><hr/><small>Academic Project Tracking System</small>`
-    );
-  }
+
+  // Real-time socket emission
+  try {
+    const unreadCount = await prisma.notification.count({ where: { userId, isRead: false } });
+    emitToUser(userId, 'notification:new', notification);
+    emitToUser(userId, 'notification:unread_count', { count: unreadCount });
+  } catch (_) {}
+
+  // Also send email if user has email (non-blocking)
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true } });
+    if (user) {
+      sendEmail(
+        user.email,
+        `APTS: ${title}`,
+        `<h3>Hello ${user.name}</h3><p>${message}</p><hr/><small>Academic Project Tracking System</small>`
+      ).catch(() => {});
+    }
+  } catch (_) {}
 };
 
 export const getMyNotifications = async (userId: string, page = 1, limit = 20) => {
@@ -37,8 +48,12 @@ export const getMyNotifications = async (userId: string, page = 1, limit = 20) =
 };
 
 export const markRead = async (id: string, userId: string) => {
+  const notification = await prisma.notification.findUnique({ where: { id } });
+  if (!notification || notification.userId !== userId) {
+    return null;
+  }
   return prisma.notification.update({
-    where: { id, userId },
+    where: { id },
     data: { isRead: true },
   });
 };

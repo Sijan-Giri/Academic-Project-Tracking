@@ -3,6 +3,7 @@ import { ValidationError, NotFoundError, ForbiddenError } from '../../shared/err
 import * as auditService from '../audit/audit.service';
 import * as notificationService from '../notifications/notification.service';
 import { ProjectStatus, AuditAction, TeamStatus } from '@prisma/client';
+import { broadcastEvent } from '../../config/socket';
 
 export const createProject = async (data: any, userId: string) => {
   const { guidePreferences, ...projectFields } = data;
@@ -212,13 +213,27 @@ export const reviewAbstract = async (id: string, data: { status: string; comment
 };
 
 export const updateProjectStatus = async (id: string, status: ProjectStatus, userId: string) => {
-  const project = await prisma.project.findUnique({ where: { id } });
+  const project = await prisma.project.findUnique({
+    where: { id },
+    include: { team: { include: { members: { include: { studentProfile: true } } } } },
+  });
   if (!project) throw new NotFoundError('Project not found');
 
   const updatedProject = await prisma.project.update({
     where: { id },
     data: { status },
   });
+
+  if (project.team?.members) {
+    for (const member of project.team.members) {
+      await notificationService.sendNotification(
+        member.studentProfile.userId,
+        'Project Status Updated',
+        `Your project status has been updated to ${status.replace('_', ' ')}.`,
+        'STATUS_CHANGE'
+      );
+    }
+  }
 
   await auditService.createAuditLog({
     action: AuditAction.STATUS_CHANGE,
@@ -228,6 +243,10 @@ export const updateProjectStatus = async (id: string, status: ProjectStatus, use
     oldValue: project.status,
     newValue: status,
   });
+
+  try {
+    broadcastEvent('project:updated', updatedProject);
+  } catch (_) {}
 
   return updatedProject;
 };

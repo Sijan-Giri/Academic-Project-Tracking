@@ -259,9 +259,14 @@ export default function CreateProjectPage() {
                     className="flex h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="" className="bg-gray-900 text-gray-400">Select Faculty</option>
-                    {(Array.isArray(guidesRes?.data) ? guidesRes.data : []).map((g: any) => (
-                      <option key={g.id} value={g.id} className="bg-gray-900 text-white">{g.user?.name ?? g.name} {g.designation ? `- ${g.designation}` : ''}</option>
-                    ))}
+                    {(Array.isArray(guidesRes?.data) ? guidesRes.data : Array.isArray(guidesRes) ? guidesRes : []).map((g: any) => {
+                      const profId = g.facultyProfileId || g.facultyProfile?.id || g.id;
+                      return (
+                        <option key={profId} value={profId} className="bg-gray-900 text-white">
+                          {g.user?.name ?? g.name} {g.facultyProfile?.designation ? `- ${g.facultyProfile.designation}` : g.designation ? `- ${g.designation}` : ''}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
               ))}

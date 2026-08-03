@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import StatusBadge from '@/components/shared/StatusBadge';
 import {
-  getMyTeam, createTeam, inviteMember, leaveTeam,
+  getMyTeam, createTeam, inviteMember, leaveTeam, removeMember,
   getMyInvitations, acceptInvitation, declineInvitation, getTeamInvitations
 } from '@/api/teams.api';
 import { useAuthStore } from '@/store/auth.store';
@@ -81,6 +81,16 @@ export default function MyTeamPage() {
       queryClient.invalidateQueries({ queryKey: ['team-invitations', team?.id] });
     },
     onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to send invitation'),
+  });
+
+  const removeMut = useMutation({
+    mutationFn: ({ teamId, memberId }: { teamId: string; memberId: string }) =>
+      removeMember(teamId, memberId),
+    onSuccess: () => {
+      toast.success('Member removed from team');
+      queryClient.invalidateQueries({ queryKey: ['my-team'] });
+    },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to remove member'),
   });
 
   const leaveMut = useMutation({
@@ -270,7 +280,7 @@ export default function MyTeamPage() {
           <CheckCircle2 className="w-5 h-5 text-emerald-400 mt-0.5" />
           <div>
             <h4 className="text-emerald-400 font-medium">Team Approved</h4>
-            <p className="text-emerald-400/80 text-sm mt-1">Your team is approved. Team composition is locked.</p>
+            <p className="text-emerald-400/80 text-sm mt-1">Your team is approved. As team leader, you can still update team name or invite additional members if needed.</p>
           </div>
         </div>
       )}
@@ -289,27 +299,40 @@ export default function MyTeamPage() {
             const rollNumber = member.studentProfile?.studentId ?? '';
             const displayEmail = memberUser?.email ?? '';
             return (
-              <div key={member.id} className="flex items-center gap-4 bg-black/20 border border-white/5 rounded-xl p-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-medium text-sm">
-                  {displayName.charAt(0).toUpperCase()}
+              <div key={member.id} className="flex items-center justify-between bg-black/20 border border-white/5 rounded-xl p-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-medium text-sm">
+                    {displayName.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium flex items-center gap-2">
+                      {displayName}
+                      {member.isLeader && <Crown className="w-4 h-4 text-yellow-500" />}
+                    </p>
+                    <p className="text-gray-500 text-sm truncate">
+                      {rollNumber}{rollNumber && displayEmail ? ' · ' : ''}{displayEmail}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-medium flex items-center gap-2">
-                    {displayName}
-                    {member.isLeader && <Crown className="w-4 h-4 text-yellow-500" title="Team Leader" />}
-                  </p>
-                  <p className="text-gray-500 text-sm truncate">
-                    {rollNumber}{rollNumber && displayEmail ? ' · ' : ''}{displayEmail}
-                  </p>
-                </div>
+                {isLeader && !member.isLeader && team.status !== 'REJECTED' && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeMut.mutate({ teamId: team.id, memberId: member.id })}
+                    disabled={removeMut.isPending}
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs"
+                  >
+                    Remove
+                  </Button>
+                )}
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* Invite + sent invitations (leader only, pending team) */}
-      {isLeader && team.status === 'PENDING' && (
+      {/* Invite + sent invitations (leader only, non-rejected team) */}
+      {isLeader && team.status !== 'REJECTED' && (
         <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 space-y-6">
           {/* Invite input */}
           <div>

@@ -120,26 +120,26 @@ export default function TeamApprovalsPage() {
           <Button variant="ghost" size="icon" onClick={() => setViewTeam(row.original)} title="View Details">
             <Eye className="w-4 h-4 text-indigo-400" />
           </Button>
-          {row.original.status === 'PENDING' && (
-            <>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleApprove(row.original.id)}
-                disabled={approveMutation.isPending}
-                className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20"
-              >
-                <CheckCircle className="w-4 h-4 mr-1" /> Approve
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setRejectItem(row.original)}
-                className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20"
-              >
-                <XCircle className="w-4 h-4 mr-1" /> Reject
-              </Button>
-            </>
+          {row.original.status !== 'APPROVED' && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleApprove(row.original.id)}
+              disabled={approveMutation.isPending}
+              className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20"
+            >
+              <CheckCircle className="w-4 h-4 mr-1" /> Approve
+            </Button>
+          )}
+          {row.original.status !== 'REJECTED' && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setRejectItem(row.original)}
+              className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20"
+            >
+              <XCircle className="w-4 h-4 mr-1" /> Reject
+            </Button>
           )}
         </div>
       ),

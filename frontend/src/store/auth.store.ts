@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { User } from '../types';
+import { queryClient } from '@/lib/queryClient';
 
 interface AuthState {
   user: User | null;
@@ -17,12 +18,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   accessToken: null,
   isAuthenticated: false,
-  isLoading: true, // Start in loading state until session check completes
-  setAuth: (user, accessToken) =>
-    set({ user, accessToken, isAuthenticated: true, isLoading: false }),
+  isLoading: true,
+  setAuth: (user, accessToken) => {
+    queryClient.clear(); // Purge any previous user cached data
+    set({ user, accessToken, isAuthenticated: true, isLoading: false });
+  },
   setUser: (user) => set({ user, isAuthenticated: !!user }),
   setAccessToken: (accessToken) => set({ accessToken }),
   setLoading: (isLoading) => set({ isLoading }),
-  clearAuth: () =>
-    set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false }),
+  clearAuth: () => {
+    queryClient.clear(); // Purge all cached data on logout
+    set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
+  },
 }));
