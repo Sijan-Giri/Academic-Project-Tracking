@@ -133,7 +133,7 @@ export default function GuideAllocationPage() {
                               <Button size="sm" variant="success" onClick={() => approveMutation.mutate(p.id)} disabled={approveMutation.isPending} id={`approve-pref-${p.id}`}>
                                 <CheckCircle className="h-3.5 w-3.5 mr-1" /> Approve
                               </Button>
-                              <Button size="sm" variant="danger" onClick={() => setRejectModal({ id: p.id })} id={`reject-pref-${p.id}`}>
+                              <Button size="sm" variant="destructive" onClick={() => setRejectModal({ id: p.id })} id={`reject-pref-${p.id}`}>
                                 <XCircle className="h-3.5 w-3.5 mr-1" /> Reject
                               </Button>
                             </div>
@@ -217,7 +217,7 @@ export default function GuideAllocationPage() {
                         {p.guideAssignment?.assignedAt ? format(new Date(p.guideAssignment.assignedAt), 'MMM d, yyyy') : '—'}
                       </td>
                       <td className="px-4 py-3">
-                        <Button size="sm" variant="danger" onClick={() => removeMutation.mutate(p.guideAssignment.id)} disabled={removeMutation.isPending} id={`remove-guide-${p.id}`}>
+                        <Button size="sm" variant="destructive" onClick={() => removeMutation.mutate(p.guideAssignment.id)} disabled={removeMutation.isPending} id={`remove-guide-${p.id}`}>
                           Remove
                         </Button>
                       </td>
@@ -243,7 +243,7 @@ export default function GuideAllocationPage() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setRejectModal(null)}>Cancel</Button>
-            <Button variant="danger" onClick={() => rejectModal && rejectMutation.mutate({ id: rejectModal.id, note: rejectNote })} disabled={rejectMutation.isPending} id="confirm-reject-btn">
+            <Button variant="destructive" onClick={() => rejectModal && rejectMutation.mutate({ id: rejectModal.id, note: rejectNote })} disabled={rejectMutation.isPending} id="confirm-reject-btn">
               {rejectMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Confirm Reject
             </Button>
           </DialogFooter>

@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,10 +17,13 @@ interface ConfirmDialogProps {
   title: string;
   description: string;
   confirmLabel?: string;
+  confirmText?: string;
   variant?: 'default' | 'danger';
+  children?: React.ReactNode;
 }
 
-export default function ConfirmDialog({ open, onOpenChange, onConfirm, title, description, confirmLabel = 'Confirm', variant = 'default' }: ConfirmDialogProps) {
+export default function ConfirmDialog({ open, onOpenChange, onConfirm, title, description, confirmLabel, confirmText, variant = 'default', children }: ConfirmDialogProps) {
+  const label = confirmLabel || confirmText || 'Confirm';
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -27,6 +31,7 @@ export default function ConfirmDialog({ open, onOpenChange, onConfirm, title, de
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
+        {children}
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
@@ -35,9 +40,9 @@ export default function ConfirmDialog({ open, onOpenChange, onConfirm, title, de
               onConfirm();
               onOpenChange(false);
             }}
-            className={variant === 'danger' ? 'bg-red-500 hover:bg-red-600 text-white' : ''}
+            className={variant === 'danger' ? 'bg-red-600 hover:bg-red-700 text-white' : ''}
           >
-            {confirmLabel}
+            {label}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

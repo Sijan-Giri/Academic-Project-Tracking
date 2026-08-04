@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { api } from '@/api/client';
 import PageHeader from '@/components/shared/PageHeader';
 import DataTable from '@/components/shared/DataTable';
+import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -27,6 +28,16 @@ export default function BatchesPage() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteItem, setDeleteItem] = useState<any>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.delete(`/batches/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['batches'] });
+      toast.success('Batch deleted successfully');
+      setDeleteItem(null);
+    },
+    onError: () => toast.error('Failed to delete batch'),
+  });
 
   const { data: batches, isLoading } = useQuery({
     queryKey: ['batches'],
@@ -109,6 +120,15 @@ export default function BatchesPage() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!deleteItem}
+        onOpenChange={(o) => !o && setDeleteItem(null)}
+        title="Delete Batch"
+        description={`Are you sure you want to delete batch "${deleteItem?.name}"?`}
+        onConfirm={() => deleteItem && deleteMutation.mutate(deleteItem.id)}
+        variant="danger"
+      />
     </div>
   );
 }

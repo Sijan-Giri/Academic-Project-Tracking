@@ -1,16 +1,16 @@
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { User, Lock, Save, Loader2, Eye, EyeOff, BookOpen, GraduationCap, Building2, BadgeCheck, Hash } from 'lucide-react';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/store/auth.store';
 import { getMe, updateProfile, changePassword } from '@/api/auth.api';
-import StatusBadge from '@/components/shared/StatusBadge';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -55,11 +55,12 @@ export default function ProfilePage() {
   const { data: meRes } = useQuery({
     queryKey: ['me'],
     queryFn: getMe,
-    onSuccess: (data: any) => {
-      const fresh = data?.data ?? data;
-      if (fresh?.id) setUser(fresh);
-    },
   });
+
+  useEffect(() => {
+    const fresh = (meRes as any)?.data ?? meRes;
+    if (fresh?.id) setUser(fresh);
+  }, [meRes, setUser]);
 
   const rawMe = meRes as any;
   const freshUser = rawMe?.data ?? (rawMe?.id ? rawMe : null);
@@ -123,7 +124,7 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-bold dark:text-white text-slate-900 mb-1">{user.name}</h1>
             <p className="dark:text-gray-400 text-slate-500 mb-3">{user.email}</p>
             <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-              <StatusBadge className="text-white" status={user.role} />
+              <Badge className="bg-indigo-600 text-white font-semibold px-3 py-1 text-sm">{user.role}</Badge>
               {isStudent && studentProfile?.studentId && (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full dark:bg-violet-500/20 dark:text-violet-300 dark:border-violet-500/30 bg-violet-50 text-violet-700 border border-violet-200 text-sm font-semibold">
                   <Hash className="w-3.5 h-3.5" />
@@ -307,8 +308,8 @@ export default function ProfilePage() {
             <h3 className="text-base font-semibold text-white mb-4">Account Info</h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between items-center">
-                <span className="text-gray-500">Role</span>
-                <StatusBadge className="text-white" status={user.role} />
+                <span className="dark:text-gray-400 text-slate-500">Role</span>
+                <Badge className="bg-indigo-600 text-white font-semibold">{user.role}</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Status</span>

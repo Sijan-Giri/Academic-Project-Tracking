@@ -1,29 +1,17 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Calendar, Upload, FileText, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { Calendar, Upload, FileText, Clock, AlertCircle } from 'lucide-react';
 import { getMilestones } from '@/api/milestones.api';
-import { createSubmission } from '@/api/submissions.api';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
 import toast from 'react-hot-toast';
 
 export default function MilestonesPage() {
   const [selectedMilestone, setSelectedMilestone] = useState<any>(null);
-  const queryClient = useQueryClient();
   
   const { data: res, isLoading } = useQuery({
     queryKey: ['my-milestones'],
     queryFn: getMilestones
-  });
-
-  const uploadMut = useMutation({
-    mutationFn: createSubmission,
-    onSuccess: () => {
-      toast.success('Files submitted successfully');
-      setSelectedMilestone(null);
-      queryClient.invalidateQueries({ queryKey: ['my-milestones'] });
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Upload failed')
   });
 
   if (isLoading) return <div className="animate-pulse h-64 bg-white/5 rounded-2xl border border-white/10" />;

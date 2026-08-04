@@ -11,7 +11,8 @@ import { Search, Eye, MessageSquare, FileText } from 'lucide-react';
 import { getGuidedProjects } from '@/api/projects.api';
 
 export default function GuidedProjectsPage() {
-  const { data: projects = [] } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });
+  const { data: rawProjects } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });
+  const projects: any[] = Array.isArray((rawProjects as any)?.data?.items) ? (rawProjects as any).data.items : (Array.isArray((rawProjects as any)?.data) ? (rawProjects as any).data : (Array.isArray(rawProjects) ? rawProjects : []));
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   

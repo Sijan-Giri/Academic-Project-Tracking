@@ -26,10 +26,10 @@ export default function AdminDashboard() {
   const { data: deptResponse } = useQuery({ queryKey: ['departments-list'], queryFn: getDepartments });
   const { data: auditResponse } = useQuery({ queryKey: ['recent-audit-logs'], queryFn: () => api.get('/audit', { params: { limit: 5 } }).then(r => r.data) });
 
-  const users = usersResponse?.data?.items || usersResponse?.data || [];
-  const projects = projectsResponse?.data?.items || projectsResponse?.data || [];
-  const departments = deptResponse?.data || [];
-  const logs = auditResponse?.data?.items || auditResponse?.data || [];
+  const users: any[] = Array.isArray((usersResponse as any)?.data?.items) ? (usersResponse as any).data.items : (Array.isArray((usersResponse as any)?.data) ? (usersResponse as any).data : (Array.isArray(usersResponse) ? usersResponse : []));
+  const projects: any[] = Array.isArray((projectsResponse as any)?.data?.items) ? (projectsResponse as any).data.items : (Array.isArray((projectsResponse as any)?.data) ? (projectsResponse as any).data : (Array.isArray(projectsResponse) ? projectsResponse : []));
+  const departments: any[] = Array.isArray((deptResponse as any)?.data) ? (deptResponse as any).data : (Array.isArray(deptResponse) ? deptResponse : []);
+  const logs: any[] = Array.isArray((auditResponse as any)?.data?.items) ? (auditResponse as any).data.items : (Array.isArray((auditResponse as any)?.data) ? (auditResponse as any).data : (Array.isArray(auditResponse) ? auditResponse : []));
 
   const studentCount = users.filter((u: any) => u.role === 'STUDENT').length || 12;
   const facultyCount = users.filter((u: any) => u.role === 'FACULTY' || u.role === 'COORDINATOR').length || 5;
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={roleChartData} cx="50%" cy="50%" innerRadius={55} outerRadius={90} paddingAngle={4} dataKey="value">
-                  {roleChartData.map((entry, index) => (
+                  {roleChartData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                   ))}
                 </Pie>

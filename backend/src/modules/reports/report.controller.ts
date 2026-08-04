@@ -9,7 +9,7 @@ export const reportController = {
       const data = await reportService.getDeptSummaryData(semesterId as string, departmentId as string);
       
       const headers = ['Metric', 'Count'];
-      const rows = [
+      const rows: (string | number)[][] = [
         ['Total Projects', data.totalProjects.toString()],
         ['Guides Assigned', data.guideAssigned.toString()],
       ];
@@ -35,7 +35,7 @@ export const reportController = {
       const { format = 'pdf' } = req.query;
       const data = await reportService.getProjectStatusData(req.query);
       const headers = ['Project Title', 'Status', 'Domain', 'Guide'];
-      const rows = data.map(p => [p.title, p.status, p.domain || 'N/A', p.guide?.user?.name || 'Unassigned']);
+      const rows = data.map(p => [p.title, p.status, p.domain || 'N/A', (p as any).guideAssignment?.facultyProfile?.user?.name || 'Unassigned']);
 
       if (format === 'excel') {
         const buffer = await reportService.generateExcel('Project Status', headers, rows);
@@ -56,7 +56,7 @@ export const reportController = {
       const { format = 'pdf', semesterId, departmentId } = req.query;
       const data = await reportService.getDefaultersData(semesterId as string, departmentId as string);
       const headers = ['Project Title', 'Milestone', 'Deadline', 'Status'];
-      const rows = data.map(m => [m.project?.title || 'Unknown', m.title, m.deadline.toISOString().split('T')[0], m.status]);
+      const rows = data.map(m => [m.project?.title || 'Unknown', (m as any).name || (m as any).title || 'Milestone', m.deadline ? m.deadline.toISOString().split('T')[0] : 'N/A', m.status]);
 
       if (format === 'excel') {
         const buffer = await reportService.generateExcel('Defaulters', headers, rows);
@@ -77,7 +77,7 @@ export const reportController = {
       const { format = 'pdf', semesterId, reviewStageId } = req.query;
       const data = await reportService.getEvaluationMarksData(semesterId as string, reviewStageId as string);
       const headers = ['Project Title', 'Stage', 'Marks', 'Grade'];
-      const rows = data.map(e => [e.project?.title || 'Unknown', e.reviewStage?.name || 'Unknown', e.totalMarks.toString(), e.grade]);
+      const rows = data.map(e => [e.project?.title || 'Unknown', e.reviewStage?.name || 'Unknown', e.totalMarks != null ? e.totalMarks.toString() : '0', e.grade || 'N/A']);
 
       if (format === 'excel') {
         const buffer = await reportService.generateExcel('Evaluation Marks', headers, rows);

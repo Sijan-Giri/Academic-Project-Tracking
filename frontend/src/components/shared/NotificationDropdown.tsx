@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
   Bell, AlertTriangle, MessageSquare, Megaphone, CheckCheck, ChevronRight,
-  ShieldCheck, Loader2, Info
+  ShieldCheck, Info
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

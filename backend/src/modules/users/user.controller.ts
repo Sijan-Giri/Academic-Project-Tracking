@@ -26,7 +26,7 @@ export const createUser = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateProfile = async (req: AuthRequest, res: Response) => {
-  const userId = req.user!.id;
+  const userId = req.user!.userId || req.user!.id;
   const data = await userService.updateUser(userId, req.body);
   sendSuccess(res, data, 'Profile updated successfully');
 };

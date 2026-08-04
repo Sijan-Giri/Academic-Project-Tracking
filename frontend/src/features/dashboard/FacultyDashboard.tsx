@@ -14,8 +14,11 @@ export default function FacultyDashboard() {
   const { theme } = useThemeStore();
   const isDark = theme === 'dark';
 
-  const { data: guidedProjects = [] } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });
-  const { data: schedules = [] } = useQuery({ queryKey: ['my-schedules'], queryFn: getMySchedules });
+  const { data: rawGuided } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });
+  const { data: rawSchedules } = useQuery({ queryKey: ['my-schedules'], queryFn: getMySchedules });
+
+  const guidedProjects: any[] = Array.isArray((rawGuided as any)?.data?.items) ? (rawGuided as any).data.items : (Array.isArray((rawGuided as any)?.data) ? (rawGuided as any).data : (Array.isArray(rawGuided) ? rawGuided : []));
+  const schedules: any[] = Array.isArray((rawSchedules as any)?.data?.items) ? (rawSchedules as any).data.items : (Array.isArray((rawSchedules as any)?.data) ? (rawSchedules as any).data : (Array.isArray(rawSchedules) ? rawSchedules : []));
 
   // Stats
   const stats = {

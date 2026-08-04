@@ -113,7 +113,7 @@ export const updateProject = async (id: string, data: any, userId: string) => {
   const isLeader = project.team.members.some(m => m.studentProfileId === profile.id && m.isLeader);
   if (!isLeader) throw new ForbiddenError('Only the team leader can update the project');
 
-  if (![ProjectStatus.DRAFT, ProjectStatus.ABSTRACT_REJECTED, ProjectStatus.REVISION_NEEDED].includes(project.status)) {
+  if (![ProjectStatus.DRAFT, ProjectStatus.ABSTRACT_REJECTED, (ProjectStatus as any).REVISION_NEEDED].includes(project.status)) {
     throw new ValidationError('Project cannot be updated in its current status');
   }
 
@@ -274,7 +274,7 @@ export const getGuidedProjects = async (userId: string) => {
 
   const projects = await prisma.project.findMany({
     where: {
-      guideAssignment: { some: { facultyProfileId: profile.id, isActive: true } },
+      guideAssignment: { facultyProfileId: profile.id, isActive: true },
     },
     include: {
       team: { include: { members: { include: { studentProfile: { include: { user: true } } } } } },

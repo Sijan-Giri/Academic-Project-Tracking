@@ -1,4 +1,5 @@
 import prisma from '../../config/database';
+import { AuditAction } from '@prisma/client';
 import { NotFoundError } from '../../shared/errors';
 import { createAuditLog } from '../audit/audit.service';
 import { sendNotification } from '../notifications/notification.service';
@@ -16,7 +17,7 @@ export const scheduleService = {
       include: { panelAssignments: { include: { facultyProfile: { include: { user: true } } } }, project: { include: { team: true } } }
     });
 
-    await createAuditLog({ action: 'CREATE' as any, entityType: 'ReviewSchedule', entityId: schedule.id, userId: creatorId, newValue: JSON.stringify({ schedule }) });
+    await createAuditLog({ action: AuditAction.CREATE, entityType: 'ReviewSchedule', entityId: schedule.id, userId: creatorId, newValue: JSON.stringify({ schedule }) });
 
     // Send notifications to panel members
     if (schedule.panelAssignments) {
@@ -118,7 +119,7 @@ export const scheduleService = {
       where: { id: scheduleId },
       data: { isCompleted: true }
     });
-    await createAuditLog({ action: 'UPDATE' as any, entityType: 'ReviewSchedule', entityId: scheduleId, userId, newValue: JSON.stringify({ action: 'complete' }) });
+    await createAuditLog({ action: AuditAction.UPDATE, entityType: 'ReviewSchedule', entityId: scheduleId, userId, newValue: JSON.stringify({ action: 'complete' }) });
     return schedule;
   },
 

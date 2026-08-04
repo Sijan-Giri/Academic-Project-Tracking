@@ -8,7 +8,7 @@ export const reportService = {
     if (semesterId) filters.semesterId = semesterId;
     if (departmentId) filters.departmentId = departmentId;
 
-    const projects = await prisma.project.findMany({ where: filters, include: { team: true } });
+    const projects = await prisma.project.findMany({ where: filters, include: { team: true, guideAssignment: true } });
     
     const byStatus: Record<string, number> = {};
     const byDomain: Record<string, number> = {};
@@ -18,7 +18,7 @@ export const reportService = {
       byStatus[p.status] = (byStatus[p.status] || 0) + 1;
       const d = p.domain || 'Unspecified';
       byDomain[d] = (byDomain[d] || 0) + 1;
-      if (p.guideId) guideAssigned++;
+      if (p.guideAssignment) guideAssigned++;
     });
 
     return { totalProjects: projects.length, byStatus, byDomain, guideAssigned };
@@ -27,7 +27,7 @@ export const reportService = {
   async getProjectStatusData(filters: any) {
     return prisma.project.findMany({
       where: filters,
-      include: { team: true, guide: { include: { user: true } } }
+      include: { team: true, guideAssignment: { include: { facultyProfile: { include: { user: true } } } } }
     });
   },
 
@@ -37,7 +37,6 @@ export const reportService = {
       status: { notIn: ['APPROVED', 'SUBMITTED'] }
     };
     
-    // Simplification for the query, actual implementation might join projects
     return prisma.milestone.findMany({
       where: filters,
       include: { project: { include: { team: true } } }
@@ -54,7 +53,7 @@ export const reportService = {
     });
   },
 
-  async generatePDF(title: string, headers: string[], rows: string[][]): Promise<Buffer> {
+  async generatePDF(title: string, headers: string[], rows: (string | number | null | undefined)[][]): Promise<Buffer> {
     return new Promise((resolve) => {
       const doc = new PDFDocument({ margin: 30, size: 'A4' });
       const buffers: Buffer[] = [];
@@ -91,7 +90,7 @@ export const reportService = {
     });
   },
 
-  async generateExcel(title: string, headers: string[], rows: (string | number)[][]): Promise<Buffer> {
+  async generateExcel(title: string, headers: string[], rows: (string | number | null | undefined)[][]): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet(title);
 
@@ -99,7 +98,7 @@ export const reportService = {
     sheet.getRow(1).font = { bold: true };
     sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } };
 
-    rows.forEach(row => sheet.addRow(row));
+    rows.forEach(row => sheet.addRow(row.map(c => c ?? '')));
 
     sheet.columns.forEach(col => { col.width = 20; });
     

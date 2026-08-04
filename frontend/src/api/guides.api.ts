@@ -1,5 +1,5 @@
 import { api } from './client';
-import { GuidePreference, GuideAssignment, ApiResponse, FacultyProfile } from '@/types';
+import { GuidePreference, GuideAssignment, ApiResponse } from '@/types';
 
 export const submitGuidePreferences = async (data: any) => (await api.post<ApiResponse<GuidePreference[]>>('/guides/preferences', data)).data;
 export const getGuidePreferences = async (projectId: string) => (await api.get<ApiResponse<GuidePreference[]>>(`/guides/preferences/${projectId}`)).data;

@@ -49,10 +49,10 @@ export default function SchedulesPage() {
   const { data: stagesData } = useQuery({ queryKey: ['review-stages'], queryFn: () => getReviewStages() });
   const { data: guidesData } = useQuery({ queryKey: ['available-guides'], queryFn: getAvailableGuides });
 
-  const schedules = schedulesData?.data?.items || schedulesData?.data || [];
-  const projects = projectsData?.data?.items || projectsData?.data || [];
-  const stages = stagesData?.data || stagesData?.data?.items || [];
-  const guides = guidesData?.data || [];
+  const schedules: any[] = Array.isArray(schedulesData) ? schedulesData : ((schedulesData as any)?.data?.items || (schedulesData as any)?.data || []);
+  const projects: any[] = Array.isArray(projectsData) ? projectsData : ((projectsData as any)?.data?.items || (projectsData as any)?.data || []);
+  const stages: any[] = Array.isArray(stagesData) ? stagesData : ((stagesData as any)?.data?.items || (stagesData as any)?.data || []);
+  const guides: any[] = Array.isArray(guidesData) ? guidesData : ((guidesData as any)?.data || []);
 
   const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<ScheduleForm>({
     resolver: zodResolver(scheduleSchema),
@@ -163,7 +163,7 @@ export default function SchedulesPage() {
                               <CheckCircle className="h-3.5 w-3.5 mr-1" /> Done
                             </Button>
                           )}
-                          <Button size="sm" variant="danger" onClick={() => setDeleteId(s.id)} id={`delete-sched-${s.id}`}>
+                          <Button size="sm" variant="destructive" onClick={() => setDeleteId(s.id)} id={`delete-sched-${s.id}`}>
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>

@@ -18,23 +18,29 @@ export default function EvaluationFormPage() {
   const queryClient = useQueryClient();
   const user = useAuthStore((state: any) => state.user);
   
-  const { data: schedule } = useQuery({
+  const { data: rawSchedule } = useQuery({
     queryKey: ['schedule', scheduleId],
     queryFn: () => getSchedule(scheduleId!),
     enabled: !!scheduleId
   });
 
-  const { data: criteria = [] } = useQuery({
+  const schedule: any = (rawSchedule as any)?.data || rawSchedule;
+
+  const { data: rawCriteria } = useQuery({
     queryKey: ['criteria', schedule?.reviewStageId],
     queryFn: () => getStageCriteria(schedule?.reviewStageId!),
     enabled: !!schedule?.reviewStageId
   });
 
-  const { data: existingEval } = useQuery({
+  const criteria: any[] = Array.isArray((rawCriteria as any)?.data) ? (rawCriteria as any).data : (Array.isArray(rawCriteria) ? rawCriteria : []);
+
+  const { data: existingEvalRes } = useQuery({
     queryKey: ['evaluations', schedule?.projectId, schedule?.reviewStageId, user?.id],
     queryFn: () => getEvaluations({ projectId: schedule?.projectId, reviewStageId: schedule?.reviewStageId, evaluatorId: user?.id }),
     enabled: !!schedule && !!user
   });
+
+  const existingEval: any = (existingEvalRes as any)?.data?.items?.[0] || (existingEvalRes as any)?.items?.[0] || (existingEvalRes as any)?.data || (Array.isArray(existingEvalRes) ? existingEvalRes[0] : existingEvalRes);
 
   const [marks, setMarks] = useState<Record<string, number>>({});
   const [remarks, setRemarks] = useState<Record<string, string>>({});

@@ -106,7 +106,7 @@ export const authService = {
     const accessToken = jwt.sign({ userId: createdUser.id, role: createdUser.role }, env.JWT_ACCESS_SECRET, { expiresIn: '15m' });
     const refreshToken = jwt.sign({ userId: createdUser.id }, env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
-    await createAuditLog({ userId: createdUser.id, action: 'SIGNUP', entityType: 'User', entityId: createdUser.id, newValue: { ipAddress, userAgent }, ipAddress, userAgent });
+    await createAuditLog({ userId: createdUser.id, action: 'CREATE', entityType: 'User', entityId: createdUser.id, newValue: { ipAddress, userAgent }, ipAddress, userAgent });
 
     return { user: createdUser, accessToken, refreshToken };
   },

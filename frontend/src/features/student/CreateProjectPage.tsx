@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { X, Plus, ChevronRight, ChevronLeft, Loader2, Save, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Loader2, Save, CheckCircle2, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -83,7 +83,7 @@ export default function CreateProjectPage() {
       teamId: team.id,
       semesterId: team.semesterId || undefined,
       guidePreferences: guidePrefs.filter(Boolean).map((id, idx) => ({ facultyProfileId: id, rank: idx + 1 })),
-    });
+    } as any);
   };
 
   const addKeyword = (e: React.KeyboardEvent) => {

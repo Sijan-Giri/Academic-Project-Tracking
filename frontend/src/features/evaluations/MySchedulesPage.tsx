@@ -12,7 +12,8 @@ import { useNavigate } from 'react-router-dom';
 
 export default function MySchedulesPage() {
   const navigate = useNavigate();
-  const { data: schedules = [] } = useQuery({ queryKey: ['my-schedules'], queryFn: getMySchedules });
+  const { data: rawSchedules } = useQuery({ queryKey: ['my-schedules'], queryFn: getMySchedules });
+  const schedules: any[] = Array.isArray((rawSchedules as any)?.data?.items) ? (rawSchedules as any).data.items : (Array.isArray((rawSchedules as any)?.data) ? (rawSchedules as any).data : (Array.isArray(rawSchedules) ? rawSchedules : []));
   const [activeTab, setActiveTab] = useState('upcoming');
 
   const upcoming = schedules.filter((s: any) => isFuture(new Date(s.date)) || s.status === 'PENDING');

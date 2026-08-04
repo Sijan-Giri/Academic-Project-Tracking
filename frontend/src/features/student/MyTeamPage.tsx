@@ -29,7 +29,7 @@ export default function MyTeamPage() {
   });
 
   // Pending invitations received (shown when student has no team)
-  const { data: myInvitationsRes, isLoading: invitesLoading } = useQuery({
+  const { data: myInvitationsRes, isLoading: _invitesLoading } = useQuery({
     queryKey: ['my-invitations'],
     queryFn: getMyInvitations,
     retry: false,

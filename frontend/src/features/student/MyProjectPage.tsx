@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { GraduationCap, Github, Crown, ExternalLink, ChevronRight, FileText, CheckCircle2, Clock, Activity } from 'lucide-react';
+import { GraduationCap, Github, Crown, ExternalLink, FileText, CheckCircle2, Clock, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
@@ -74,7 +74,7 @@ export default function MyProjectPage() {
               <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-sm font-medium border border-indigo-500/30">
                 {project.domain}
               </span>
-              <StatusBadge status={project.status} />
+              <StatusBadge status={project.status} type="project" />
             </div>
             <h1 className="text-3xl font-bold text-white">{project.title}</h1>
           </div>

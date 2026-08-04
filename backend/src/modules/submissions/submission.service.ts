@@ -43,16 +43,14 @@ export const createSubmission = async (data: { milestoneId: string; notes?: stri
     data: { status: MilestoneStatus.SUBMITTED },
   });
 
-  if (milestone.project.guideAssignment && Array.isArray(milestone.project.guideAssignment) ? milestone.project.guideAssignment.length > 0 && milestone.project.guideAssignment[0].isActive : (milestone.project.guideAssignment as any)?.isActive) {
-    const guideProfile = Array.isArray(milestone.project.guideAssignment) ? milestone.project.guideAssignment[0].facultyProfile : (milestone.project.guideAssignment as any)?.facultyProfile;
-    if (guideProfile) {
-      await sendNotification(
-        guideProfile.userId,
-        'New Milestone Submission',
-        `A new submission was made for milestone: ${milestone.name}`,
-        'GENERAL'
-      );
-    }
+  const guideAssignment: any = milestone.project.guideAssignment;
+  if (guideAssignment && guideAssignment.isActive && guideAssignment.facultyProfile) {
+    await sendNotification(
+      guideAssignment.facultyProfile.userId,
+      'New Milestone Submission',
+      `A new submission was made for milestone: ${milestone.name}`,
+      'GENERAL'
+    );
   }
 
   await createAuditLog({

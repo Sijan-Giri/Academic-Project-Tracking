@@ -31,8 +31,11 @@ export const comparePassword = async (password: string, hash: string): Promise<b
 export const generateToken = (payload: object, secret: string, expiresIn: string): string =>
   jwt.sign(payload, secret, { expiresIn } as jwt.SignOptions);
 
-export const verifyToken = (token: string, secret: string): JwtPayload =>
-  jwt.verify(token, secret) as JwtPayload;
+export const verifyToken = (token: string, secret: string): JwtPayload => {
+  const decoded = jwt.verify(token, secret) as any;
+  const userId = decoded.userId || decoded.id;
+  return { ...decoded, userId, id: userId };
+};
 
 export const exclude = <T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> => {
   const result = { ...obj };

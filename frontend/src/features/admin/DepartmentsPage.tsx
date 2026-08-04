@@ -131,7 +131,7 @@ export default function DepartmentsPage() {
     },
   ];
 
-  const deptList = Array.isArray(departments?.data) ? departments.data : (Array.isArray(departments) ? departments : ((departments as any)?.data?.items || []));
+  const deptList = Array.isArray((departments as any)?.data) ? (departments as any).data : (Array.isArray(departments) ? departments : ((departments as any)?.data?.items || []));
 
   return (
     <div className="space-y-6">

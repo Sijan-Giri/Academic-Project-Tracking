@@ -1,4 +1,5 @@
 import prisma from '../../config/database';
+import { AuditAction } from '@prisma/client';
 import { NotFoundError, ConflictError, ForbiddenError } from '../../shared/errors';
 import { createAuditLog } from '../audit/audit.service';
 import { sendNotification } from '../notifications/notification.service';
@@ -110,7 +111,7 @@ export const evaluationService = {
       data: { totalMarks, grade, feedback: data.feedback ?? evaluation.feedback }
     });
 
-    await createAuditLog({ action: 'MARKS_ENTRY' as any, entityType: 'Evaluation', entityId: id, userId, newValue: JSON.stringify({ action: 'update', totalMarks, grade }) });
+    await createAuditLog({ action: AuditAction.MARKS_ENTRY, entityType: 'Evaluation', entityId: id, userId, newValue: JSON.stringify({ action: 'update', totalMarks, grade }) });
     return updated;
   },
 
@@ -124,7 +125,7 @@ export const evaluationService = {
       data: { isLocked: true, lockedAt: new Date(), lockedById: userId }
     });
 
-    await createAuditLog({ action: 'MARKS_LOCK' as any, entityType: 'Evaluation', entityId: id, userId });
+    await createAuditLog({ action: AuditAction.MARKS_LOCK, entityType: 'Evaluation', entityId: id, userId });
 
     // Need to notify the project team conceptually
     // For brevity, we just return
@@ -148,7 +149,7 @@ export const evaluationService = {
         };
       }
       summary[ev.reviewStageId].evaluators.push({
-        evaluatorName: ev.evaluator.name,
+        evaluatorName: (ev.evaluator as any).user?.name || (ev.evaluator as any).name || 'Evaluator',
         marks: ev.totalMarks,
         grade: ev.grade
       });

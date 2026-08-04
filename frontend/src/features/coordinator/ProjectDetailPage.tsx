@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Download, FileText, CheckCircle2, User, Github } from 'lucide-react';
+import { ArrowLeft, Download, FileText, CheckCircle2, Github } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-import { api } from '@/api/client';
 import { getProject, updateProjectStatus } from '@/api/projects.api';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
@@ -71,7 +70,7 @@ export default function ProjectDetailPage() {
             <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-sm font-medium border border-indigo-500/30">
               {project.domain || 'General'}
             </span>
-            <StatusBadge status={project.status} />
+            <StatusBadge status={project.status} type="project" />
           </div>
           <h1 className="text-2xl font-bold text-white">{project.title}</h1>
         </div>

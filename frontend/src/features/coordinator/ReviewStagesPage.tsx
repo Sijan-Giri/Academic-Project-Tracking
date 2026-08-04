@@ -16,7 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import PageHeader from '@/components/shared/PageHeader';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import EmptyState from '@/components/shared/EmptyState';
-import { getReviewStages, createReviewStage, updateReviewStage, deleteReviewStage, getTemplates, getStageCriteria, addCriteria, deleteCriteria } from '@/api/reviews.api';
+import { getReviewStages, createReviewStage, updateReviewStage, deleteReviewStage, getTemplates, addCriteria, deleteCriteria } from '@/api/reviews.api';
 import { getSemesters } from '@/api/semesters.api';
 import { getDepartments } from '@/api/departments.api';
 import { REVIEW_STAGE_LABELS } from '@/lib/constants';
@@ -69,22 +69,22 @@ export default function ReviewStagesPage() {
   const { data: semestersData } = useQuery({ queryKey: ['semesters'], queryFn: () => getSemesters() });
   const { data: deptsData } = useQuery({ queryKey: ['departments'], queryFn: getDepartments });
 
-  const stages = stagesData?.data || stagesData?.data?.items || [];
-  const templates = templatesData?.data || [];
-  const semesters = semestersData?.data?.items || semestersData?.data || [];
-  const depts = deptsData?.data || [];
+  const stages: any[] = Array.isArray(stagesData) ? stagesData : ((stagesData as any)?.data?.items || (stagesData as any)?.data || []);
+  const templates: any[] = Array.isArray(templatesData) ? templatesData : ((templatesData as any)?.data || []);
+  const semesters: any[] = Array.isArray(semestersData) ? semestersData : ((semestersData as any)?.data?.items || (semestersData as any)?.data || []);
+  const depts: any[] = Array.isArray(deptsData) ? deptsData : ((deptsData as any)?.data || []);
 
   const stageForm = useForm<StageForm>({ resolver: zodResolver(stageSchema), defaultValues: { isActive: true, order: 1 } });
   const criteriaForm = useForm<CriteriaForm>({ resolver: zodResolver(criteriaSchema), defaultValues: { order: 1 } });
 
   const createStageMutation = useMutation({
-    mutationFn: createReviewStage,
+    mutationFn: (data: any) => createReviewStage(data),
     onSuccess: () => { toast.success('Review stage created'); qc.invalidateQueries({ queryKey: ['review-stages'] }); setCreateOpen(false); stageForm.reset(); },
     onError: () => toast.error('Failed to create stage'),
   });
 
   const updateStageMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<StageForm> }) => updateReviewStage(id, data),
+    mutationFn: ({ id, data }: { id: string; data: any }) => updateReviewStage(id, data),
     onSuccess: () => { toast.success('Stage updated'); qc.invalidateQueries({ queryKey: ['review-stages'] }); setEditStage(null); },
     onError: () => toast.error('Failed to update'),
   });

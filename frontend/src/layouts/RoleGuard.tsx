@@ -10,7 +10,7 @@ interface RoleGuardProps {
 }
 
 export default function RoleGuard({ allowedRoles }: RoleGuardProps) {
-  const { isAuthenticated, user, accessToken, isLoading, setAuth, setAccessToken, setUser, setLoading, clearAuth } = useAuthStore();
+  const { isAuthenticated, user, accessToken, isLoading, setAuth, setAccessToken, setLoading, clearAuth } = useAuthStore();
 
   useEffect(() => {
     let isMounted = true;

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Download, FileText, ChevronDown } from 'lucide-react';
+import { Download, FileText } from 'lucide-react';
 import { getSubmissions } from '@/api/submissions.api';
 import { Button } from '@/components/ui/button';
 

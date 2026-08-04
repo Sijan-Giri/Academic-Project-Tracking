@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Eye, Search, BookOpen, Users, GraduationCap } from 'lucide-react';
+import { Eye, Search, Users, GraduationCap } from 'lucide-react';
 
 import PageHeader from '@/components/shared/PageHeader';
 import DataTable from '@/components/shared/DataTable';
@@ -84,7 +84,7 @@ export default function ProjectsPage() {
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }: any) => <StatusBadge status={row.original.status} />,
+      cell: ({ row }: any) => <StatusBadge status={row.original.status} type="project" />,
     },
     {
       id: 'actions',
