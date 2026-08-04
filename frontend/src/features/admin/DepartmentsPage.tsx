@@ -102,14 +102,14 @@ export default function DepartmentsPage() {
   };
 
   const columns = [
-    { accessorKey: 'code', header: 'Code' },
+    { accessorKey: 'code', header: 'Code', cell: ({ row }: any) => <span className="font-semibold dark:text-white text-slate-900">{row.original.code}</span> },
     { accessorKey: 'name', header: 'Name' },
     { accessorKey: 'description', header: 'Description' },
     {
       accessorKey: 'isActive',
       header: 'Status',
       cell: ({ row }: any) => (
-        <Badge variant={row.original.isActive ? 'default' : 'secondary'} className={row.original.isActive ? 'bg-indigo-500' : ''}>
+        <Badge variant={row.original.isActive ? 'default' : 'secondary'} className={row.original.isActive ? 'bg-indigo-600 dark:bg-indigo-500 text-white' : ''}>
           {row.original.isActive ? 'Active' : 'Inactive'}
         </Badge>
       ),
@@ -121,10 +121,10 @@ export default function DepartmentsPage() {
       cell: ({ row }: any) => (
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => handleEdit(row.original)}>
-            <Edit className="w-4 h-4 text-indigo-400" />
+            <Edit className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           </Button>
           <Button variant="ghost" size="icon" onClick={() => setDeleteItem(row.original)}>
-            <Trash2 className="w-4 h-4 text-red-400" />
+            <Trash2 className="w-4 h-4 text-rose-600 dark:text-red-400" />
           </Button>
         </div>
       ),
@@ -139,20 +139,20 @@ export default function DepartmentsPage() {
         title="Departments"
         subtitle="Manage institution departments"
         actions={
-          <Button onClick={() => { form.reset(); setCreateOpen(true); }} className="bg-indigo-600 hover:bg-indigo-700">
+          <Button onClick={() => { form.reset(); setCreateOpen(true); }} className="bg-indigo-600 hover:bg-indigo-700 text-white">
             <Plus className="w-4 h-4 mr-2" /> Add Department
           </Button>
         }
       />
 
-      <div className="bg-[#1a1d27] rounded-xl border border-white/10 p-4">
+      <div className="dark:bg-[#1a1d27] bg-white rounded-xl border dark:border-white/10 border-slate-200 p-4 shadow-sm">
         <DataTable columns={columns} data={deptList} isLoading={isLoading} />
       </div>
 
       <Dialog open={createOpen || !!editItem} onOpenChange={(open) => {
         if (!open) { setCreateOpen(false); setEditItem(null); }
       }}>
-        <DialogContent className="bg-[#0f1117] border-white/10 text-white sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{editItem ? 'Edit Department' : 'Add Department'}</DialogTitle>
           </DialogHeader>
@@ -162,7 +162,7 @@ export default function DepartmentsPage() {
                 <FormItem>
                   <FormLabel>Code</FormLabel>
                   <FormControl>
-                    <Input placeholder="CS" className="bg-[#1a1d27] border-white/10" {...field} />
+                    <Input placeholder="CS" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -171,7 +171,7 @@ export default function DepartmentsPage() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Computer Science" className="bg-[#1a1d27] border-white/10" {...field} />
+                    <Input placeholder="Computer Science" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -180,13 +180,13 @@ export default function DepartmentsPage() {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Details..." className="bg-[#1a1d27] border-white/10" {...field} />
+                    <Textarea placeholder="Details..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="isActive" render={({ field }) => (
-                <FormItem className="flex items-center justify-between p-3 rounded-lg border border-white/10">
+                <FormItem className="flex items-center justify-between p-3 rounded-lg border dark:border-white/10 border-slate-200">
                   <FormLabel>Active Status</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -194,10 +194,10 @@ export default function DepartmentsPage() {
                 </FormItem>
               )} />
               <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => { setCreateOpen(false); setEditItem(null); }} className="border-white/10">
+                <Button type="button" variant="outline" onClick={() => { setCreateOpen(false); setEditItem(null); }}>
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">
+                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white">
                   {editItem ? 'Update' : 'Create'}
                 </Button>
               </div>

@@ -123,13 +123,13 @@ export default function NotificationDropdown() {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent align="end" className="w-80 sm:w-96 p-0 bg-[#14161f] border-white/10 text-white shadow-2xl rounded-2xl overflow-hidden">
+      <PopoverContent align="end" className="w-80 sm:w-96 p-0 dark:bg-[#14161f] dark:border-white/10 dark:text-white bg-white border-slate-200 text-slate-900 shadow-2xl rounded-2xl overflow-hidden">
         {/* Header */}
-        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+        <div className="p-4 border-b dark:border-white/10 border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h3 className="font-bold text-white text-lg">Notifications</h3>
+            <h3 className="font-bold dark:text-white text-slate-900 text-lg">Notifications</h3>
             {unreadCount > 0 && (
-              <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold">
+              <span className="px-2 py-0.5 rounded-full dark:bg-indigo-500/20 dark:text-indigo-300 dark:border-indigo-500/30 bg-indigo-50 text-indigo-600 border border-indigo-200 text-xs font-semibold">
                 {unreadCount} new
               </span>
             )}
@@ -140,7 +140,7 @@ export default function NotificationDropdown() {
               size="sm"
               onClick={() => markAllReadMut.mutate()}
               disabled={markAllReadMut.isPending}
-              className="text-xs text-indigo-400 hover:text-indigo-300 hover:bg-white/5 h-8 px-2"
+              className="text-xs text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-white/5 hover:bg-slate-100 h-8 px-2"
             >
               <CheckCheck className="w-3.5 h-3.5 mr-1" /> Mark all read
             </Button>
@@ -148,14 +148,14 @@ export default function NotificationDropdown() {
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex border-b border-white/10 bg-black/20 px-3 py-1.5 gap-2">
+        <div className="flex border-b dark:border-white/10 dark:bg-black/20 border-slate-200 bg-slate-50 px-3 py-1.5 gap-2">
           <button
             onClick={() => setFilter('ALL')}
             className={cn(
               'px-3 py-1 rounded-lg text-xs font-medium transition-colors',
               filter === 'ALL'
-                ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold'
-                : 'text-gray-400 hover:text-white'
+                ? 'dark:bg-indigo-500/20 dark:text-indigo-300 dark:border-indigo-500/30 bg-indigo-100 text-indigo-700 border border-indigo-200 font-semibold'
+                : 'dark:text-gray-400 dark:hover:text-white text-slate-600 hover:text-slate-900'
             )}
           >
             All
@@ -165,8 +165,8 @@ export default function NotificationDropdown() {
             className={cn(
               'px-3 py-1 rounded-lg text-xs font-medium transition-colors',
               filter === 'UNREAD'
-                ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold'
-                : 'text-gray-400 hover:text-white'
+                ? 'dark:bg-indigo-500/20 dark:text-indigo-300 dark:border-indigo-500/30 bg-indigo-100 text-indigo-700 border border-indigo-200 font-semibold'
+                : 'dark:text-gray-400 dark:hover:text-white text-slate-600 hover:text-slate-900'
             )}
           >
             Unread ({unreadCount})
@@ -176,42 +176,50 @@ export default function NotificationDropdown() {
         {/* List */}
         <ScrollArea className="h-96">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center p-8 text-gray-500 space-y-2">
-              <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
-              <p className="text-xs">Loading notifications...</p>
+            <div className="p-4 space-y-3.5">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-start gap-3.5 animate-pulse">
+                  <div className="w-9 h-9 rounded-full dark:bg-white/10 bg-slate-200 shrink-0" />
+                  <div className="flex-1 space-y-2 py-0.5">
+                    <div className="h-3.5 dark:bg-white/10 bg-slate-200 rounded w-3/4" />
+                    <div className="h-3 dark:bg-white/5 bg-slate-100 rounded w-full" />
+                    <div className="h-2.5 dark:bg-white/5 bg-slate-100 rounded w-1/4" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredNotifications.length === 0 ? (
-            <div className="p-8 text-center text-sm text-gray-400">
-              <Bell className="w-8 h-8 text-gray-600 mx-auto mb-2 opacity-50" />
-              <p className="font-medium text-gray-300">No notifications</p>
-              <p className="text-xs text-gray-500 mt-1">You're all caught up!</p>
+            <div className="p-8 text-center text-sm dark:text-gray-400 text-slate-500">
+              <Bell className="w-8 h-8 dark:text-gray-600 text-slate-300 mx-auto mb-2 opacity-50" />
+              <p className="font-medium dark:text-gray-300 text-slate-700">No notifications</p>
+              <p className="text-xs dark:text-gray-500 text-slate-400 mt-1">You're all caught up!</p>
             </div>
           ) : (
-            <div className="divide-y divide-white/5">
+            <div className="divide-y dark:divide-white/5 divide-slate-100">
               {filteredNotifications.map((notif) => (
                 <div
                   key={notif.id}
                   onClick={() => handleItemClick(notif)}
                   className={cn(
-                    'flex items-start gap-3.5 p-4 transition-all hover:bg-white/5 cursor-pointer relative group',
-                    !notif.isRead && 'bg-indigo-500/10'
+                    'flex items-start gap-3.5 p-4 transition-all dark:hover:bg-white/5 hover:bg-slate-50 cursor-pointer relative group',
+                    !notif.isRead && 'dark:bg-indigo-500/10 bg-indigo-50/60'
                   )}
                 >
                   {getTypeIcon(notif.type)}
                   <div className="flex-1 min-w-0">
-                    <p className={cn('text-sm font-medium leading-snug', !notif.isRead ? 'text-white font-semibold' : 'text-gray-300')}>
+                    <p className={cn('text-sm font-medium leading-snug', !notif.isRead ? 'dark:text-white text-slate-900 font-semibold' : 'dark:text-gray-300 text-slate-600')}>
                       {notif.title}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5 line-clamp-2 leading-relaxed">
+                    <p className="text-xs dark:text-gray-400 text-slate-500 mt-0.5 line-clamp-2 leading-relaxed">
                       {notif.message}
                     </p>
-                    <span className="text-[10px] text-gray-500 mt-1.5 block font-medium">
+                    <span className="text-[10px] dark:text-gray-500 text-slate-400 mt-1.5 block font-medium">
                       {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}
                     </span>
                   </div>
 
                   {!notif.isRead && (
-                    <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0 mt-1.5 ring-4 ring-indigo-500/20" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0 mt-1.5 ring-4 dark:ring-indigo-500/20 ring-indigo-500/30" />
                   )}
                 </div>
               ))}
@@ -220,7 +228,7 @@ export default function NotificationDropdown() {
         </ScrollArea>
 
         {/* Footer */}
-        <div className="p-3 border-t border-white/10 bg-black/20 text-center">
+        <div className="p-3 border-t dark:border-white/10 dark:bg-black/20 border-slate-200 bg-slate-50 text-center">
           <Button
             variant="ghost"
             size="sm"
@@ -228,7 +236,7 @@ export default function NotificationDropdown() {
               setOpen(false);
               navigate('/notifications');
             }}
-            className="w-full text-xs text-indigo-400 hover:text-indigo-300 hover:bg-white/5"
+            className="w-full text-xs text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-white/5 hover:bg-slate-200/60"
           >
             See all notifications <ChevronRight className="w-3.5 h-3.5 ml-1" />
           </Button>

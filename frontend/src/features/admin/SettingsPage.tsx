@@ -28,8 +28,6 @@ export default function SettingsPage() {
     queryKey: ['settings'],
     queryFn: async () => {
       const res = await api.get('/settings');
-      // Assume API returns array of key-value or an object map
-      // For form defaultValues, we map it back to object
       const defaultValues: any = {};
       if (Array.isArray(res.data)) {
          res.data.forEach((s: any) => defaultValues[s.key] = s.value);
@@ -61,7 +59,7 @@ export default function SettingsPage() {
     updateMutation.mutate(values);
   };
 
-  if (isLoading) return <div>Loading settings...</div>;
+  if (isLoading) return <div className="dark:text-white text-slate-900">Loading settings...</div>;
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -70,18 +68,18 @@ export default function SettingsPage() {
         subtitle="Configure global parameters for the tracking system"
       />
 
-      <div className="bg-[#1a1d27] rounded-xl border border-white/10 p-6">
+      <div className="dark:bg-[#1a1d27] bg-white rounded-xl border dark:border-white/10 border-slate-200 p-6 shadow-sm">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               
               <FormField control={form.control} name="max_team_size" render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-base text-white">Maximum Team Size</FormLabel>
+                  <FormLabel className="text-base font-semibold dark:text-white text-slate-900">Maximum Team Size</FormLabel>
                   <FormControl>
-                    <Input type="number" className="bg-[#0f1117] border-white/10 text-white" {...field} />
+                    <Input type="number" {...field} />
                   </FormControl>
-                  <FormDescription className="text-gray-400">
+                  <FormDescription className="dark:text-gray-400 text-slate-500">
                     Maximum number of students allowed in a single project team.
                   </FormDescription>
                   <FormMessage />
@@ -90,11 +88,11 @@ export default function SettingsPage() {
 
               <FormField control={form.control} name="min_team_size" render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-base text-white">Minimum Team Size</FormLabel>
+                  <FormLabel className="text-base font-semibold dark:text-white text-slate-900">Minimum Team Size</FormLabel>
                   <FormControl>
-                    <Input type="number" className="bg-[#0f1117] border-white/10 text-white" {...field} />
+                    <Input type="number" {...field} />
                   </FormControl>
-                  <FormDescription className="text-gray-400">
+                  <FormDescription className="dark:text-gray-400 text-slate-500">
                     Minimum number of students required to form a project team.
                   </FormDescription>
                   <FormMessage />
@@ -103,11 +101,11 @@ export default function SettingsPage() {
 
               <FormField control={form.control} name="abstract_max_words" render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-base text-white">Abstract Max Words</FormLabel>
+                  <FormLabel className="text-base font-semibold dark:text-white text-slate-900">Abstract Max Words</FormLabel>
                   <FormControl>
-                    <Input type="number" className="bg-[#0f1117] border-white/10 text-white" {...field} />
+                    <Input type="number" {...field} />
                   </FormControl>
-                  <FormDescription className="text-gray-400">
+                  <FormDescription className="dark:text-gray-400 text-slate-500">
                     Maximum word limit for project abstract submissions.
                   </FormDescription>
                   <FormMessage />
@@ -116,11 +114,11 @@ export default function SettingsPage() {
 
               <FormField control={form.control} name="plagiarism_threshold" render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-base text-white">Plagiarism Threshold (%)</FormLabel>
+                  <FormLabel className="text-base font-semibold dark:text-white text-slate-900">Plagiarism Threshold (%)</FormLabel>
                   <FormControl>
-                    <Input type="number" className="bg-[#0f1117] border-white/10 text-white" {...field} />
+                    <Input type="number" {...field} />
                   </FormControl>
-                  <FormDescription className="text-gray-400">
+                  <FormDescription className="dark:text-gray-400 text-slate-500">
                     Percentage threshold for flagging similarity in submitted documents.
                   </FormDescription>
                   <FormMessage />
@@ -129,8 +127,8 @@ export default function SettingsPage() {
 
             </div>
 
-            <div className="flex justify-end pt-4 border-t border-white/10">
-              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 h-11 px-8" disabled={updateMutation.isPending}>
+            <div className="flex justify-end pt-4 border-t dark:border-white/10 border-slate-200">
+              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white h-11 px-8" disabled={updateMutation.isPending}>
                 <Save className="w-4 h-4 mr-2" /> 
                 {updateMutation.isPending ? 'Saving...' : 'Save All Settings'}
               </Button>

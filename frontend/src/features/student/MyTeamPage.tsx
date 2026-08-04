@@ -193,18 +193,18 @@ export default function MyTeamPage() {
 
         {/* Create / Join */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 text-center flex flex-col items-center">
-            <div className="w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center mb-6">
+          <div className="dark:bg-white/5 dark:border-white/10 bg-white border border-slate-200 shadow-sm rounded-2xl p-8 text-center flex flex-col items-center backdrop-blur-md">
+            <div className="w-16 h-16 dark:bg-indigo-500/20 bg-indigo-100 dark:text-indigo-400 text-indigo-600 rounded-full flex items-center justify-center mb-6">
               <Users className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Create a New Team</h2>
-            <p className="text-gray-400 mb-6">Start a new team as a leader and invite your peers.</p>
+            <h2 className="text-2xl font-bold dark:text-white text-slate-900 mb-2">Create a New Team</h2>
+            <p className="dark:text-gray-400 text-slate-500 mb-6">Start a new team as a leader and invite your peers.</p>
             <div className="w-full space-y-4">
               <Input
                 value={teamName}
                 onChange={e => setTeamName(e.target.value)}
                 placeholder="Enter team name"
-                className="bg-white/5 border-white/10 text-white w-full"
+                className="w-full"
               />
               <Button
                 onClick={() => createMut.mutate({ name: teamName })}
@@ -217,12 +217,12 @@ export default function MyTeamPage() {
             </div>
           </div>
 
-          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 text-center flex flex-col items-center justify-center">
-            <div className="w-16 h-16 bg-violet-500/20 text-violet-400 rounded-full flex items-center justify-center mb-6">
+          <div className="dark:bg-white/5 dark:border-white/10 bg-white border border-slate-200 shadow-sm rounded-2xl p-8 text-center flex flex-col items-center justify-center backdrop-blur-md">
+            <div className="w-16 h-16 dark:bg-violet-500/20 bg-violet-100 dark:text-violet-400 text-violet-600 rounded-full flex items-center justify-center mb-6">
               <UserPlus className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Join an Existing Team</h2>
-            <p className="text-gray-400">
+            <h2 className="text-2xl font-bold dark:text-white text-slate-900 mb-2">Join an Existing Team</h2>
+            <p className="dark:text-gray-400 text-slate-500">
               {myInvitations.length > 0
                 ? 'You have pending invitations above. Accept one to join.'
                 : 'Ask your team leader to invite you using your roll number. The invitation will appear here.'}
@@ -241,16 +241,16 @@ export default function MyTeamPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 dark:bg-white/5 dark:border-white/10 bg-white border border-slate-200 shadow-sm backdrop-blur-md rounded-2xl p-6">
         <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold dark:text-white text-slate-900 flex items-center gap-3">
             {team.name}
             <StatusBadge status={team.status} type="team" />
           </h1>
-          <p className="text-gray-400 mt-1">Manage your team members and invitations.</p>
+          <p className="dark:text-gray-400 text-slate-500 mt-1">Manage your team members and invitations.</p>
         </div>
         {!isLeader && team.status === 'PENDING' && (
-          <Button variant="destructive" onClick={() => leaveMut.mutate(team.id)} disabled={leaveMut.isPending} className="bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/20">
+          <Button variant="destructive" onClick={() => leaveMut.mutate(team.id)} disabled={leaveMut.isPending} className="dark:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500/30 bg-rose-100 text-rose-700 hover:bg-rose-200 border border-rose-200">
             <LogOut className="w-4 h-4 mr-2" /> Leave Team
           </Button>
         )}

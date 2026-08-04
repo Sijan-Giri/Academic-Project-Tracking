@@ -20,14 +20,14 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isLoading: true,
   setAuth: (user, accessToken) => {
-    queryClient.clear(); // Purge any previous user cached data
+    queryClient.clear();
     set({ user, accessToken, isAuthenticated: true, isLoading: false });
   },
   setUser: (user) => set({ user, isAuthenticated: !!user }),
   setAccessToken: (accessToken) => set({ accessToken }),
   setLoading: (isLoading) => set({ isLoading }),
   clearAuth: () => {
-    queryClient.clear(); // Purge all cached data on logout
+    queryClient.clear();
     set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
   },
 }));

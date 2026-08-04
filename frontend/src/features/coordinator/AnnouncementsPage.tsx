@@ -98,7 +98,7 @@ export default function CoordinatorAnnouncementsPage() {
   };
 
   return (
-    <div className="space-y-6 min-h-screen text-white p-6 bg-[#0f1117]">
+    <div className="space-y-6">
       <PageHeader
         title="Announcements Broadcast"
         subtitle="Publish updates to specific departments, batches, or semesters"
@@ -112,7 +112,7 @@ export default function CoordinatorAnnouncementsPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-48 bg-white/5 animate-pulse rounded-xl border border-white/10" />
+            <div key={i} className="h-48 dark:bg-white/5 bg-slate-200 animate-pulse rounded-xl dark:border-white/10 border-slate-200" />
           ))}
         </div>
       ) : (
@@ -123,16 +123,16 @@ export default function CoordinatorAnnouncementsPage() {
             const targets = ann.targets || [];
 
             return (
-              <Card key={ann.id} className="bg-white/5 backdrop-blur-md border-white/10 hover:border-indigo-500/50 transition-colors flex flex-col relative group">
-                <CardHeader className="pb-3 border-b border-white/10 flex flex-row items-start justify-between space-y-0">
+              <Card key={ann.id} className="hover:border-indigo-500/50 transition-colors flex flex-col relative group">
+                <CardHeader className="pb-3 border-b dark:border-white/10 border-slate-200 flex flex-row items-start justify-between space-y-0">
                   <div className="flex gap-3">
-                    <div className="w-9 h-9 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0">
-                      <Megaphone className="w-4 h-4 text-indigo-400" />
+                    <div className="w-9 h-9 rounded-full dark:bg-indigo-500/20 bg-indigo-100 flex items-center justify-center shrink-0">
+                      <Megaphone className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                     </div>
                     <div>
-                      <CardTitle className="text-base font-bold text-white leading-tight">{ann.title}</CardTitle>
-                      <p className="text-[11px] text-gray-400 mt-1 flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-indigo-400" /> {dateStr}
+                      <CardTitle className="text-base font-bold dark:text-white text-slate-900 leading-tight">{ann.title}</CardTitle>
+                      <p className="text-[11px] dark:text-gray-400 text-slate-500 mt-1 flex items-center gap-1">
+                        <Calendar className="w-3 h-3 text-indigo-500" /> {dateStr}
                       </p>
                     </div>
                   </div>
@@ -140,23 +140,23 @@ export default function CoordinatorAnnouncementsPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => setDeleteItem(ann)}
-                    className="text-gray-400 hover:text-red-400 hover:bg-red-500/10 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="dark:text-gray-400 text-slate-400 hover:text-red-500 dark:hover:bg-red-500/10 hover:bg-rose-50 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </CardHeader>
                 <CardContent className="pt-4 flex-1">
-                  <p className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">{ann.content}</p>
+                  <p className="text-sm dark:text-slate-300 text-slate-700 whitespace-pre-wrap leading-relaxed">{ann.content}</p>
                 </CardContent>
-                <CardFooter className="pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
+                <CardFooter className="pt-3 border-t dark:border-white/10 border-slate-200 flex flex-wrap gap-1.5">
                   {targets.length > 0 ? (
                     targets.map((t: any, i: number) => (
-                      <Badge key={i} variant="outline" className="text-[11px] border-indigo-500/30 text-indigo-300 bg-indigo-500/10">
+                      <Badge key={i} variant="outline" className="text-[11px] dark:border-indigo-500/30 dark:text-indigo-300 dark:bg-indigo-500/10 border-indigo-200 text-indigo-700 bg-indigo-50">
                         {t.department?.name || t.batch?.name || t.semester?.name || 'Targeted'}
                       </Badge>
                     ))
                   ) : (
-                    <Badge variant="outline" className="text-[11px] border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
+                    <Badge variant="outline" className="text-[11px] dark:border-emerald-500/30 dark:text-emerald-400 dark:bg-emerald-500/10 border-emerald-300 text-emerald-700 bg-emerald-50">
                       Global Broadcast
                     </Badge>
                   )}
@@ -165,10 +165,10 @@ export default function CoordinatorAnnouncementsPage() {
             );
           })}
           {announcementList.length === 0 && (
-            <div className="text-slate-400 col-span-full py-16 text-center bg-white/5 rounded-2xl border border-dashed border-white/10">
-              <Megaphone className="w-10 h-10 mx-auto text-slate-500 mb-3" />
-              <p className="text-lg font-medium text-slate-300">No announcements posted yet.</p>
-              <p className="text-xs text-slate-500 mt-1">Click "New Announcement" to publish your first update.</p>
+            <div className="dark:text-slate-400 text-slate-500 col-span-full py-16 text-center dark:bg-white/5 bg-white rounded-2xl border border-dashed dark:border-white/10 border-slate-300">
+              <Megaphone className="w-10 h-10 mx-auto dark:text-slate-500 text-slate-400 mb-3" />
+              <p className="text-lg font-medium dark:text-slate-300 text-slate-700">No announcements posted yet.</p>
+              <p className="text-xs dark:text-slate-500 text-slate-400 mt-1">Click "New Announcement" to publish your first update.</p>
             </div>
           )}
         </div>
@@ -176,100 +176,98 @@ export default function CoordinatorAnnouncementsPage() {
 
       {/* Create Announcement Modal */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="bg-[#12141d] border-white/10 text-white sm:max-w-[550px]">
+        <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-white">New Announcement</DialogTitle>
+            <DialogTitle className="text-lg font-bold">New Announcement</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit((d) => createMutation.mutate(d))} className="space-y-4 pt-2">
             <div className="space-y-1.5">
-              <Label className="text-gray-300">Announcement Title</Label>
+              <Label>Announcement Title</Label>
               <Input
                 {...register('title')}
                 placeholder="e.g. Abstract Submission Deadline Extended"
-                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
               />
-              {errors.title && <p className="text-red-400 text-xs">{errors.title.message}</p>}
+              {errors.title && <p className="text-red-500 text-xs">{errors.title.message}</p>}
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-gray-300">Content</Label>
+              <Label>Content</Label>
               <Textarea
                 {...register('content')}
                 rows={4}
                 placeholder="Write announcement details here..."
-                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
               />
-              {errors.content && <p className="text-red-400 text-xs">{errors.content.message}</p>}
+              {errors.content && <p className="text-red-500 text-xs">{errors.content.message}</p>}
             </div>
 
-            <div className="space-y-3 pt-3 border-t border-white/10">
-              <h4 className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
+            <div className="space-y-3 pt-3 border-t dark:border-white/10 border-slate-200">
+              <h4 className="text-xs font-semibold dark:text-gray-300 text-slate-700 uppercase tracking-wider">
                 Targeting Options (Leave unselected for Global)
               </h4>
 
               <div className="grid grid-cols-3 gap-3">
                 {/* Departments */}
                 <div className="space-y-1">
-                  <Label className="text-[11px] text-gray-400">Departments</Label>
-                  <div className="max-h-32 overflow-y-auto bg-white/5 p-2 rounded-lg border border-white/10 space-y-1.5">
+                  <Label className="text-[11px]">Departments</Label>
+                  <div className="max-h-32 overflow-y-auto dark:bg-white/5 bg-slate-50 p-2 rounded-lg border dark:border-white/10 border-slate-200 space-y-1.5">
                     {departmentsList.map((d: any) => (
-                      <label key={d.id} className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                      <label key={d.id} className="flex items-center gap-2 text-xs dark:text-slate-300 text-slate-700 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={selectedDepts.includes(d.id)}
                           onChange={() => toggleSelection('departmentIds', d.id)}
-                          className="rounded border-white/20 bg-black/40 text-indigo-500 focus:ring-0"
+                          className="rounded border-slate-300 dark:border-white/20 text-indigo-600 focus:ring-0"
                         />
                         <span className="truncate">{d.code || d.name}</span>
                       </label>
                     ))}
-                    {departmentsList.length === 0 && <p className="text-[10px] text-gray-500">No departments</p>}
+                    {departmentsList.length === 0 && <p className="text-[10px] text-slate-400">No departments</p>}
                   </div>
                 </div>
 
                 {/* Batches */}
                 <div className="space-y-1">
-                  <Label className="text-[11px] text-gray-400">Batches</Label>
-                  <div className="max-h-32 overflow-y-auto bg-white/5 p-2 rounded-lg border border-white/10 space-y-1.5">
+                  <Label className="text-[11px]">Batches</Label>
+                  <div className="max-h-32 overflow-y-auto dark:bg-white/5 bg-slate-50 p-2 rounded-lg border dark:border-white/10 border-slate-200 space-y-1.5">
                     {batchesList.map((b: any) => (
-                      <label key={b.id} className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                      <label key={b.id} className="flex items-center gap-2 text-xs dark:text-slate-300 text-slate-700 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={selectedBatches.includes(b.id)}
                           onChange={() => toggleSelection('batchIds', b.id)}
-                          className="rounded border-white/20 bg-black/40 text-indigo-500 focus:ring-0"
+                          className="rounded border-slate-300 dark:border-white/20 text-indigo-600 focus:ring-0"
                         />
                         <span className="truncate">{b.name}</span>
                       </label>
                     ))}
-                    {batchesList.length === 0 && <p className="text-[10px] text-gray-500">No batches</p>}
+                    {batchesList.length === 0 && <p className="text-[10px] text-slate-400">No batches</p>}
                   </div>
                 </div>
 
                 {/* Semesters */}
                 <div className="space-y-1">
-                  <Label className="text-[11px] text-gray-400">Semesters</Label>
-                  <div className="max-h-32 overflow-y-auto bg-white/5 p-2 rounded-lg border border-white/10 space-y-1.5">
+                  <Label className="text-[11px]">Semesters</Label>
+                  <div className="max-h-32 overflow-y-auto dark:bg-white/5 bg-slate-50 p-2 rounded-lg border dark:border-white/10 border-slate-200 space-y-1.5">
                     {semestersList.map((s: any) => (
-                      <label key={s.id} className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                      <label key={s.id} className="flex items-center gap-2 text-xs dark:text-slate-300 text-slate-700 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={selectedSems.includes(s.id)}
                           onChange={() => toggleSelection('semesterIds', s.id)}
-                          className="rounded border-white/20 bg-black/40 text-indigo-500 focus:ring-0"
+                          className="rounded border-slate-300 dark:border-white/20 text-indigo-600 focus:ring-0"
                         />
                         <span className="truncate">{s.name || `Sem ${s.number}`}</span>
                       </label>
                     ))}
-                    {semestersList.length === 0 && <p className="text-[10px] text-gray-500">No semesters</p>}
+                    {semestersList.length === 0 && <p className="text-[10px] text-slate-400">No semesters</p>}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
-              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-white/10 text-gray-300">
+            <div className="flex justify-end gap-3 pt-4 border-t dark:border-white/10 border-slate-200">
+              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={createMutation.isPending} className="bg-indigo-600 hover:bg-indigo-700 text-white">
@@ -287,7 +285,7 @@ export default function CoordinatorAnnouncementsPage() {
         title="Delete Announcement"
         description="Are you sure you want to delete this announcement? This action cannot be undone."
         onConfirm={() => deleteItem && deleteMutation.mutate(deleteItem.id)}
-        confirmLabel="Delete"
+        confirmText="Delete"
         variant="danger"
       />
     </div>

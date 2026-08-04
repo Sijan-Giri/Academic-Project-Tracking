@@ -63,17 +63,16 @@ export default function EvaluationFormPage() {
 
   let grade = 'F';
   let gradeColor = 'text-red-500';
-  if (percentage >= 90) { grade = 'A+'; gradeColor = 'text-emerald-400'; }
-  else if (percentage >= 80) { grade = 'A'; gradeColor = 'text-emerald-500'; }
-  else if (percentage >= 70) { grade = 'B'; gradeColor = 'text-blue-400'; }
-  else if (percentage >= 60) { grade = 'C'; gradeColor = 'text-yellow-400'; }
-  else if (percentage >= 50) { grade = 'D'; gradeColor = 'text-orange-400'; }
+  if (percentage >= 90) { grade = 'A+'; gradeColor = 'text-emerald-500 dark:text-emerald-400'; }
+  else if (percentage >= 80) { grade = 'A'; gradeColor = 'text-emerald-600 dark:text-emerald-500'; }
+  else if (percentage >= 70) { grade = 'B'; gradeColor = 'text-blue-600 dark:text-blue-400'; }
+  else if (percentage >= 60) { grade = 'C'; gradeColor = 'text-amber-600 dark:text-yellow-400'; }
+  else if (percentage >= 50) { grade = 'D'; gradeColor = 'text-orange-600 dark:text-orange-400'; }
 
   const saveMutation = useMutation({
     mutationFn: (data: any) => existingEval ? updateEvaluation(existingEval.id, data) : createEvaluation(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['evaluations'] });
-      // show toast logic here
     }
   });
 
@@ -99,57 +98,57 @@ export default function EvaluationFormPage() {
     });
   };
 
-  if (!schedule) return <div className="p-8 text-white">Loading...</div>;
+  if (!schedule) return <div className="p-8 dark:text-white text-slate-900">Loading...</div>;
 
   return (
-    <div className="space-y-6 text-white min-h-screen p-6 bg-[#0f1117] max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="hover:bg-white/10">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-600">
           Evaluation Form
         </h1>
         {isLocked && (
-          <div className="ml-auto flex items-center gap-2 text-red-400 bg-red-400/10 px-4 py-2 rounded-full border border-red-400/20 text-sm font-medium">
+          <div className="ml-auto flex items-center gap-2 text-rose-600 dark:text-red-400 bg-rose-100 dark:bg-red-400/10 px-4 py-2 rounded-full border border-rose-300 dark:border-red-400/20 text-sm font-medium">
             <Lock className="w-4 h-4" /> Locked
           </div>
         )}
       </div>
 
       {isLocked && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl flex items-start gap-3">
+        <div className="dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400 bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-xl flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
           <p>This evaluation is locked. No further edits are allowed. Contact the coordinator if you need to make changes.</p>
         </div>
       )}
 
       {/* Project Info Header */}
-      <Card className="bg-white/5 backdrop-blur-md border-white/10">
+      <Card>
         <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-sm text-indigo-400 font-medium mb-1">{schedule.reviewStage?.name || 'Review Stage'}</p>
-            <h2 className="text-2xl font-bold mb-2">{schedule.project?.title || 'Project Title'}</h2>
-            <p className="text-slate-400 text-sm line-clamp-2">{schedule.project?.abstract || 'No abstract available.'}</p>
+            <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium mb-1">{schedule.reviewStage?.name || 'Review Stage'}</p>
+            <h2 className="text-2xl font-bold mb-2 dark:text-white text-slate-900">{schedule.project?.title || 'Project Title'}</h2>
+            <p className="dark:text-slate-400 text-slate-500 text-sm line-clamp-2">{schedule.project?.abstract || 'No abstract available.'}</p>
           </div>
           <div className="md:text-right space-y-2">
-            <p className="text-slate-300"><span className="text-slate-500">Team:</span> {schedule.team?.name}</p>
-            <p className="text-slate-300"><span className="text-slate-500">Date:</span> {format(new Date(schedule.date), 'MMM d, yyyy h:mm a')}</p>
-            <p className="text-slate-300"><span className="text-slate-500">Venue:</span> {schedule.venue}</p>
+            <p className="dark:text-slate-300 text-slate-700"><span className="dark:text-slate-500 text-slate-400">Team:</span> {schedule.team?.name}</p>
+            <p className="dark:text-slate-300 text-slate-700"><span className="dark:text-slate-500 text-slate-400">Date:</span> {format(new Date(schedule.date), 'MMM d, yyyy h:mm a')}</p>
+            <p className="dark:text-slate-300 text-slate-700"><span className="dark:text-slate-500 text-slate-400">Venue:</span> {schedule.venue}</p>
           </div>
         </CardContent>
       </Card>
 
       {/* Rubric Table */}
-      <Card className="bg-white/5 backdrop-blur-md border-white/10">
+      <Card>
         <CardHeader>
-          <CardTitle>Evaluation Rubric</CardTitle>
+          <CardTitle className="text-base font-semibold">Evaluation Rubric</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10 hover:bg-transparent">
+                <TableRow>
                   <TableHead className="w-[30%]">Criterion</TableHead>
                   <TableHead className="w-[10%] text-center">Max Marks</TableHead>
                   <TableHead className="w-[15%]">Marks Awarded</TableHead>
@@ -158,12 +157,12 @@ export default function EvaluationFormPage() {
               </TableHeader>
               <TableBody>
                 {criteria.map((c: any) => (
-                  <TableRow key={c.id} className="border-white/10 hover:bg-white/5">
+                  <TableRow key={c.id}>
                     <TableCell>
-                      <p className="font-medium text-slate-200">{c.name}</p>
-                      <p className="text-xs text-slate-500 mt-1">{c.description}</p>
+                      <p className="font-medium dark:text-slate-200 text-slate-800">{c.name}</p>
+                      <p className="text-xs dark:text-slate-500 text-slate-400 mt-1">{c.description}</p>
                     </TableCell>
-                    <TableCell className="text-center text-slate-400 font-medium">{c.maxMarks}</TableCell>
+                    <TableCell className="text-center dark:text-slate-400 text-slate-600 font-medium">{c.maxMarks}</TableCell>
                     <TableCell>
                       <Input 
                         type="number" 
@@ -172,7 +171,6 @@ export default function EvaluationFormPage() {
                         value={marks[c.id] === undefined ? '' : marks[c.id]}
                         onChange={(e) => setMarks({...marks, [c.id]: Number(e.target.value)})}
                         disabled={isLocked}
-                        className="bg-black/20 border-white/10 text-white"
                       />
                     </TableCell>
                     <TableCell>
@@ -181,7 +179,6 @@ export default function EvaluationFormPage() {
                         value={remarks[c.id] || ''}
                         onChange={(e) => setRemarks({...remarks, [c.id]: e.target.value})}
                         disabled={isLocked}
-                        className="bg-black/20 border-white/10 text-white"
                       />
                     </TableCell>
                   </TableRow>
@@ -190,25 +187,25 @@ export default function EvaluationFormPage() {
             </Table>
           </div>
 
-          <div className="mt-8 p-6 bg-black/20 rounded-xl border border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="mt-8 p-6 dark:bg-black/20 bg-slate-50 rounded-xl border dark:border-white/5 border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-              <p className="text-slate-400 font-medium">Total Score</p>
+              <p className="dark:text-slate-400 text-slate-500 font-medium">Total Score</p>
               <div className="text-4xl font-bold mt-1">
-                <span className="text-white">{totalMarks}</span>
-                <span className="text-slate-600 text-2xl"> / {maxTotal}</span>
+                <span className="dark:text-white text-slate-900">{totalMarks}</span>
+                <span className="dark:text-slate-600 text-slate-400 text-2xl"> / {maxTotal}</span>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-slate-400 font-medium">Computed Grade</p>
+              <p className="dark:text-slate-400 text-slate-500 font-medium">Computed Grade</p>
               <div className={`text-5xl font-bold mt-1 ${gradeColor}`}>{grade}</div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-white/5 backdrop-blur-md border-white/10">
+      <Card>
         <CardHeader>
-          <CardTitle>Overall Feedback</CardTitle>
+          <CardTitle className="text-base font-semibold">Overall Feedback</CardTitle>
         </CardHeader>
         <CardContent>
           <Textarea 
@@ -216,7 +213,7 @@ export default function EvaluationFormPage() {
             value={overallFeedback}
             onChange={(e) => setOverallFeedback(e.target.value)}
             disabled={isLocked}
-            className="min-h-[150px] bg-black/20 border-white/10 text-white"
+            className="min-h-[150px]"
           />
         </CardContent>
       </Card>
@@ -225,15 +222,15 @@ export default function EvaluationFormPage() {
         {existingEval && canLock && !isLocked && (
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-500/10">
+              <Button variant="outline" className="border-rose-400 text-rose-600 hover:bg-rose-50">
                 <Lock className="w-4 h-4 mr-2" /> Lock Evaluation
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-[#1e1e2e] border-white/10 text-white">
+            <DialogContent>
               <DialogHeader>
                 <DialogTitle>Lock this evaluation?</DialogTitle>
               </DialogHeader>
-              <p className="text-slate-400">This action cannot be undone. Once locked, no evaluator can modify the marks or remarks for this schedule.</p>
+              <p className="dark:text-slate-400 text-slate-600 text-sm">This action cannot be undone. Once locked, no evaluator can modify the marks or remarks for this schedule.</p>
               <DialogFooter>
                 <DialogClose asChild>
                   <Button variant="ghost">Cancel</Button>

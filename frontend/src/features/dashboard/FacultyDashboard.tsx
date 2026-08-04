@@ -8,12 +8,16 @@ import { BookOpen, Calendar, CheckSquare, Clock } from 'lucide-react';
 import { getGuidedProjects } from '@/api/projects.api';
 import { getMySchedules } from '@/api/schedules.api';
 import { format } from 'date-fns';
+import { useThemeStore } from '@/store/theme.store';
 
 export default function FacultyDashboard() {
+  const { theme } = useThemeStore();
+  const isDark = theme === 'dark';
+
   const { data: guidedProjects = [] } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });
   const { data: schedules = [] } = useQuery({ queryKey: ['my-schedules'], queryFn: getMySchedules });
 
-  // Mock stats
+  // Stats
   const stats = {
     guided: guidedProjects.length,
     schedules: schedules.length,
@@ -29,83 +33,86 @@ export default function FacultyDashboard() {
   ];
 
   return (
-    <div className="space-y-6 text-white min-h-screen p-6 bg-[#0f1117]">
+    <div className="space-y-6">
       <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-600">
         Faculty Dashboard
       </h1>
 
       {/* Row 1 — Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard title="Guided Projects" value={stats.guided} icon={<BookOpen className="text-indigo-400" />} />
-        <StatsCard title="Upcoming Schedules" value={stats.schedules} icon={<Calendar className="text-blue-400" />} />
-        <StatsCard title="Evaluations Completed" value={stats.completedEvals} icon={<CheckSquare className="text-emerald-400" />} />
-        <StatsCard title="Pending Reviews" value={stats.pendingReviews} icon={<Clock className="text-yellow-400" />} />
+        <StatsCard title="Guided Projects" value={stats.guided} icon={<BookOpen className="text-indigo-500 dark:text-indigo-400" />} />
+        <StatsCard title="Upcoming Schedules" value={stats.schedules} icon={<Calendar className="text-blue-500 dark:text-blue-400" />} />
+        <StatsCard title="Evaluations Completed" value={stats.completedEvals} icon={<CheckSquare className="text-emerald-500 dark:text-emerald-400" />} />
+        <StatsCard title="Pending Reviews" value={stats.pendingReviews} icon={<Clock className="text-amber-500 dark:text-yellow-400" />} />
       </div>
 
       {/* Row 2 — Charts + Lists */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 bg-white/5 backdrop-blur-md border-white/10">
+        <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Projects by Status</CardTitle>
+            <CardTitle className="text-base font-semibold">Projects by Status</CardTitle>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData}>
-                <XAxis dataKey="name" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" />
-                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: '#1e1e2e', border: 'none', borderRadius: '8px' }} />
+                <XAxis dataKey="name" stroke={isDark ? '#94a3b8' : '#64748b'} />
+                <YAxis stroke={isDark ? '#94a3b8' : '#64748b'} />
+                <Tooltip 
+                  cursor={{ fill: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }} 
+                  contentStyle={{ backgroundColor: isDark ? '#1e1e2e' : '#ffffff', border: isDark ? 'none' : '1px solid #cbd5e1', borderRadius: '8px', color: isDark ? '#fff' : '#0f172a' }} 
+                />
                 <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="bg-white/5 backdrop-blur-md border-white/10 flex flex-col">
+        <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle>Upcoming Schedules</CardTitle>
+            <CardTitle className="text-base font-semibold">Upcoming Schedules</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 flex-1">
             {schedules.slice(0, 5).map((s: any) => (
-              <div key={s.id} className="p-3 rounded-lg bg-white/5 border border-white/5 flex flex-col space-y-2">
+              <div key={s.id} className="p-3 rounded-lg dark:bg-white/5 bg-slate-50 border dark:border-white/5 border-slate-200 flex flex-col space-y-2">
                 <div className="flex justify-between items-start">
-                  <span className="font-semibold line-clamp-1">{s.project.title}</span>
-                  <Badge className={s.mode === 'ONLINE' ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-500/20 text-slate-400'}>
+                  <span className="font-semibold line-clamp-1 dark:text-white text-slate-900">{s.project.title}</span>
+                  <Badge className={s.mode === 'ONLINE' ? 'dark:bg-blue-500/20 dark:text-blue-400 bg-blue-100 text-blue-700' : 'dark:bg-slate-500/20 dark:text-slate-400 bg-slate-100 text-slate-700'}>
                     {s.mode}
                   </Badge>
                 </div>
-                <div className="flex justify-between text-sm text-slate-400">
+                <div className="flex justify-between text-sm dark:text-slate-400 text-slate-500">
                   <span>{format(new Date(s.date), 'MMM d, h:mm a')}</span>
                   <span>{s.venue}</span>
                 </div>
               </div>
             ))}
-            {schedules.length === 0 && <p className="text-slate-400">No upcoming schedules.</p>}
+            {schedules.length === 0 && <p className="dark:text-slate-400 text-slate-500 text-sm">No upcoming schedules.</p>}
           </CardContent>
         </Card>
       </div>
 
       {/* Row 3 — Recent Guided Projects */}
-      <Card className="bg-white/5 backdrop-blur-md border-white/10">
+      <Card>
         <CardHeader>
-          <CardTitle>Recent Guided Projects Activity</CardTitle>
+          <CardTitle className="text-base font-semibold">Recent Guided Projects Activity</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow className="border-white/10 hover:bg-white/5">
-                <TableHead className="text-slate-400">Project</TableHead>
-                <TableHead className="text-slate-400">Team</TableHead>
-                <TableHead className="text-slate-400">Current Milestone Status</TableHead>
-                <TableHead className="text-slate-400">Guide Assignment Date</TableHead>
+              <TableRow>
+                <TableHead>Project</TableHead>
+                <TableHead>Team</TableHead>
+                <TableHead>Current Milestone Status</TableHead>
+                <TableHead>Guide Assignment Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {guidedProjects.slice(0, 5).map((p: any) => (
-                <TableRow key={p.id} className="border-white/10 hover:bg-white/5">
-                  <TableCell className="font-medium text-indigo-300">{p.title}</TableCell>
-                  <TableCell>{p.team.name}</TableCell>
+                <TableRow key={p.id}>
+                  <TableCell className="font-medium text-indigo-600 dark:text-indigo-300">{p.title}</TableCell>
+                  <TableCell>{p.team?.name}</TableCell>
                   <TableCell>
-                    <Badge className="bg-violet-500/20 text-violet-400">{p.status}</Badge>
+                    <Badge className="dark:bg-violet-500/20 dark:text-violet-400 bg-violet-100 text-violet-700">{p.status}</Badge>
                   </TableCell>
                   <TableCell>{format(new Date(p.assignmentDate || new Date()), 'MMM d, yyyy')}</TableCell>
                 </TableRow>
@@ -120,13 +127,13 @@ export default function FacultyDashboard() {
 
 function StatsCard({ title, value, icon }: { title: string; value: React.ReactNode; icon: React.ReactNode }) {
   return (
-    <Card className="bg-white/5 backdrop-blur-md border-white/10">
+    <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-slate-400">{title}</CardTitle>
+        <CardTitle className="text-sm font-medium dark:text-slate-400 text-slate-500">{title}</CardTitle>
         {icon}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-2xl font-bold dark:text-white text-slate-900">{value}</div>
       </CardContent>
     </Card>
   );

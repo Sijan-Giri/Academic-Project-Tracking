@@ -142,20 +142,20 @@ export default function UsersPage() {
       />
 
       <div className="flex gap-4 items-center">
-        <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <Input 
             placeholder="Search users..." 
-            value={search} 
+            value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 bg-[#1a1d27] border-white/10 text-white"
+            className="pl-9"
           />
         </div>
         <Select value={roleFilter} onValueChange={setRoleFilter}>
-          <SelectTrigger className="w-[180px] bg-[#1a1d27] border-white/10">
+          <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by Role" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1a1d27] border-white/10 text-white">
+          <SelectContent>
             <SelectItem value="ALL">All Roles</SelectItem>
             <SelectItem value="STUDENT">Student</SelectItem>
             <SelectItem value="FACULTY">Faculty</SelectItem>
@@ -165,12 +165,12 @@ export default function UsersPage() {
         </Select>
       </div>
 
-      <div className="bg-[#1a1d27] rounded-xl border border-white/10 p-4">
+      <div className="dark:bg-[#1a1d27] bg-white rounded-xl border dark:border-white/10 border-slate-200 p-4 shadow-sm">
         <DataTable columns={columns} data={userList} isLoading={isLoading} />
       </div>
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="bg-[#0f1117] border-white/10 text-white sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add New User</DialogTitle>
           </DialogHeader>
@@ -180,14 +180,14 @@ export default function UsersPage() {
                 <FormField control={form.control} name="name" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
-                    <FormControl><Input className="bg-[#1a1d27] border-white/10" {...field} /></FormControl>
+                    <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="email" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
-                    <FormControl><Input type="email" className="bg-[#1a1d27] border-white/10" {...field} /></FormControl>
+                    <FormControl><Input type="email" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />

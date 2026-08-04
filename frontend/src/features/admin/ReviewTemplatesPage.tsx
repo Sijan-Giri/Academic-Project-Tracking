@@ -102,13 +102,13 @@ export default function ReviewTemplatesPage() {
 
   const columns = [
     { accessorKey: 'order', header: 'Order' },
-    { accessorKey: 'name', header: 'Name', cell: ({ row }: any) => <span className="font-semibold text-white">{row.original.name}</span> },
-    { accessorKey: 'type', header: 'Type', cell: ({ row }: any) => <Badge variant="outline" className="border-indigo-500/30 text-indigo-400 bg-indigo-500/10">{row.original.type.replace('_', ' ')}</Badge> },
+    { accessorKey: 'name', header: 'Name', cell: ({ row }: any) => <span className="font-semibold dark:text-white text-slate-900">{row.original.name}</span> },
+    { accessorKey: 'type', header: 'Type', cell: ({ row }: any) => <Badge variant="outline" className="dark:border-indigo-500/30 dark:text-indigo-400 dark:bg-indigo-500/10 border-indigo-200 text-indigo-700 bg-indigo-50">{row.original.type.replace('_', ' ')}</Badge> },
     { accessorKey: 'description', header: 'Description' },
     {
       accessorKey: 'isDefault',
       header: 'Default',
-      cell: ({ row }: any) => row.original.isDefault ? <CheckCircle className="w-5 h-5 text-emerald-500" /> : <XCircle className="w-5 h-5 text-gray-500" />,
+      cell: ({ row }: any) => row.original.isDefault ? <CheckCircle className="w-5 h-5 text-emerald-500" /> : <XCircle className="w-5 h-5 text-slate-400" />,
     },
     {
       id: 'actions',
@@ -116,10 +116,10 @@ export default function ReviewTemplatesPage() {
       cell: ({ row }: any) => (
         <div className="flex gap-2">
           <Button variant="ghost" size="icon" onClick={() => handleEdit(row.original)}>
-            <Edit className="w-4 h-4 text-indigo-400" />
+            <Edit className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           </Button>
           <Button variant="ghost" size="icon" onClick={() => setDeleteItem(row.original)}>
-            <Trash2 className="w-4 h-4 text-red-400" />
+            <Trash2 className="w-4 h-4 text-rose-600 dark:text-red-400" />
           </Button>
         </div>
       ),
@@ -132,28 +132,28 @@ export default function ReviewTemplatesPage() {
         title="Review Stage Templates"
         subtitle="Manage global templates for project review stages"
         actions={
-          <Button onClick={() => { form.reset(); setCreateOpen(true); }} className="bg-indigo-600 hover:bg-indigo-700">
+          <Button onClick={() => { form.reset(); setCreateOpen(true); }} className="bg-indigo-600 hover:bg-indigo-700 text-white">
             <Plus className="w-4 h-4 mr-2" /> Add Template
           </Button>
         }
       />
-      <div className="bg-[#1a1d27] rounded-xl border border-white/10 p-4">
-        <DataTable columns={columns} data={templates || []} isisLoading={isLoading} />
+      <div className="dark:bg-[#1a1d27] bg-white rounded-xl border dark:border-white/10 border-slate-200 p-4 shadow-sm">
+        <DataTable columns={columns} data={templates || []} isLoading={isLoading} />
       </div>
 
       <Dialog open={createOpen || !!editItem} onOpenChange={(open) => {
         if (!open) { setCreateOpen(false); setEditItem(null); }
       }}>
-        <DialogContent className="bg-[#0f1117] border-white/10 text-white sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader><DialogTitle>{editItem ? 'Edit Template' : 'Add Template'}</DialogTitle></DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="name" render={({ field }) => (
-                  <FormItem><FormLabel>Name</FormLabel><FormControl><Input className="bg-[#1a1d27] border-white/10" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="order" render={({ field }) => (
-                  <FormItem><FormLabel>Order</FormLabel><FormControl><Input type="number" className="bg-[#1a1d27] border-white/10" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>Order</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -161,8 +161,8 @@ export default function ReviewTemplatesPage() {
                   <FormItem>
                     <FormLabel>Type</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl><SelectTrigger className="bg-[#1a1d27] border-white/10"><SelectValue placeholder="Select type" /></SelectTrigger></FormControl>
-                      <SelectContent className="bg-[#1a1d27] border-white/10">
+                      <FormControl><SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger></FormControl>
+                      <SelectContent>
                         {REVIEW_STAGE_TYPES.map(t => <SelectItem key={t} value={t}>{t.replace('_', ' ')}</SelectItem>)}
                       </SelectContent>
                     </Select>
@@ -172,8 +172,8 @@ export default function ReviewTemplatesPage() {
                   <FormItem>
                     <FormLabel>Department (Optional)</FormLabel>
                     <Select onValueChange={(val) => field.onChange(val === 'ALL' ? null : val)} value={field.value || 'ALL'}>
-                      <FormControl><SelectTrigger className="bg-[#1a1d27] border-white/10"><SelectValue placeholder="All Departments" /></SelectTrigger></FormControl>
-                      <SelectContent className="bg-[#1a1d27] border-white/10">
+                      <FormControl><SelectTrigger><SelectValue placeholder="All Departments" /></SelectTrigger></FormControl>
+                      <SelectContent>
                         <SelectItem value="ALL">All Departments</SelectItem>
                         {departments?.map((d: any) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
                       </SelectContent>
@@ -182,17 +182,17 @@ export default function ReviewTemplatesPage() {
                 )} />
               </div>
               <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea className="bg-[#1a1d27] border-white/10" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="isDefault" render={({ field }) => (
-                <FormItem className="flex items-center justify-between p-3 rounded-lg border border-white/10 mt-4">
+                <FormItem className="flex items-center justify-between p-3 rounded-lg border dark:border-white/10 border-slate-200 mt-4">
                   <FormLabel>Is Default Template?</FormLabel>
                   <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                 </FormItem>
               )} />
               <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => { setCreateOpen(false); setEditItem(null); }} className="border-white/10">Cancel</Button>
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">{editItem ? 'Update' : 'Create'}</Button>
+                <Button type="button" variant="outline" onClick={() => { setCreateOpen(false); setEditItem(null); }}>Cancel</Button>
+                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white">{editItem ? 'Update' : 'Create'}</Button>
               </div>
             </form>
           </Form>
