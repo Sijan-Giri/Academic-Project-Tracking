@@ -221,9 +221,9 @@ export const acceptInvitation = async (invitationId: string, userId: string) => 
   if (!invitation) throw new NotFoundError('Invitation not found');
   if (invitation.studentProfileId !== profile.id) throw new ForbiddenError('This invitation is not for you');
   if (invitation.status !== 'PENDING') throw new ValidationError('This invitation has already been responded to');
-  if (invitation.team.status !== TeamStatus.PENDING) throw new ValidationError('This team is no longer accepting members');
+  if (invitation.team.status === TeamStatus.REJECTED) throw new ValidationError('This team was rejected and cannot accept members');
 
-  // Re-check they are not already in a team
+  // Re-check they are not already in a team for this semester
   const alreadyInTeam = await prisma.teamMember.findFirst({
     where: {
       studentProfileId: profile.id,
@@ -237,8 +237,8 @@ export const acceptInvitation = async (invitationId: string, userId: string) => 
   const maxTeamSize = maxTeamSetting ? parseInt(maxTeamSetting.value, 10) || 4 : 4;
   if (invitation.team.members.length >= maxTeamSize) throw new ValidationError(`Team is full (max ${maxTeamSize} members)`);
 
-  // Add as member and mark invitation accepted — in a transaction
-  const [updatedInvitation, newMember] = await prisma.$transaction([
+  // Add as member, mark invitation accepted, and set team status back to PENDING for coordinator re-approval
+  const [updatedInvitation, newMember, updatedTeam] = await prisma.$transaction([
     prisma.teamInvitation.update({
       where: { id: invitationId },
       data: { status: 'ACCEPTED', respondedAt: new Date() },
@@ -246,26 +246,49 @@ export const acceptInvitation = async (invitationId: string, userId: string) => 
     prisma.teamMember.create({
       data: { teamId: invitation.teamId, studentProfileId: profile.id, isLeader: false },
     }),
+    prisma.team.update({
+      where: { id: invitation.teamId },
+      data: { status: TeamStatus.PENDING },
+      include: { members: { include: { studentProfile: { include: { user: true } } } } },
+    }),
   ]);
 
-  // Notify the team leader
-  const leaderMember = await prisma.teamMember.findFirst({
-    where: { teamId: invitation.teamId, isLeader: true },
-    include: { studentProfile: { include: { user: true } } },
-  });
-  if (leaderMember) {
+  // Notify all team members
+  for (const member of updatedTeam.members) {
     try {
-      emitToUser(leaderMember.studentProfile.userId, 'team:updated', updatedInvitation);
+      emitToUser(member.studentProfile.userId, 'team:updated', updatedTeam);
+    } catch (_) {}
+    if (member.isLeader) {
+      await notificationService.sendNotification(
+        member.studentProfile.userId,
+        'Invitation Accepted',
+        `A student accepted your invitation and joined "${updatedTeam.name}". Team status is now PENDING coordinator re-approval.`,
+        'GENERAL'
+      );
+    }
+  }
+
+  // Notify coordinators that team composition changed and is pending approval
+  const coordinators = await prisma.user.findMany({
+    where: { role: { in: ['COORDINATOR', 'ADMIN'] }, isActive: true },
+  });
+  for (const coord of coordinators) {
+    try {
+      emitToUser(coord.id, 'team:updated', updatedTeam);
     } catch (_) {}
     await notificationService.sendNotification(
-      leaderMember.studentProfile.userId,
-      'Invitation Accepted',
-      `A student has accepted your invitation and joined team "${invitation.team.name}"`,
+      coord.id,
+      'Team Pending Re-Approval',
+      `Team "${updatedTeam.name}" added a new member and requires coordinator re-approval.`,
       'GENERAL'
     );
   }
 
-  return { invitation: updatedInvitation, member: newMember };
+  try {
+    broadcastEvent('team:updated', updatedTeam);
+  } catch (_) {}
+
+  return { invitation: updatedInvitation, member: newMember, team: updatedTeam };
 };
 
 export const declineInvitation = async (invitationId: string, userId: string) => {
@@ -449,31 +472,38 @@ export const approveTeam = async (id: string, userId: string) => {
   return team;
 };
 
-export const rejectTeam = async (id: string, reason: string, userId: string) => {
+export const rejectTeam = async (id: string, reason?: string, userId?: string) => {
   const team = await prisma.team.update({
     where: { id },
     data: {
       status: TeamStatus.REJECTED,
-      rejectionReason: reason,
+      rejectionReason: reason || null,
     },
     include: { members: { include: { studentProfile: true } } },
   });
 
   for (const member of team.members) {
+    try {
+      emitToUser(member.studentProfile.userId, 'team:updated', team);
+    } catch (_) {}
     await notificationService.sendNotification(
       member.studentProfile.userId,
       'Team Rejected',
-      `Your team ${team.name} has been rejected. Reason: ${reason}`,
+      `Your team ${team.name} has been rejected.${reason ? ` Reason: ${reason}` : ''}`,
       'GENERAL'
     );
   }
+
+  try {
+    broadcastEvent('team:updated', team);
+  } catch (_) {}
 
   await auditService.createAuditLog({
     action: AuditAction.STATUS_CHANGE,
     entityType: 'TEAM',
     entityId: id,
-    userId,
-    newValue: JSON.stringify({ newValue: TeamStatus.REJECTED, reason }),
+    userId: userId || '',
+    newValue: JSON.stringify({ newValue: TeamStatus.REJECTED, reason: reason || null }),
   });
 
   return team;

@@ -10,7 +10,7 @@ export const inviteMemberSchema = z.object({
 });
 
 export const rejectTeamSchema = z.object({
-  rejectionReason: z.string().min(5),
+  rejectionReason: z.string().optional(),
 });
 
 export const updateTeamSchema = z.object({

@@ -189,14 +189,14 @@ export default function TeamApprovalsPage() {
         open={!!rejectItem}
         onOpenChange={(open) => !open && setRejectItem(null)}
         title="Reject Team"
-        description={`Please provide a reason for rejecting team "${rejectItem?.name}". This will be sent to the team leader.`}
+        description={`Are you sure you want to reject team "${rejectItem?.name}"? You may optionally provide a reason.`}
         onConfirm={() => rejectItem && rejectMutation.mutate({ id: rejectItem.id, reason: rejectReason })}
         confirmText="Reject Team"
         variant="danger"
       >
         <div className="py-4">
           <Textarea
-            placeholder="Enter reason for rejection..."
+            placeholder="Reason for rejection (optional)..."
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
             className="bg-white/5 border-white/10 text-white"

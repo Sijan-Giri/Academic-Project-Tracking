@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { User, Lock, Save, Loader2, Eye, EyeOff, BookOpen, GraduationCap, Building2, BadgeCheck, Hash } from 'lucide-react';
 import { useState } from 'react';
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/store/auth.store';
-import { updateProfile, changePassword } from '@/api/auth.api';
+import { getMe, updateProfile, changePassword } from '@/api/auth.api';
 import StatusBadge from '@/components/shared/StatusBadge';
 
 const profileSchema = z.object({
@@ -44,12 +44,26 @@ function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label:
 }
 
 export default function ProfilePage() {
-  const user = useAuthStore(s => s.user);
+  const authUser = useAuthStore(s => s.user);
   const setUser = useAuthStore(s => s.setUser);
   
   const [showOldPw, setShowOldPw] = useState(false);
   const [showNewPw, setShowNewPw] = useState(false);
   const [showConfirmPw, setShowConfirmPw] = useState(false);
+
+  // Fetch fresh profile data on mount
+  const { data: meRes } = useQuery({
+    queryKey: ['me'],
+    queryFn: getMe,
+    onSuccess: (data: any) => {
+      const fresh = data?.data ?? data;
+      if (fresh?.id) setUser(fresh);
+    },
+  });
+
+  const rawMe = meRes as any;
+  const freshUser = rawMe?.data ?? (rawMe?.id ? rawMe : null);
+  const user = freshUser || authUser;
 
   const studentProfile = (user as any)?.studentProfile;
   const facultyProfile = (user as any)?.facultyProfile;
@@ -232,6 +246,11 @@ export default function ProfilePage() {
                   icon={Hash}
                   label="Roll Number / Student ID"
                   value={studentProfile?.studentId}
+                />
+                <InfoRow
+                  icon={User}
+                  label="Phone Number"
+                  value={studentProfile?.phone}
                 />
                 <InfoRow
                   icon={BookOpen}

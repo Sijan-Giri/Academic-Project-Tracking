@@ -98,21 +98,41 @@ export const updateUser = async (id: string, data: any) => {
     const user = await tx.user.update({
       where: { id },
       data: {
-        name: data.name,
+        ...(data.name ? { name: data.name } : {}),
       },
     });
-    
-    if (user.role === Role.FACULTY && (data.designation || data.specialization)) {
-      await tx.facultyProfile.update({
-        where: { userId: id },
-        data: {
-          designation: data.designation,
-          specialization: data.specialization,
-        },
-      });
+
+    if (user.role === Role.STUDENT) {
+      const studentProf = await tx.studentProfile.findUnique({ where: { userId: id } });
+      if (studentProf && data.phone !== undefined) {
+        await tx.studentProfile.update({
+          where: { userId: id },
+          data: { phone: data.phone },
+        });
+      }
+    } else if (user.role === Role.FACULTY || user.role === Role.COORDINATOR || user.role === Role.PANEL) {
+      const facultyProf = await tx.facultyProfile.findUnique({ where: { userId: id } });
+      if (facultyProf) {
+        await tx.facultyProfile.update({
+          where: { userId: id },
+          data: {
+            ...(data.phone !== undefined ? { phone: data.phone } : {}),
+            ...(data.designation ? { designation: data.designation } : {}),
+            ...(data.specialization ? { specialization: data.specialization } : {}),
+          },
+        });
+      }
     }
-    
-    return exclude(user, ['password']);
+
+    const updatedUser = await tx.user.findUnique({
+      where: { id },
+      include: {
+        studentProfile: { include: { batch: { include: { department: true } } } },
+        facultyProfile: { include: { department: true } },
+      },
+    });
+
+    return exclude(updatedUser!, ['password']);
   });
 };
 

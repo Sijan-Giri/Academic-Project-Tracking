@@ -25,6 +25,12 @@ export const createUser = async (req: AuthRequest, res: Response) => {
   sendSuccess(res, data, 'User created successfully', 201);
 };
 
+export const updateProfile = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const data = await userService.updateUser(userId, req.body);
+  sendSuccess(res, data, 'Profile updated successfully');
+};
+
 export const updateUser = async (req: AuthRequest, res: Response) => {
   const data = await userService.updateUser(req.params.id, req.body);
   sendSuccess(res, data, 'User updated successfully');
