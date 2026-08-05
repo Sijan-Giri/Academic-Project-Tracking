@@ -78,7 +78,7 @@ export default function Header({ className }: HeaderProps) {
         <Button variant="ghost" size="icon" onClick={toggle} className="lg:hidden text-slate-600 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white shrink-0">
           <Menu className="h-5 w-5" />
         </Button>
-        <h2 className="text-lg font-extrabold dark:text-white text-slate-900 hidden sm:block tracking-tight truncate max-w-md" title={getPageTitle()}>
+        <h2 className="text-lg font-bold dark:text-white text-slate-900 hidden sm:block tracking-tight truncate max-w-md" title={getPageTitle()}>
           {getPageTitle()}
         </h2>
       </div>

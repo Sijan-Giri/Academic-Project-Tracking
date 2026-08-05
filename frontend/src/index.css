@@ -1,9 +1,62 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
+/* ── Aeonik Typeface Definitions ───────────────────────────────────────── */
+@font-face {
+  font-family: 'Aeonik';
+  src: local('Aeonik Light'), local('Aeonik-Light'),
+       url('/fonts/Aeonik-Light.woff2') format('woff2'),
+       url('/fonts/Aeonik-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aeonik';
+  src: local('Aeonik Regular'), local('Aeonik-Regular'),
+       url('/fonts/Aeonik-Regular.woff2') format('woff2'),
+       url('/fonts/Aeonik-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aeonik';
+  src: local('Aeonik Medium'), local('Aeonik-Medium'),
+       url('/fonts/Aeonik-Medium.woff2') format('woff2'),
+       url('/fonts/Aeonik-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aeonik';
+  src: local('Aeonik SemiBold'), local('Aeonik-SemiBold'),
+       url('/fonts/Aeonik-SemiBold.woff2') format('woff2'),
+       url('/fonts/Aeonik-SemiBold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aeonik';
+  src: local('Aeonik Bold'), local('Aeonik-Bold'),
+       url('/fonts/Aeonik-Bold.woff2') format('woff2'),
+       url('/fonts/Aeonik-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
+    --font-aeonik: 'Aeonik', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    
     --background: 210 40% 98%; /* slate-50 */
     --foreground: 222.2 47.4% 11.2%; /* slate-900 */
 
@@ -73,10 +126,26 @@
 @layer base {
   * {
     @apply border-border;
+    font-family: var(--font-aeonik);
   }
-  body {
+  
+  html, body, #root {
     @apply bg-background text-foreground transition-colors duration-200;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-aeonik);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Semantic Typography Hierarchy Mapping */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  button, input, select, textarea, label, th {
+    font-family: var(--font-aeonik);
+    font-weight: 500;
   }
 }
 
