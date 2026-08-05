@@ -1,1 +1,0 @@
-import{d as a}from"./index-l7PDU3vw.js";const t=async n=>(await a.post("/announcements",n)).data,s=async n=>(await a.get("/announcements",{params:n})).data,c=async n=>(await a.delete(`/announcements/${n}`)).data;export{t as c,c as d,s as g};

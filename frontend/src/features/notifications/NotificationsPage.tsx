@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Bell, Clock, MessageSquare, Megaphone, Check, AlertTriangle, ShieldCheck, Inbox } from 'lucide-react';
 import { getNotifications, markAllRead, markRead } from '@/api/notifications.api';
 import PageHeader from '@/components/shared/PageHeader';
+import { Skeleton, SkeletonCircle } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -126,12 +127,15 @@ export default function NotificationsPage() {
       <div className="space-y-3">
         {isLoading ? (
           <div className="space-y-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="p-4 rounded-xl border border-border bg-card shadow-xs flex gap-3 animate-pulse">
-                <div className="w-8 h-8 rounded-lg bg-secondary shrink-0" />
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="p-4 rounded-xl border border-border bg-card shadow-xs flex gap-3.5 items-start">
+                <SkeletonCircle size="w-8 h-8 shrink-0" />
                 <div className="flex-1 space-y-2 py-0.5">
-                  <div className="h-4 bg-secondary rounded w-1/3" />
-                  <div className="h-3 bg-secondary rounded w-full" />
+                  <div className="flex justify-between items-center">
+                    <Skeleton className="h-4 w-48 rounded-xs" />
+                    <Skeleton className="h-3 w-20 rounded-xs" />
+                  </div>
+                  <Skeleton className="h-3 w-full rounded-xs" />
                 </div>
               </div>
             ))}

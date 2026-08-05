@@ -1,1 +1,0 @@
-import{a5 as f,aL as n,aM as c}from"./index-l7PDU3vw.js";function o(a){const t=f(a);return t.setHours(0,0,0,0),t}function d(a,t){const s=o(a),e=o(t),r=+s-n(s),i=+e-n(e);return Math.round((r-i)/c)}export{d};
