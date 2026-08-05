@@ -30,6 +30,8 @@ const STAGES = [
   { id: 'COMPLETED', name: 'Completed' },
 ];
 
+import { ProjectDetailSkeleton } from '@/components/shared/Skeletons';
+
 export default function MyProjectPage() {
   const navigate = useNavigate();
   const [showFullAbstract, setShowFullAbstract] = useState(false);
@@ -40,15 +42,7 @@ export default function MyProjectPage() {
   });
 
   if (isLoading) {
-    return (
-      <div className="space-y-6 max-w-6xl mx-auto animate-pulse">
-        <div className="h-44 bg-card border border-border rounded-xl" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="h-64 bg-card border border-border rounded-xl" />
-          <div className="h-64 bg-card border border-border rounded-xl" />
-        </div>
-      </div>
-    );
+    return <ProjectDetailSkeleton />;
   }
 
   const projectList = Array.isArray((res as any)?.data?.items)

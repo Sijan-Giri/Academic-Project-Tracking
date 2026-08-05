@@ -13,6 +13,8 @@ import { getSchedule, getStageCriteria, getEvaluations, createEvaluation, update
 import { format } from 'date-fns';
 import { useAuthStore } from '@/store/auth.store';
 
+import { FormSkeleton } from '@/components/shared/Skeletons';
+
 export default function EvaluationFormPage() {
   const { scheduleId } = useParams();
   const navigate = useNavigate();
@@ -109,7 +111,7 @@ export default function EvaluationFormPage() {
     });
   };
 
-  if (!schedule) return <div className="p-8 text-muted-foreground font-normal">Loading evaluation form...</div>;
+  if (!schedule) return <FormSkeleton />;
 
   const dateVal = schedule.scheduledAt || schedule.date;
 

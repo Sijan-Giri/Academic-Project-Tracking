@@ -13,6 +13,8 @@ import PageHeader from '@/components/shared/PageHeader';
 import { useAuthStore } from '@/store/auth.store';
 import { cn } from '@/lib/utils';
 
+import { DashboardSkeleton } from '@/components/shared/Skeletons';
+
 const STAGES = [
   'Abstract Submission',
   'Abstract Approved',
@@ -27,9 +29,13 @@ export default function StudentDashboard() {
   const navigate = useNavigate();
   const authUser = useAuthStore((s) => s.user);
 
-  const { data: projectsRes } = useQuery({ queryKey: ['my-projects'], queryFn: getMyProjects });
-  const { data: teamRes } = useQuery({ queryKey: ['my-team'], queryFn: getMyTeam });
+  const { data: projectsRes, isLoading: loadingProjects } = useQuery({ queryKey: ['my-projects'], queryFn: getMyProjects });
+  const { data: teamRes, isLoading: loadingTeam } = useQuery({ queryKey: ['my-team'], queryFn: getMyTeam });
   const { data: announcementsRes } = useQuery({ queryKey: ['announcements'], queryFn: () => getAnnouncements() });
+
+  if (loadingProjects || loadingTeam) {
+    return <DashboardSkeleton />;
+  }
 
   const projectList = Array.isArray((projectsRes as any)?.data?.items)
     ? (projectsRes as any).data.items

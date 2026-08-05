@@ -14,6 +14,8 @@ import PageHeader from '@/components/shared/PageHeader';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 
+import { DashboardSkeleton } from '@/components/shared/Skeletons';
+
 const COLORS: Record<string, string> = {
   DRAFT: '#64748b',
   ABSTRACT_SUBMITTED: '#3b82f6',
@@ -45,6 +47,10 @@ export default function CoordinatorDashboard() {
     queryKey: ['coordinator-announcements'],
     queryFn: () => getAnnouncements(),
   });
+
+  if (loadingProjects) {
+    return <DashboardSkeleton />;
+  }
 
   // Safe array unwrapping
   const projectsList: any[] = Array.isArray((projectsRes as any)?.data?.items)

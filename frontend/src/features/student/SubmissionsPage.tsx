@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/shared/PageHeader';
 import toast from 'react-hot-toast';
 
+import { SubmissionsSkeleton } from '@/components/shared/Skeletons';
+
 export default function SubmissionsPage() {
   const { data: res, isLoading } = useQuery({
     queryKey: ['my-submissions'],
@@ -21,12 +23,7 @@ export default function SubmissionsPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="max-w-6xl mx-auto space-y-6 animate-pulse">
-        <div className="h-44 bg-card border border-border rounded-xl" />
-        <div className="h-64 bg-card border border-border rounded-xl" />
-      </div>
-    );
+    return <SubmissionsSkeleton />;
   }
 
   const submissions = (res as any)?.data?.items || (res as any)?.items || (res as any)?.data || (Array.isArray(res) ? res : []);

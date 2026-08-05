@@ -8,6 +8,8 @@ import { getMyProjects } from '@/api/projects.api';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
+import { AbstractSkeleton } from '@/components/shared/Skeletons';
+
 export default function AbstractPage() {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
@@ -18,12 +20,7 @@ export default function AbstractPage() {
   });
 
   if (isLoading) {
-    return (
-      <div className="max-w-4xl mx-auto space-y-6 animate-pulse">
-        <div className="h-44 bg-card border border-border rounded-xl" />
-        <div className="h-64 bg-card border border-border rounded-xl" />
-      </div>
-    );
+    return <AbstractSkeleton />;
   }
 
   const raw = projectRes as any;

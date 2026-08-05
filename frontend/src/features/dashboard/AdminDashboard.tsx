@@ -14,6 +14,8 @@ import { getDepartments } from '@/api/departments.api';
 import { api } from '@/api/client';
 import { useThemeStore } from '@/store/theme.store';
 
+import { DashboardSkeleton } from '@/components/shared/Skeletons';
+
 const PIE_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316'];
 
 export default function AdminDashboard() {
@@ -21,10 +23,14 @@ export default function AdminDashboard() {
   const { theme } = useThemeStore();
   const isDark = theme === 'dark';
 
-  const { data: usersResponse } = useQuery({ queryKey: ['users-list'], queryFn: () => getUsers({ limit: 100 }) });
-  const { data: projectsResponse } = useQuery({ queryKey: ['projects-list'], queryFn: () => getProjects({ limit: 100 }) });
+  const { data: usersResponse, isLoading: loadingUsers } = useQuery({ queryKey: ['users-list'], queryFn: () => getUsers({ limit: 100 }) });
+  const { data: projectsResponse, isLoading: loadingProjects } = useQuery({ queryKey: ['projects-list'], queryFn: () => getProjects({ limit: 100 }) });
   const { data: deptResponse } = useQuery({ queryKey: ['departments-list'], queryFn: getDepartments });
   const { data: auditResponse } = useQuery({ queryKey: ['recent-audit-logs'], queryFn: () => api.get('/audit', { params: { limit: 5 } }).then(r => r.data) });
+
+  if (loadingUsers || loadingProjects) {
+    return <DashboardSkeleton />;
+  }
 
   const users: any[] = Array.isArray((usersResponse as any)?.data?.items) ? (usersResponse as any).data.items : (Array.isArray((usersResponse as any)?.data) ? (usersResponse as any).data : (Array.isArray(usersResponse) ? usersResponse : []));
   const projects: any[] = Array.isArray((projectsResponse as any)?.data?.items) ? (projectsResponse as any).data.items : (Array.isArray((projectsResponse as any)?.data) ? (projectsResponse as any).data : (Array.isArray(projectsResponse) ? projectsResponse : []));

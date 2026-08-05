@@ -11,7 +11,7 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search } from '
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton, SkeletonBadge } from '@/components/ui/skeleton';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -75,29 +75,29 @@ export default function DataTable<TData, TValue>({
       {/* Search Input Bar */}
       <div className="flex items-center justify-between gap-4">
         <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 dark:text-gray-400 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder={searchPlaceholder || 'Search table...'}
             value={globalFilter}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-9 dark:bg-white/5 dark:border-white/10 dark:text-white bg-white border-slate-200 text-slate-900 dark:placeholder:text-gray-500 placeholder:text-slate-400"
+            className="pl-9 input-field"
           />
         </div>
 
         {/* Rows Count Info */}
-        <div className="text-xs dark:text-gray-400 text-slate-500">
+        <div className="text-xs text-muted-foreground font-medium">
           Showing {table.getRowModel().rows.length} of {tableData.length} entries
         </div>
       </div>
 
       {/* Table Container */}
-      <div className="rounded-xl dark:border-white/10 dark:bg-white/5 border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-border bg-card shadow-xs overflow-hidden">
         <Table>
-          <TableHeader className="dark:bg-white/5 bg-slate-50">
+          <TableHeader className="bg-secondary/40">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="dark:border-white/10 border-slate-200 hover:bg-transparent">
+              <TableRow key={headerGroup.id} className="border-border hover:bg-transparent">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="dark:text-gray-300 text-slate-700 font-semibold">
+                  <TableHead key={header.id} className="text-foreground font-semibold text-xs uppercase tracking-wider">
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
@@ -107,17 +107,28 @@ export default function DataTable<TData, TValue>({
           <TableBody>
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i} className="dark:border-white/10 border-slate-200">
+                <TableRow key={i} className="border-border">
                   {columns.map((_, j) => (
-                    <TableCell key={j}><Skeleton className="h-6 w-full dark:bg-white/10 bg-slate-200" /></TableCell>
+                    <TableCell key={j} className="py-3.5">
+                      {j === 0 ? (
+                        <div className="space-y-1.5">
+                          <Skeleton className="h-4 w-48 rounded-md" />
+                          <Skeleton className="h-3 w-32 rounded-xs" />
+                        </div>
+                      ) : j === columns.length - 1 ? (
+                        <SkeletonBadge width="w-20" className="h-7" />
+                      ) : (
+                        <SkeletonBadge width={j % 2 === 0 ? 'w-24' : 'w-16'} />
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} className="dark:border-white/5 border-slate-100 dark:hover:bg-white/5 hover:bg-slate-50 transition-colors">
+                <TableRow key={row.id} className="border-border hover:bg-secondary/40 transition-colors">
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="dark:text-gray-300 text-slate-700">
+                    <TableCell key={cell.id} className="text-foreground text-xs">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -125,7 +136,7 @@ export default function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center dark:text-gray-400 text-slate-500">
+                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground text-xs font-medium">
                   No results found.
                 </TableCell>
               </TableRow>
@@ -135,13 +146,13 @@ export default function DataTable<TData, TValue>({
       </div>
 
       {/* TanStack Table Pagination Controls */}
-      <div className="flex items-center justify-between text-xs dark:text-gray-400 text-slate-500 pt-2">
+      <div className="flex items-center justify-between text-xs text-muted-foreground font-medium pt-2">
         <div className="flex items-center space-x-2">
           <span>Rows per page:</span>
           <select
             value={table.getState().pagination.pageSize}
             onChange={(e) => table.setPageSize(Number(e.target.value))}
-            className="dark:bg-[#1e1e2e] dark:border-white/10 dark:text-white bg-white border-slate-300 text-slate-900 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="bg-card border border-border text-foreground rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-ring text-xs font-semibold"
           >
             {[5, 10, 20, 50, 100].map((size) => (
               <option key={size} value={size}>
@@ -159,19 +170,19 @@ export default function DataTable<TData, TValue>({
                 size="sm"
                 onClick={() => onPageChange!(currentPage! - 1)}
                 disabled={currentPage! <= 1 || isLoading}
-                className="h-8 w-8 p-0 dark:border-white/10 border-slate-300"
+                className="h-8 w-8 p-0 btn-outline"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span>
-                Page <strong className="dark:text-white text-slate-900">{currentPage}</strong> of <strong className="dark:text-white text-slate-900">{totalPages}</strong>
+                Page <strong className="text-foreground">{currentPage}</strong> of <strong className="text-foreground">{totalPages}</strong>
               </span>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => onPageChange!(currentPage! + 1)}
                 disabled={currentPage! >= totalPages! || isLoading}
-                className="h-8 w-8 p-0 dark:border-white/10 border-slate-300"
+                className="h-8 w-8 p-0 btn-outline"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -183,7 +194,7 @@ export default function DataTable<TData, TValue>({
                 size="sm"
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage() || isLoading}
-                className="h-8 w-8 p-0 dark:border-white/10 border-slate-300"
+                className="h-8 w-8 p-0 btn-outline"
               >
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
@@ -192,20 +203,20 @@ export default function DataTable<TData, TValue>({
                 size="sm"
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage() || isLoading}
-                className="h-8 w-8 p-0 dark:border-white/10 border-slate-300"
+                className="h-8 w-8 p-0 btn-outline"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span>
-                Page <strong className="dark:text-white text-slate-900">{table.getState().pagination.pageIndex + 1}</strong> of{' '}
-                <strong className="dark:text-white text-slate-900">{table.getPageCount() || 1}</strong>
+                Page <strong className="text-foreground">{table.getState().pagination.pageIndex + 1}</strong> of{' '}
+                <strong className="text-foreground">{table.getPageCount() || 1}</strong>
               </span>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage() || isLoading}
-                className="h-8 w-8 p-0 dark:border-white/10 border-slate-300"
+                className="h-8 w-8 p-0 btn-outline"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -214,7 +225,7 @@ export default function DataTable<TData, TValue>({
                 size="sm"
                 onClick={() => table.setPageIndex(Math.max(0, table.getPageCount() - 1))}
                 disabled={!table.getCanNextPage() || isLoading}
-                className="h-8 w-8 p-0 dark:border-white/10 border-slate-300"
+                className="h-8 w-8 p-0 btn-outline"
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>

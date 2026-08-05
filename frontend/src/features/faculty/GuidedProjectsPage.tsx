@@ -14,16 +14,23 @@ import PageHeader from '@/components/shared/PageHeader';
 import StatusBadge from '@/components/shared/StatusBadge';
 import EmptyState from '@/components/shared/EmptyState';
 
+import { CardsGridSkeleton } from '@/components/shared/Skeletons';
+
 export default function GuidedProjectsPage() {
   const navigate = useNavigate();
-  const { data: rawProjects, isLoading } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });
-  const projects: any[] = Array.isArray((rawProjects as any)?.data?.items)
-    ? (rawProjects as any).data.items
-    : (Array.isArray((rawProjects as any)?.data) ? (rawProjects as any).data : (Array.isArray(rawProjects) ? rawProjects : []));
-
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [feedbackText, setFeedbackText] = useState('');
+
+  const { data: rawProjects, isLoading } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });
+
+  if (isLoading) {
+    return <CardsGridSkeleton cards={6} />;
+  }
+
+  const projects: any[] = Array.isArray((rawProjects as any)?.data?.items)
+    ? (rawProjects as any).data.items
+    : (Array.isArray((rawProjects as any)?.data) ? (rawProjects as any).data : (Array.isArray(rawProjects) ? rawProjects : []));
 
   const filteredProjects = projects.filter((p: any) => {
     const matchesSearch = p.title?.toLowerCase().includes(searchTerm.toLowerCase()) || p.domain?.toLowerCase().includes(searchTerm.toLowerCase());

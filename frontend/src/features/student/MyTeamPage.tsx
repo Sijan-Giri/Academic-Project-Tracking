@@ -10,6 +10,7 @@ import StatusBadge from '@/components/shared/StatusBadge';
 import { useAuthStore } from '@/store/auth.store';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
+import { MyTeamSkeleton } from '@/components/shared/Skeletons';
 
 export default function MyTeamPage() {
   const queryClient = useQueryClient();
@@ -32,10 +33,7 @@ export default function MyTeamPage() {
     queryFn: getMyInvitations,
   });
 
-  const team = (teamRes as any)?.data ?? teamRes ?? null;
-  const myInvitations: any[] = (invRes as any)?.data ?? invRes ?? [];
-
-  // Mutations
+  // All Mutations declared unconditionally at top level
   const createMut = useMutation({
     mutationFn: createTeam,
     onSuccess: () => {
@@ -92,14 +90,13 @@ export default function MyTeamPage() {
     onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to decline invitation')
   });
 
+  // Early return for skeleton rendering AFTER all hooks are declared
   if (teamLoading || invLoading) {
-    return (
-      <div className="max-w-4xl mx-auto space-y-6 animate-pulse">
-        <div className="h-44 bg-card border border-border rounded-xl" />
-        <div className="h-64 bg-card border border-border rounded-xl" />
-      </div>
-    );
+    return <MyTeamSkeleton />;
   }
+
+  const team = (teamRes as any)?.data ?? teamRes ?? null;
+  const myInvitations: any[] = (invRes as any)?.data ?? invRes ?? [];
 
   // Check if student is team leader
   const myMemberRecord = team?.members?.find(
@@ -121,8 +118,8 @@ export default function MyTeamPage() {
 
         {/* Received Pending Invitations */}
         {myInvitations.length > 0 && (
-          <div className="rounded-xl border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50/50 dark:bg-indigo-500/10 p-6 space-y-4 shadow-xs">
-            <div className="flex items-center gap-2">
+          <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="flex items-center gap-2 border-b border-border pb-3">
               <Mail className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
               <h3 className="text-base font-semibold text-foreground">
                 Pending Team Invitations ({myInvitations.length})
@@ -164,246 +161,230 @@ export default function MyTeamPage() {
           </div>
         )}
 
-        {/* Tab Selection */}
-        <div className="flex border-b border-border gap-6">
-          <button
-            onClick={() => setActiveTab('CREATE')}
-            className={cn(
-              'pb-3 text-sm font-semibold transition-colors relative',
-              activeTab === 'CREATE'
-                ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-500'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            Create New Team
-          </button>
-          <button
-            onClick={() => setActiveTab('JOIN')}
-            className={cn(
-              'pb-3 text-sm font-semibold transition-colors relative',
-              activeTab === 'JOIN'
-                ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-500'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            Join Existing Team
-          </button>
-        </div>
-
-        {activeTab === 'CREATE' ? (
-          <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-6">
-            <div>
-              <h3 className="text-base font-semibold text-foreground mb-1">Create Team Roster</h3>
-              <p className="text-xs text-muted-foreground">Register your team name. As team leader, you can invite peers afterwards.</p>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!teamName.trim()) return toast.error('Enter a team name');
-                createMut.mutate({ name: teamName.trim() });
-              }}
-              className="space-y-4 max-w-md"
+        {/* Create / Join Team Tabs */}
+        <div className="rounded-xl border border-border bg-card shadow-xs overflow-hidden">
+          <div className="flex border-b border-border">
+            <button
+              onClick={() => setActiveTab('CREATE')}
+              className={cn(
+                'flex-1 py-4 text-center font-semibold text-sm transition-colors border-b-2',
+                activeTab === 'CREATE'
+                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-secondary/50'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
+              )}
             >
-              <div className="space-y-2">
-                <Label htmlFor="teamName" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Team Name</Label>
-                <Input
-                  id="teamName"
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                  placeholder="e.g. Innovators, ByteForce, Team Alpha"
-                />
+              Create New Team
+            </button>
+            <button
+              onClick={() => setActiveTab('JOIN')}
+              className={cn(
+                'flex-1 py-4 text-center font-semibold text-sm transition-colors border-b-2',
+                activeTab === 'JOIN'
+                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-secondary/50'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
+              )}
+            >
+              Join Existing Team
+            </button>
+          </div>
+
+          <div className="p-8">
+            {activeTab === 'CREATE' ? (
+              <div className="max-w-md mx-auto space-y-6">
+                <div className="text-center space-y-1">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center mx-auto mb-3">
+                    <Users className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground">Form a Project Team</h3>
+                  <p className="text-xs text-muted-foreground font-normal">
+                    You will become the team leader and can invite peers using their Student Roll IDs.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="teamName" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Team Name</Label>
+                    <Input
+                      id="teamName"
+                      placeholder="e.g. CyberNova Squad"
+                      value={teamName}
+                      onChange={(e) => setTeamName(e.target.value)}
+                      className="input-field"
+                    />
+                  </div>
+
+                  <Button
+                    onClick={() => createMut.mutate({ name: teamName })}
+                    disabled={!teamName.trim() || createMut.isPending}
+                    className="btn-primary w-full"
+                  >
+                    Create Team & Continue
+                  </Button>
+                </div>
               </div>
-              <Button type="submit" disabled={createMut.isPending} className="btn-primary">
-                <Users className="w-4 h-4 mr-2" /> Register & Create Team
-              </Button>
-            </form>
+            ) : (
+              <div className="max-w-md mx-auto text-center space-y-4 py-4">
+                <div className="w-12 h-12 rounded-xl bg-secondary border border-border flex items-center justify-center mx-auto mb-2">
+                  <Info className="w-6 h-6 text-muted-foreground" />
+                </div>
+                <h3 className="text-base font-semibold text-foreground">How to Join a Team</h3>
+                <p className="text-xs text-muted-foreground font-normal leading-relaxed">
+                  To join an existing team, ask your team leader to send an invitation to your Student Roll ID (<strong className="text-foreground">{authUser?.studentProfile?.studentId || 'Your Roll ID'}</strong>). Received invitations will appear above automatically.
+                </p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="rounded-xl border border-border bg-card p-8 shadow-xs text-center space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-secondary border border-border flex items-center justify-center mx-auto">
-              <Mail className="w-6 h-6 text-muted-foreground" />
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-foreground">Waiting for Invitation</h3>
-              <p className="text-xs text-muted-foreground max-w-md mx-auto mt-1 font-normal">
-                Ask your team leader to invite your Roll Number or Student ID from their team management page.
-              </p>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     );
   }
 
-  // ── Has a team ───────────────────────────────────────────────────────────
-
-  const pendingSentInvites = sentInvitations.filter((i: any) => i.status === 'PENDING');
+  // ── Existing Team View ───────────────────────────────────────────────────
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Page Header */}
+    <div className="space-y-6 max-w-6xl mx-auto">
       <PageHeader
-        title={team?.name ? `Team ${team.name}` : "Team Roster & Invites"}
-        subtitle={team?.name ? `Manage team members, member invitations, and approval for Team ${team.name}.` : "Manage your capstone project team roster, invites, and approval status."}
+        title="My Team Roster"
+        subtitle="Manage team members, invite new peers, and track team status."
+        actions={
+          <Button
+            variant="outline"
+            onClick={() => leaveMut.mutate(team.id)}
+            disabled={leaveMut.isPending}
+            className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 text-xs font-semibold"
+          >
+            <LogOut className="w-4 h-4 mr-1.5" /> Leave Team
+          </Button>
+        }
       />
 
-      {/* Team Info Header Card */}
-      <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-secondary border border-border text-foreground">
-                Team #{team.id.substring(0, 8)}
-              </span>
-              <StatusBadge status={team.status} type="team" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">
-              {team.name}
-            </h1>
+      {/* Team Header Banner */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <div className="flex items-center gap-3 mb-1">
+            <h2 className="text-xl font-bold text-foreground tracking-tight">{team.name}</h2>
+            <StatusBadge status={team.status} type="team" />
           </div>
-          {!isLeader && team.status === 'PENDING' && (
-            <Button
-              variant="destructive"
-              onClick={() => leaveMut.mutate(team.id)}
-              disabled={leaveMut.isPending}
-            >
-              <LogOut className="w-4 h-4 mr-2" /> Leave Team
-            </Button>
-          )}
+          <p className="text-xs text-muted-foreground font-normal">
+            Created on {new Date(team.createdAt || Date.now()).toLocaleDateString()} · {team.members?.length || 0} Member(s)
+          </p>
         </div>
+
+        {team.status === 'PENDING' && (
+          <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/15 px-3 py-1.5 rounded-md border border-amber-200 dark:border-amber-500/30 text-xs font-semibold">
+            <AlertTriangle className="w-4 h-4 text-amber-600" /> Pending Coordinator Approval
+          </div>
+        )}
       </div>
 
-      {/* Status Alert Banners */}
-      {team.status === 'PENDING' && (
-        <div className="rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-300 p-4 flex items-start gap-3">
-          <Info className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
-          <div>
-            <h4 className="font-semibold text-sm">Coordinator Approval Pending</h4>
-            <p className="text-xs mt-0.5 opacity-90 leading-relaxed font-normal">
-              Your team is currently pending approval by the project coordinator. You can still invite team members in the meantime.
-            </p>
-          </div>
-        </div>
-      )}
-      {team.status === 'REJECTED' && (
-        <div className="rounded-lg bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-800 dark:text-rose-300 p-4 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 mt-0.5 shrink-0" />
-          <div>
-            <h4 className="font-semibold text-sm">Team Proposal Rejected</h4>
-            <p className="text-xs mt-0.5 opacity-90 leading-relaxed font-normal">
-              {team.rejectionReason || 'Your team registration was declined by the coordinator. Please contact your coordinator for details.'}
-            </p>
-          </div>
-        </div>
-      )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Members Roster */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="flex justify-between items-center border-b border-border pb-3">
+              <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                Team Members ({team.members?.length || 0})
+              </h3>
+            </div>
 
-      {/* Team Roster Grid */}
-      <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
-        <div className="flex items-center justify-between border-b border-border pb-4">
-          <div>
-            <h3 className="text-base font-semibold text-foreground">Team Roster Members</h3>
-            <p className="text-xs text-muted-foreground">{team.members?.length || 0} registered member(s)</p>
-          </div>
-          <span className="text-xs font-semibold text-muted-foreground">
-            Role: <strong className="text-indigo-600 dark:text-indigo-400">{isLeader ? 'Leader' : 'Member'}</strong>
-          </span>
-        </div>
+            <div className="space-y-3">
+              {team.members?.map((m: any) => {
+                const user = m.studentProfile?.user;
+                const studentId = m.studentProfile?.studentId;
+                const isMe = user?.id === authUser?.id;
 
-        <div className="space-y-3">
-          {team.members?.map((m: any) => {
-            const profile = m.studentProfile;
-            const u = profile?.user;
-            const isMe = u?.id === authUser?.id || profile?.userId === authUser?.id;
+                return (
+                  <div
+                    key={m.id}
+                    className="p-4 rounded-lg bg-card border border-border flex items-center justify-between gap-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                        {user?.name?.charAt(0) || 'U'}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-foreground text-sm">{user?.name || 'Unknown Student'}</span>
+                          {isMe && <span className="text-[10px] bg-secondary text-muted-foreground px-2 py-0.5 rounded-md font-semibold border border-border">You</span>}
+                          {m.isLeader && (
+                            <span className="text-[10px] bg-amber-50 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2 py-0.5 rounded-md font-bold">
+                              Leader
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">{user?.email}</p>
+                      </div>
+                    </div>
 
-            return (
-              <div
-                key={m.id}
-                className="flex items-center justify-between p-3.5 rounded-lg bg-secondary/50 border border-border"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0">
-                    {u?.name?.charAt(0) ?? 'S'}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground flex items-center gap-2">
-                      {u?.name || 'Student Member'}
-                      {m.isLeader && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
-                          Leader
-                        </span>
+                    <div className="flex items-center gap-3">
+                      {studentId && <span className="text-xs text-indigo-600 dark:text-indigo-400 font-mono font-semibold">{studentId}</span>}
+                      {isLeader && !m.isLeader && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeMut.mutate({ teamId: team.id, memberId: m.id })}
+                          disabled={removeMut.isPending}
+                          className="text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 h-8 text-xs font-semibold"
+                        >
+                          Remove
+                        </Button>
                       )}
-                      {isMe && <span className="text-xs text-muted-foreground font-normal">(You)</span>}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      ID: {profile?.studentId || 'N/A'} • {u?.email || 'No email'}
-                    </p>
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Invite Sidebar */}
+        <div className="space-y-6">
+          {isLeader && (
+            <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 border-b border-border pb-3">
+                <UserPlus className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <h3 className="text-base font-semibold text-foreground">Invite Team Member</h3>
+              </div>
+
+              <div className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="inviteId" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Student Roll ID</Label>
+                  <Input
+                    id="inviteId"
+                    placeholder="e.g. STU-2026-0042"
+                    value={inviteStudentId}
+                    onChange={(e) => setInviteStudentId(e.target.value)}
+                    className="input-field"
+                  />
                 </div>
 
-                {isLeader && !m.isLeader && team.status === 'PENDING' && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => removeMut.mutate({ teamId: team.id, memberId: m.id })}
-                    disabled={removeMut.isPending}
-                    className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-xs font-medium"
-                  >
-                    Remove
-                  </Button>
-                )}
+                <Button
+                  onClick={() => inviteMut.mutate({ teamId: team.id, studentId: inviteStudentId })}
+                  disabled={!inviteStudentId.trim() || inviteMut.isPending}
+                  className="btn-primary w-full"
+                >
+                  Send Invitation
+                </Button>
               </div>
-            );
-          })}
-        </div>
-      </div>
+            </div>
+          )}
 
-      {/* Leader Actions: Invite Member Form */}
-      {isLeader && (
-        <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
-          <div className="border-b border-border pb-4">
-            <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-              <UserPlus className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-              Invite Team Member
-            </h3>
-            <p className="text-xs text-muted-foreground font-normal">
-              Enter a student's Roll Number or Student ID to send them a team invitation.
-            </p>
-          </div>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!inviteStudentId.trim()) return toast.error('Enter a student ID');
-              inviteMut.mutate({ teamId: team.id, studentId: inviteStudentId.trim() });
-            }}
-            className="flex flex-col sm:flex-row gap-3 max-w-lg"
-          >
-            <Input
-              value={inviteStudentId}
-              onChange={(e) => setInviteStudentId(e.target.value)}
-              placeholder="e.g. PAS078BCT001"
-              className="flex-1"
-            />
-            <Button type="submit" disabled={inviteMut.isPending} className="btn-primary shrink-0">
-              <UserPlus className="w-4 h-4 mr-2" /> Send Invitation
-            </Button>
-          </form>
-
-          {/* Pending Sent Invites */}
-          {pendingSentInvites.length > 0 && (
-            <div className="pt-4 border-t border-border space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Pending Sent Invitations ({pendingSentInvites.length}):
-              </p>
+          {/* Sent Pending Invitations */}
+          {sentInvitations.length > 0 && (
+            <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-3">
+              <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">
+                Sent Invitations ({sentInvitations.length})
+              </h3>
               <div className="space-y-2">
-                {pendingSentInvites.map((inv: any) => (
-                  <div key={inv.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/50 border border-border text-xs">
-                    <span className="font-semibold text-foreground">
-                      Student ID: {inv.studentProfile?.studentId || inv.studentProfileId}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 font-semibold">
-                      Pending Acceptance
+                {sentInvitations.map((inv: any) => (
+                  <div key={inv.id} className="p-3 bg-secondary/50 rounded-lg border border-border flex justify-between items-center text-xs">
+                    <div>
+                      <p className="font-semibold text-foreground">{inv.studentProfile?.user?.name || inv.studentProfileId}</p>
+                      <p className="text-[11px] text-muted-foreground">Status: Pending</p>
+                    </div>
+                    <span className="px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 font-semibold text-[10px]">
+                      Sent
                     </span>
                   </div>
                 ))}
@@ -411,7 +392,7 @@ export default function MyTeamPage() {
             </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

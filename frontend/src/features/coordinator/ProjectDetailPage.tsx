@@ -23,6 +23,8 @@ const STATUS_OPTIONS = [
   'CANCELLED',
 ];
 
+import { ProjectDetailSkeleton } from '@/components/shared/Skeletons';
+
 export default function ProjectDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -48,7 +50,7 @@ export default function ProjectDetailPage() {
   const raw = projectRes as any;
   const project = raw?.data ?? raw;
 
-  if (isLoading) return <div className="p-8 text-muted-foreground font-normal">Loading project details...</div>;
+  if (isLoading) return <ProjectDetailSkeleton />;
   if (!project || !project.id) return <div className="p-8 text-muted-foreground font-normal">Project not found.</div>;
 
   const isCoordinatorOrAdmin = user?.role === 'COORDINATOR' || user?.role === 'ADMIN';

@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import PageHeader from '@/components/shared/PageHeader';
 import { useAuthStore } from '@/store/auth.store';
 import { getMe, updateProfile, changePassword } from '@/api/auth.api';
+import { FormSkeleton } from '@/components/shared/Skeletons';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -52,7 +53,7 @@ export default function ProfilePage() {
   const [showConfirmPw, setShowConfirmPw] = useState(false);
 
   // Fetch fresh profile data on mount
-  const { data: meRes } = useQuery({
+  const { data: meRes, isLoading } = useQuery({
     queryKey: ['me'],
     queryFn: getMe,
   });
@@ -108,6 +109,11 @@ export default function ProfilePage() {
     }
   });
 
+  // Early return for loading AFTER all hooks are called
+  if (isLoading) {
+    return <FormSkeleton />;
+  }
+
   const studentProf = user?.studentProfile;
   const facultyProf = user?.facultyProfile;
 
@@ -159,45 +165,39 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Email Address</Label>
-                  <Input id="email" value={user?.email || ''} disabled className="opacity-60 cursor-not-allowed" />
+                  <Label htmlFor="phone" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Phone Number</Label>
+                  <Input id="phone" placeholder="+1 (555) 000-0000" {...regProfile('phone')} />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="phone" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Phone Number</Label>
-                <Input id="phone" placeholder="+977 9800000000" {...regProfile('phone')} />
-                {profileErrors.phone?.message && <p className="text-xs text-rose-600 font-medium">{String(profileErrors.phone.message)}</p>}
-              </div>
-
-              {user?.role === 'FACULTY' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border">
+              {user?.role === 'FACULTY' || user?.role === 'COORDINATOR' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="designation" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Designation</Label>
-                    <Input id="designation" placeholder="e.g. Associate Professor" {...regProfile('designation')} />
+                    <Input id="designation" placeholder="e.g. Assistant Professor" {...regProfile('designation')} />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="specialization" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Specialization</Label>
-                    <Input id="specialization" placeholder="e.g. Machine Learning, Cloud Systems" {...regProfile('specialization')} />
+                    <Input id="specialization" placeholder="e.g. AI / Machine Learning" {...regProfile('specialization')} />
                   </div>
                 </div>
-              )}
+              ) : null}
 
-              <div className="flex justify-end pt-3 border-t border-border">
+              <div className="flex justify-end pt-2">
                 <Button type="submit" disabled={updateProfileMut.isPending} className="btn-primary">
                   {updateProfileMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-                  Save Changes
+                  Save Profile Changes
                 </Button>
               </div>
             </form>
           </div>
 
-          {/* Form 2: Change Security Password */}
+          {/* Form 2: Password Security */}
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="border-b border-border pb-3">
               <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
                 <Lock className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                Security Password
+                Security & Password
               </h3>
             </div>
 
@@ -206,11 +206,7 @@ export default function ProfilePage() {
                 <Label htmlFor="currentPassword" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Current Password</Label>
                 <div className="relative">
                   <Input id="currentPassword" type={showOldPw ? 'text' : 'password'} {...regPw('currentPassword')} />
-                  <button
-                    type="button"
-                    onClick={() => setShowOldPw(!showOldPw)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
+                  <button type="button" onClick={() => setShowOldPw(!showOldPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                     {showOldPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
@@ -222,11 +218,7 @@ export default function ProfilePage() {
                   <Label htmlFor="newPassword" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">New Password</Label>
                   <div className="relative">
                     <Input id="newPassword" type={showNewPw ? 'text' : 'password'} {...regPw('newPassword')} />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewPw(!showNewPw)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
+                    <button type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                       {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
@@ -237,11 +229,7 @@ export default function ProfilePage() {
                   <Label htmlFor="confirmPassword" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Confirm New Password</Label>
                   <div className="relative">
                     <Input id="confirmPassword" type={showConfirmPw ? 'text' : 'password'} {...regPw('confirmPassword')} />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPw(!showConfirmPw)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
+                    <button type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                       {showConfirmPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
@@ -249,40 +237,31 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="flex justify-end pt-3 border-t border-border">
+              <div className="flex justify-end pt-2">
                 <Button type="submit" disabled={changePasswordMut.isPending} className="btn-primary">
-                  {changePasswordMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Lock className="w-4 h-4 mr-2" />}
-                  Update Password
+                  {changePasswordMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ShieldCheck className="w-4 h-4 mr-2" />}
+                  Update Security Password
                 </Button>
               </div>
             </form>
           </div>
         </div>
 
-        {/* Right Column: Academic & System Records */}
+        {/* Right Column: Academic & System Profile Metadata */}
         <div className="space-y-6">
-          <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-3">
-            <h3 className="text-base font-semibold text-foreground border-b border-border pb-3">Academic Record</h3>
+          <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-2">
+            <h3 className="text-sm font-semibold text-foreground border-b border-border pb-3 flex items-center gap-2">
+              <BadgeCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              Academic Metadata
+            </h3>
 
-            <div className="space-y-1">
-              <InfoRow icon={ShieldCheck} label="System Role" value={user?.role} />
-              {studentProf && (
-                <>
-                  <InfoRow icon={Hash} label="Student Roll ID" value={studentProf.studentId} />
-                  <InfoRow icon={GraduationCap} label="Batch Roster" value={studentProf.batch?.name || studentProf.batchId} />
-                  <InfoRow icon={Building2} label="Department" value={studentProf.batch?.department?.name} />
-                  <InfoRow icon={Phone} label="Contact Phone" value={studentProf.phone} />
-                </>
-              )}
-              {facultyProf && (
-                <>
-                  <InfoRow icon={Hash} label="Faculty ID" value={facultyProf.facultyId} />
-                  <InfoRow icon={Building2} label="Department" value={facultyProf.department?.name || facultyProf.departmentId} />
-                  <InfoRow icon={BadgeCheck} label="Designation" value={facultyProf.designation} />
-                  <InfoRow icon={BookOpen} label="Specialization" value={facultyProf.specialization} />
-                  <InfoRow icon={Phone} label="Contact Phone" value={facultyProf.phone} />
-                </>
-              )}
+            <div className="divide-y divide-border">
+              <InfoRow icon={Hash} label="User ID" value={user?.id} />
+              <InfoRow icon={GraduationCap} label="Student Roll ID" value={studentProf?.studentId} />
+              <InfoRow icon={BadgeCheck} label="Faculty ID" value={facultyProf?.facultyId} />
+              <InfoRow icon={Building2} label="Department" value={facultyProf?.department?.name || studentProf?.batch?.department?.name} />
+              <InfoRow icon={BookOpen} label="Academic Batch" value={studentProf?.batch?.name} />
+              <InfoRow icon={Phone} label="Contact Phone" value={studentProf?.phone || facultyProf?.phone} />
             </div>
           </div>
         </div>

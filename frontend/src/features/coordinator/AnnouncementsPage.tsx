@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { CardsGridSkeleton } from '@/components/shared/Skeletons';
 
 const announcementSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
@@ -38,14 +39,10 @@ export default function CoordinatorAnnouncementsPage() {
     queryFn: () => getAnnouncements(),
   });
 
-  const { data: deptRes } = useQuery({ queryKey: ['departments'], queryFn: () => getDepartments() });
-
-  // Safe response unwrapping
-  const announcementList: any[] = Array.isArray((announcementsRes as any)?.data?.items)
-    ? (announcementsRes as any).data.items
-    : (Array.isArray((announcementsRes as any)?.data) ? (announcementsRes as any).data : (Array.isArray(announcementsRes) ? announcementsRes : []));
-
-  const departmentsList: any[] = Array.isArray((deptRes as any)?.data) ? (deptRes as any).data : (Array.isArray(deptRes) ? deptRes : []);
+  const { data: deptRes } = useQuery({
+    queryKey: ['departments'],
+    queryFn: () => getDepartments()
+  });
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<AnnouncementFormValues>({
     resolver: zodResolver(announcementSchema),
@@ -72,6 +69,18 @@ export default function CoordinatorAnnouncementsPage() {
     },
     onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to delete announcement'),
   });
+
+  // Early return for skeleton rendering AFTER all hooks are called
+  if (isLoading) {
+    return <CardsGridSkeleton cards={6} />;
+  }
+
+  // Safe response unwrapping
+  const announcementList: any[] = Array.isArray((announcementsRes as any)?.data?.items)
+    ? (announcementsRes as any).data.items
+    : (Array.isArray((announcementsRes as any)?.data) ? (announcementsRes as any).data : (Array.isArray(announcementsRes) ? announcementsRes : []));
+
+  const departmentsList: any[] = Array.isArray((deptRes as any)?.data) ? (deptRes as any).data : (Array.isArray(deptRes) ? deptRes : []);
 
   const selectedDepts = watch('departmentIds') || [];
 
@@ -102,14 +111,7 @@ export default function CoordinatorAnnouncementsPage() {
 
       {/* Announcements Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {isLoading ? (
-          Array.from({ length: 3 }).map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader className="h-16 bg-secondary/50" />
-              <CardContent className="h-24 bg-secondary/30 mt-2" />
-            </Card>
-          ))
-        ) : announcementList.length > 0 ? (
+        {announcementList.length > 0 ? (
           announcementList.map((item: any) => {
             const dateVal = item.createdAt || item.date || Date.now();
             const dateStr = format(new Date(dateVal), 'MMM d, yyyy');

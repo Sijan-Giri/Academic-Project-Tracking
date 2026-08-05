@@ -13,13 +13,19 @@ import PageHeader from '@/components/shared/PageHeader';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 
+import { DashboardSkeleton } from '@/components/shared/Skeletons';
+
 export default function FacultyDashboard() {
   const { theme } = useThemeStore();
   const isDark = theme === 'dark';
   const navigate = useNavigate();
 
-  const { data: rawGuided } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });
-  const { data: rawSchedules } = useQuery({ queryKey: ['my-schedules'], queryFn: getMySchedules });
+  const { data: rawGuided, isLoading: loadingGuided } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });
+  const { data: rawSchedules, isLoading: loadingSchedules } = useQuery({ queryKey: ['my-schedules'], queryFn: getMySchedules });
+
+  if (loadingGuided || loadingSchedules) {
+    return <DashboardSkeleton />;
+  }
 
   const guidedProjects: any[] = Array.isArray((rawGuided as any)?.data?.items)
     ? (rawGuided as any).data.items

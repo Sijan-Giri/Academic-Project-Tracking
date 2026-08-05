@@ -80,6 +80,15 @@
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 @layer components {
   /* Reusable Design Token Components */
   .card-panel {
@@ -102,6 +111,16 @@
   }
   .badge-pill {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold border transition-all;
+  }
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted) / 0.8) 25%,
+      hsl(var(--secondary) / 0.4) 37%,
+      hsl(var(--muted) / 0.8) 63%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite ease-in-out;
   }
 }
 

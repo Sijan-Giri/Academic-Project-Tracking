@@ -11,6 +11,8 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
+import { MilestonesSkeleton } from '@/components/shared/Skeletons';
+
 export default function MilestonesPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -53,12 +55,7 @@ export default function MilestonesPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="max-w-4xl mx-auto space-y-6 animate-pulse">
-        <div className="h-44 bg-card border border-border rounded-xl" />
-        <div className="h-64 bg-card border border-border rounded-xl" />
-      </div>
-    );
+    return <MilestonesSkeleton />;
   }
 
   const milestonesList: any[] = Array.isArray((res as any)?.data?.items)
