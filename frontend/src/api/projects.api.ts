@@ -1,5 +1,6 @@
 import { api } from './client';
-import { Project, ApiResponse, PaginatedResponse } from '@/types';
+import type { Project } from '@/types/project.types';
+import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
 
 export const createProject = async (data: any) => (await api.post<ApiResponse<Project>>('/projects', data)).data;
 export const getProjects = async (params?: any) => (await api.get<ApiResponse<PaginatedResponse<Project>>>('/projects', { params })).data;

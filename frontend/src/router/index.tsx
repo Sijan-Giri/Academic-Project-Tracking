@@ -3,7 +3,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import AuthLayout from '@/layouts/AuthLayout';
 import RoleGuard from '@/layouts/RoleGuard';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { PageSkeleton } from '@/components/shared/Skeletons';
 
 // Lazy load ALL pages
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
@@ -50,7 +50,7 @@ const ProfilePage = lazy(() => import('@/features/profile/ProfilePage'));
 const NotFoundPage = lazy(() => import('@/features/NotFoundPage'));
 
 const wrap = (component: React.ReactNode) => (
-  <Suspense fallback={<LoadingSpinner className="min-h-[50vh]" />}>{component}</Suspense>
+  <Suspense fallback={<PageSkeleton />}>{component}</Suspense>
 );
 
 export const router = createBrowserRouter([

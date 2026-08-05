@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus, Edit, Trash2 } from 'lucide-react';
-import toast from 'react-hot-toast';
 
-import { api } from '@/api/client';
+import { useAcademicYears } from '@/hooks/useAcademicYears';
 import PageHeader from '@/components/shared/PageHeader';
 import DataTable from '@/components/shared/DataTable';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
@@ -29,50 +27,46 @@ const academicYearSchema = z.object({
 type AcademicYearFormValues = z.infer<typeof academicYearSchema>;
 
 export default function AcademicYearsPage() {
-  const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [editItem, setEditItem] = useState<any>(null);
   const [deleteItem, setDeleteItem] = useState<any>(null);
 
-  const { data: academicYears, isLoading } = useQuery({
-    queryKey: ['academic-years'],
-    queryFn: async () => (await api.get('/academic-years')).data,
-  });
+  const {
+    academicYears,
+    isLoading,
+    createAcademicYear,
+    updateAcademicYear,
+    deleteAcademicYear,
+  } = useAcademicYears();
 
   const form = useForm<AcademicYearFormValues>({
     resolver: zodResolver(academicYearSchema),
     defaultValues: { startYear: new Date().getFullYear(), endYear: new Date().getFullYear() + 4, isActive: true },
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: any) => api.post('/academic-years', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['academic-years'] });
-      toast.success('Academic Year created');
+  const handleCreate = async (data: any) => {
+    try {
+      await createAcademicYear(data);
       setCreateOpen(false);
       form.reset();
-    },
-    onError: () => toast.error('Failed to create'),
-  });
+    } catch (_) {}
+  };
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => api.put(`/academic-years/${id}`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['academic-years'] });
-      toast.success('Academic Year updated');
+  const handleUpdate = async (data: any) => {
+    if (!editItem) return;
+    try {
+      await updateAcademicYear({ id: editItem.id, data });
       setEditItem(null);
-    },
-    onError: () => toast.error('Failed to update'),
-  });
+    } catch (_) {}
+  };
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/academic-years/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['academic-years'] });
-      toast.success('Academic Year deleted');
+  const handleDelete = async () => {
+    if (!deleteItem) return;
+    try {
+      await deleteAcademicYear(deleteItem.id);
       setDeleteItem(null);
-    },
-  });
+    } catch (_) {}
+  };
 
   const onSubmit = (values: AcademicYearFormValues) => {
     const payload = {
@@ -80,9 +74,9 @@ export default function AcademicYearsPage() {
       label: `${values.startYear}-${values.endYear}`
     };
     if (editItem) {
-      updateMutation.mutate({ id: editItem.id, data: payload });
+      handleUpdate(payload);
     } else {
-      createMutation.mutate(payload);
+      handleCreate(payload);
     }
   };
 
@@ -120,7 +114,7 @@ export default function AcademicYearsPage() {
     },
   ];
 
-  const yearList = Array.isArray(academicYears?.data) ? academicYears.data : (Array.isArray(academicYears) ? academicYears : ((academicYears as any)?.data?.items || []));
+  const yearList = Array.isArray(academicYears) ? academicYears : [];
 
   return (
     <div className="space-y-6">
@@ -170,7 +164,7 @@ export default function AcademicYearsPage() {
       <ConfirmDialog
         open={!!deleteItem} onOpenChange={(open) => !open && setDeleteItem(null)}
         title="Delete Academic Year" description="Are you sure you want to delete this year? This action cannot be undone."
-        onConfirm={() => deleteItem && deleteMutation.mutate(deleteItem.id)} confirmText="Delete" variant="danger"
+        onConfirm={handleDelete} confirmText="Delete" variant="danger"
       />
     </div>
   );

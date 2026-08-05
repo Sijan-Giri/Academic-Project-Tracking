@@ -2,15 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
+import { useProfile } from '@/hooks/useProfile';
 import { User, Lock, Save, Loader2, Eye, EyeOff, BookOpen, GraduationCap, Building2, BadgeCheck, Hash, ShieldCheck, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import PageHeader from '@/components/shared/PageHeader';
-import { useAuthStore } from '@/store/auth.store';
-import { getMe, updateProfile, changePassword } from '@/api/auth.api';
 import { FormSkeleton } from '@/components/shared/Skeletons';
 
 const profileSchema = z.object({
@@ -45,21 +42,19 @@ function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label:
 }
 
 export default function ProfilePage() {
-  const authUser = useAuthStore(s => s.user);
-  const setUser = useAuthStore(s => s.setUser);
 
   const [showOldPw, setShowOldPw] = useState(false);
   const [showNewPw, setShowNewPw] = useState(false);
   const [showConfirmPw, setShowConfirmPw] = useState(false);
 
-  // Fetch fresh profile data on mount
-  const { data: meRes, isLoading } = useQuery({
-    queryKey: ['me'],
-    queryFn: getMe,
-  });
-
-  const meData = (meRes as any)?.data ?? meRes;
-  const user = meData || authUser;
+  const {
+    user,
+    isLoading,
+    updateProfile: updateProfileMutate,
+    isUpdatingProfile,
+    changePassword: changePasswordMutate,
+    isChangingPassword,
+  } = useProfile();
 
   const { register: regProfile, handleSubmit: handleProfileSubmit, reset: resetProfile, formState: { errors: profileErrors } } = useForm({
     resolver: zodResolver(profileSchema),
@@ -71,7 +66,7 @@ export default function ProfilePage() {
     }
   });
 
-  const { register: regPw, handleSubmit: handlePwSubmit, reset: resetPw, formState: { errors: pwErrors } } = useForm({
+  const { register: regPw, handleSubmit: handlePwSubmit, formState: { errors: pwErrors } } = useForm({
     resolver: zodResolver(passwordSchema)
   });
 
@@ -86,28 +81,8 @@ export default function ProfilePage() {
     }
   }, [user, resetProfile]);
 
-  const updateProfileMut = useMutation({
-    mutationFn: updateProfile,
-    onSuccess: (data: any) => {
-      toast.success('Profile information updated successfully!');
-      const updatedUser = data?.data || data;
-      if (updatedUser) setUser(updatedUser);
-    },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to update profile');
-    }
-  });
-
-  const changePasswordMut = useMutation({
-    mutationFn: changePassword,
-    onSuccess: () => {
-      toast.success('Security password updated successfully!');
-      resetPw({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to change password');
-    }
-  });
+  const updateProfileMut = { mutate: updateProfileMutate, isPending: isUpdatingProfile };
+  const changePasswordMut = { mutate: changePasswordMutate, isPending: isChangingPassword };
 
   // Early return for loading AFTER all hooks are called
   if (isLoading) {

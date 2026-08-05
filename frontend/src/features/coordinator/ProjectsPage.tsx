@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Eye, Search, Users, GraduationCap } from 'lucide-react';
 
@@ -8,31 +7,17 @@ import DataTable from '@/components/shared/DataTable';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { getProjects } from '@/api/projects.api';
+import { useProjects } from '@/hooks/useProjects';
 
 export default function ProjectsPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
-  const { data: projectsRes, isLoading } = useQuery({
-    queryKey: ['coordinator-projects', statusFilter, search],
-    queryFn: () =>
-      getProjects({
-        status: statusFilter === 'ALL' ? undefined : statusFilter,
-        search: search || undefined,
-      }),
+  const { projects: projectsList, isLoading } = useProjects({
+    status: statusFilter === 'ALL' ? undefined : statusFilter,
+    search: search || undefined,
   });
-
-  // Safely unwrap data
-  const raw = projectsRes as any;
-  const projectsList: any[] = Array.isArray(raw?.data)
-    ? raw.data
-    : Array.isArray(raw?.data?.items)
-    ? raw.data.items
-    : Array.isArray(raw)
-    ? raw
-    : [];
 
   const columns = [
     {

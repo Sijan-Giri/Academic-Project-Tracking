@@ -1,19 +1,14 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff, Loader2, GraduationCap, Briefcase, Phone, Hash } from 'lucide-react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
+import { useRegister } from '@/hooks/useRegister';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { signup } from '@/api/auth.api';
-import { getDepartments } from '@/api/departments.api';
-import { getBatches } from '@/api/batches.api';
-import { useAuthStore } from '@/store/auth.store';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -33,38 +28,13 @@ type SignupForm = z.infer<typeof signupSchema>;
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'STUDENT' | 'FACULTY'>('STUDENT');
-  const navigate = useNavigate();
-  const setAuth = useAuthStore((s) => s.setAuth);
 
-  const { data: deptRes } = useQuery({ queryKey: ['departments'], queryFn: getDepartments });
-  const { data: batchRes } = useQuery({ queryKey: ['batches'], queryFn: () => getBatches() });
-
-  const departments = Array.isArray(deptRes?.data) ? deptRes.data : (Array.isArray(deptRes) ? deptRes : []);
-  const batches = Array.isArray(batchRes?.data) ? batchRes.data : (Array.isArray(batchRes) ? batchRes : []);
+  const { departments, batches, register: mutate, isPending } = useRegister();
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       role: 'STUDENT',
-    },
-  });
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: signup,
-    onSuccess: (response: any) => {
-      const user = response?.user || response?.data?.user;
-      const accessToken = response?.accessToken || response?.data?.accessToken;
-      if (user) {
-        setAuth(user, accessToken || null);
-        toast.success(`Account created successfully! Welcome, ${user.name}!`);
-        navigate('/dashboard', { replace: true });
-      } else {
-        toast.error('Account created. Please log in.');
-        navigate('/login');
-      }
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Registration failed. Please check your information.');
     },
   });
 

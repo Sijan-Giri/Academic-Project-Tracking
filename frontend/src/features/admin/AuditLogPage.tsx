@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { FileText, Download, Filter, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import PageHeader from '@/components/shared/PageHeader';
 import EmptyState from '@/components/shared/EmptyState';
 import { downloadAuditLog } from '@/api/reports.api';
-import { api } from '@/api/client';
+import { useAuditLogs } from '@/hooks/useAuditLogs';
 
 const AUDIT_ACTIONS = ['CREATE','UPDATE','DELETE','STATUS_CHANGE','LOGIN','LOGOUT','FILE_UPLOAD','MARKS_LOCK','MARKS_ENTRY'];
 
@@ -30,14 +29,9 @@ export default function AuditLogPage() {
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['audit', filters],
-    queryFn: () => api.get('/audit', { params: filters }).then(r => r.data),
-  });
-
-  const logs = data?.data?.items || [];
-  const total = data?.data?.total || 0;
-  const totalPages = data?.data?.totalPages || 1;
+  const { auditLogs: logs, isLoading } = useAuditLogs(filters);
+  const total = logs.length;
+  const totalPages = Math.ceil(total / filters.limit) || 1;
 
   const handleExport = async () => {
     setExporting(true);

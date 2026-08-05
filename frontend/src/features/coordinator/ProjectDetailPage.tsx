@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, FileText, CheckCircle2, Github, Users, GraduationCap } from 'lucide-react';
-import toast from 'react-hot-toast';
 
-import { getProject, updateProjectStatus } from '@/api/projects.api';
+import { useProjectDetail } from '@/hooks/useProjectDetail';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -28,27 +26,16 @@ import { ProjectDetailSkeleton } from '@/components/shared/Skeletons';
 export default function ProjectDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const qc = useQueryClient();
   const user = useAuthStore(s => s.user);
   const [activeTab, setActiveTab] = useState('overview');
 
-  const { data: projectRes, isLoading } = useQuery({
-    queryKey: ['project', id],
-    queryFn: () => getProject(id!),
-    enabled: !!id,
-  });
+  const { project, isLoading, reviewAbstract } = useProjectDetail(id || '');
 
-  const statusMutation = useMutation({
-    mutationFn: (newStatus: string) => updateProjectStatus(id!, newStatus),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['project', id] });
-      toast.success('Project status updated successfully!');
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to update status'),
-  });
-
-  const raw = projectRes as any;
-  const project = raw?.data ?? raw;
+  const handleStatusChange = async (newStatus: string) => {
+    try {
+      await reviewAbstract({ status: newStatus as any });
+    } catch (_) {}
+  };
 
   if (isLoading) return <ProjectDetailSkeleton />;
   if (!project || !project.id) return <div className="p-8 text-muted-foreground font-normal">Project not found.</div>;
@@ -84,8 +71,7 @@ export default function ProjectDetailPage() {
               <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Change Status:</span>
               <Select
                 value={project.status}
-                onValueChange={(val) => statusMutation.mutate(val)}
-                disabled={statusMutation.isPending}
+                onValueChange={handleStatusChange}
               >
                 <SelectTrigger className="w-[180px] bg-card border-input text-foreground font-semibold text-xs h-9">
                   <SelectValue placeholder="Select status" />
@@ -101,9 +87,9 @@ export default function ProjectDetailPage() {
             </div>
           )}
 
-          {(project.githubLink || project.githubUrl) && (
+          {project.githubLink && (
             <Button variant="outline" className="btn-outline shrink-0 gap-2" asChild>
-              <a href={project.githubLink || project.githubUrl} target="_blank" rel="noopener noreferrer">
+              <a href={project.githubLink} target="_blank" rel="noopener noreferrer">
                 <Github className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Repository
               </a>
             </Button>
@@ -220,7 +206,7 @@ export default function ProjectDetailPage() {
             <CardHeader className="border-b border-border pb-3"><CardTitle className="text-base font-semibold">Document Submissions</CardTitle></CardHeader>
             <CardContent className="pt-4">
               <div className="space-y-3">
-                {project.submissions?.length ? project.submissions.map((sub: any) => (
+                {(project as any).submissions?.length ? (project as any).submissions.map((sub: any) => (
                   <div key={sub.id} className="flex justify-between items-center p-4 bg-secondary/50 rounded-lg border border-border">
                     <div className="flex items-center gap-3">
                       <FileText className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />

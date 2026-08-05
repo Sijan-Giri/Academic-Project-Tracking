@@ -1,5 +1,7 @@
 import { api } from './client';
-import { Batch, Semester, User, ApiResponse, PaginatedResponse } from '@/types';
+import type { Batch, Semester } from '@/types/system.types';
+import type { User } from '@/types/user.types';
+import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
 
 export const getBatches = async (params?: any) => (await api.get<ApiResponse<PaginatedResponse<Batch>>>('/batches', { params })).data;
 export const getBatch = async (id: string) => (await api.get<ApiResponse<Batch>>(`/batches/${id}`)).data;

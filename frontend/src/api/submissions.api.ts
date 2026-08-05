@@ -1,5 +1,6 @@
 import { api } from './client';
-import { Submission, ApiResponse, PaginatedResponse } from '@/types';
+import type { Submission } from '@/types/project.types';
+import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
 
 export const createSubmission = async (formData: FormData) => (await api.post<ApiResponse<Submission>>('/submissions', formData)).data;
 export const getSubmissions = async (params?: any) => (await api.get<ApiResponse<PaginatedResponse<Submission>>>('/submissions', { params })).data;

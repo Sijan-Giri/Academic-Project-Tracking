@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Calendar, Trash2, CheckCircle, Wifi, WifiOff, Loader2, MapPin, Users } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Plus, Calendar, Trash2, CheckCircle, Wifi, WifiOff, MapPin, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,10 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import PageHeader from '@/components/shared/PageHeader';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import EmptyState from '@/components/shared/EmptyState';
-import { createSchedule, getSchedules, deleteSchedule, completeSchedule } from '@/api/schedules.api';
-import { getProjects } from '@/api/projects.api';
-import { getReviewStages } from '@/api/reviews.api';
-import { getAvailableGuides } from '@/api/guides.api';
+import { useSchedules } from '@/hooks/useSchedules';
 
 const scheduleSchema = z.object({
   reviewStageId: z.string().min(1, 'Review stage required'),
@@ -33,23 +28,19 @@ const scheduleSchema = z.object({
 type ScheduleForm = z.infer<typeof scheduleSchema>;
 
 export default function SchedulesPage() {
-  const qc = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [stageFilter, setStageFilter] = useState('');
 
-  const { data: schedulesData, isLoading } = useQuery({
-    queryKey: ['schedules', stageFilter],
-    queryFn: () => getSchedules(stageFilter ? { reviewStageId: stageFilter } : {}),
-  });
-  const { data: projectsData } = useQuery({ queryKey: ['projects'], queryFn: () => getProjects({ limit: 100 }) });
-  const { data: stagesData } = useQuery({ queryKey: ['review-stages'], queryFn: () => getReviewStages() });
-  const { data: guidesData } = useQuery({ queryKey: ['available-guides'], queryFn: getAvailableGuides });
-
-  const schedules: any[] = Array.isArray(schedulesData) ? schedulesData : ((schedulesData as any)?.data?.items || (schedulesData as any)?.data || []);
-  const projects: any[] = Array.isArray(projectsData) ? projectsData : ((projectsData as any)?.data?.items || (projectsData as any)?.data || []);
-  const stages: any[] = Array.isArray(stagesData) ? stagesData : ((stagesData as any)?.data?.items || (stagesData as any)?.data || []);
-  const guides: any[] = Array.isArray(guidesData) ? guidesData : ((guidesData as any)?.data || []);
+  const {
+    schedules,
+    projects,
+    stages,
+    facultyList: guides,
+    isLoading,
+    createSchedule,
+    deleteSchedule,
+  } = useSchedules(stageFilter ? { reviewStageId: stageFilter } : undefined);
 
   const { register, handleSubmit, reset, setValue, watch } = useForm<ScheduleForm>({
     resolver: zodResolver(scheduleSchema),
@@ -58,35 +49,21 @@ export default function SchedulesPage() {
 
   const selectedPanelIds = watch('panelMemberIds') || [];
 
-  const createMut = useMutation({
-    mutationFn: (data: ScheduleForm) => createSchedule(data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['schedules'] });
-      toast.success('Schedule created & panel notified');
+  const handleCreate = async (data: ScheduleForm) => {
+    try {
+      await createSchedule(data);
       setCreateOpen(false);
       reset();
-    },
-    onError: (e: any) => toast.error(e?.response?.data?.message || 'Failed to create schedule'),
-  });
+    } catch (_) {}
+  };
 
-  const deleteMut = useMutation({
-    mutationFn: (id: string) => deleteSchedule(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['schedules'] });
-      toast.success('Schedule deleted');
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteSchedule(deleteId);
       setDeleteId(null);
-    },
-    onError: () => toast.error('Failed to delete schedule'),
-  });
-
-  const completeMut = useMutation({
-    mutationFn: (id: string) => completeSchedule(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['schedules'] });
-      toast.success('Schedule marked completed');
-    },
-    onError: () => toast.error('Failed to complete schedule'),
-  });
+    } catch (_) {}
+  };
 
   const togglePanelMember = (id: string) => {
     const current = [...selectedPanelIds];
@@ -160,7 +137,7 @@ export default function SchedulesPage() {
 
                   <div className="flex items-center gap-2 shrink-0">
                     {!isCompleted && (
-                      <Button size="sm" variant="success" onClick={() => completeMut.mutate(sch.id)} disabled={completeMut.isPending} id={`complete-sch-${sch.id}`} className="text-xs font-semibold">
+                      <Button size="sm" variant="success" id={`complete-sch-${sch.id}`} className="text-xs font-semibold">
                         <CheckCircle className="h-3.5 w-3.5 mr-1" /> Mark Complete
                       </Button>
                     )}
@@ -196,7 +173,7 @@ export default function SchedulesPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="bg-card border-border text-foreground max-w-lg">
           <DialogHeader><DialogTitle className="text-base font-semibold">Schedule Review Presentation</DialogTitle></DialogHeader>
-          <form onSubmit={handleSubmit(d => createMut.mutate(d))} className="space-y-4">
+          <form onSubmit={handleSubmit(handleCreate)} className="space-y-4">
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Review Stage</Label>
               <Select value={watch('reviewStageId')} onValueChange={v => setValue('reviewStageId', v)}>
@@ -260,8 +237,8 @@ export default function SchedulesPage() {
 
             <DialogFooter className="gap-2 pt-2">
               <Button variant="ghost" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={createMut.isPending} id="submit-sch-btn" className="btn-primary">
-                {createMut.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Schedule Review
+              <Button type="submit" id="submit-sch-btn" className="btn-primary">
+                Schedule Review
               </Button>
             </DialogFooter>
           </form>
@@ -274,7 +251,7 @@ export default function SchedulesPage() {
         onOpenChange={o => !o && setDeleteId(null)}
         title="Delete Schedule Slot"
         description="Are you sure you want to delete this presentation schedule?"
-        onConfirm={() => deleteId && deleteMut.mutate(deleteId)}
+        onConfirm={handleDelete}
         variant="danger"
       />
     </div>

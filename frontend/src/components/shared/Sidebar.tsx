@@ -3,7 +3,7 @@ import { GraduationCap, LayoutDashboard, Building2, Calendar, Users, Settings, F
 import { useAuthStore } from '@/store/auth.store';
 import { logout as logoutApi } from '@/api/auth.api';
 import { cn } from '@/lib/utils';
-import { Role } from '@/types';
+import type { Role } from '@/types/user.types';
 
 interface SidebarProps { className?: string; }
 

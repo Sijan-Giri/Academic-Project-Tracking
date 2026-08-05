@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,10 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from '@/components/ui/textarea';
 import { Search, Eye, MessageSquare, FileText, Users, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getGuidedProjects } from '@/api/projects.api';
 import PageHeader from '@/components/shared/PageHeader';
 import StatusBadge from '@/components/shared/StatusBadge';
 import EmptyState from '@/components/shared/EmptyState';
+import { useGuidedProjects } from '@/hooks/useGuidedProjects';
 
 import { CardsGridSkeleton } from '@/components/shared/Skeletons';
 
@@ -22,15 +21,11 @@ export default function GuidedProjectsPage() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [feedbackText, setFeedbackText] = useState('');
 
-  const { data: rawProjects, isLoading } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });
+  const { projects, isLoading } = useGuidedProjects();
 
   if (isLoading) {
     return <CardsGridSkeleton cards={6} />;
   }
-
-  const projects: any[] = Array.isArray((rawProjects as any)?.data?.items)
-    ? (rawProjects as any).data.items
-    : (Array.isArray((rawProjects as any)?.data) ? (rawProjects as any).data : (Array.isArray(rawProjects) ? rawProjects : []));
 
   const filteredProjects = projects.filter((p: any) => {
     const matchesSearch = p.title?.toLowerCase().includes(searchTerm.toLowerCase()) || p.domain?.toLowerCase().includes(searchTerm.toLowerCase());

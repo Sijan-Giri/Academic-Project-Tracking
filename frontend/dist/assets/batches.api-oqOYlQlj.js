@@ -1,0 +1,1 @@
+import{n as t}from"./index-BfIdqsKx.js";const e=async a=>(await t.get("/batches",{params:a})).data,n=async a=>(await t.post("/batches",a)).data,d=async(a,s)=>(await t.put(`/batches/${a}`,s)).data,h=async a=>(await t.delete(`/batches/${a}`)).data;export{n as c,h as d,e as g,d as u};

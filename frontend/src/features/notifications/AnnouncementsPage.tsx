@@ -1,21 +1,12 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Megaphone, Calendar } from 'lucide-react';
-import { getAnnouncements } from '@/api/announcements.api';
 import { format } from 'date-fns';
+import { useAnnouncements } from '@/hooks/useAnnouncements';
 
 export default function AnnouncementsPage() {
-  const { data: response, isLoading } = useQuery({
-    queryKey: ['announcements'],
-    queryFn: () => getAnnouncements(),
-  });
-
-  // Safe unwrapping for paginated response or plain array
-  const announcementList = Array.isArray((response as any)?.data?.items)
-    ? (response as any).data.items
-    : (Array.isArray((response as any)?.data) ? (response as any).data : (Array.isArray(response) ? response : []));
+  const { announcements: announcementList, isLoading } = useAnnouncements();
 
   if (isLoading) {
     return (

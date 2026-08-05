@@ -3,14 +3,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
+import { useLogin } from '@/hooks/useLogin';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { loginSchema } from '@/lib/validators';
-import { login, refreshToken, getMe } from '@/api/auth.api';
+import { refreshToken, getMe } from '@/api/auth.api';
 import { useAuthStore } from '@/store/auth.store';
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -72,23 +72,7 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: login,
-    onSuccess: (response: any) => {
-      const user = response?.user || response?.data?.user;
-      const accessToken = response?.accessToken || response?.data?.accessToken;
-      if (user) {
-        setAuth(user, accessToken || null);
-        toast.success(`Welcome back, ${user.name}!`);
-        navigate('/dashboard', { replace: true });
-      } else {
-        toast.error('Unexpected login response format.');
-      }
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Login failed. Please check your credentials.');
-    },
-  });
+  const { login: mutate, isPending } = useLogin();
 
   if (checkingSession) {
     return (

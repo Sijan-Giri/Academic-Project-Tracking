@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus, Upload, Search, Power, PowerOff } from 'lucide-react';
-import toast from 'react-hot-toast';
 
-import { api } from '@/api/client';
+import { useUsers } from '@/hooks/useUsers';
 import PageHeader from '@/components/shared/PageHeader';
 import DataTable from '@/components/shared/DataTable';
 import { Button } from '@/components/ui/button';
@@ -15,7 +13,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { User, Department, Batch } from '@/types';
 
 const userSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -33,29 +30,19 @@ const userSchema = z.object({
 type UserFormValues = z.infer<typeof userSchema>;
 
 export default function UsersPage() {
-  const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
   const [createOpen, setCreateOpen] = useState(false);
   const [_importOpen, setImportOpen] = useState(false);
 
-  const { data: users, isLoading } = useQuery<User[]>({
-    queryKey: ['users', roleFilter, search],
-    queryFn: async () => {
-      const res = await api.get('/users', { params: { role: roleFilter === 'ALL' ? undefined : roleFilter, search } });
-      return res.data;
-    },
-  });
-
-  const { data: departments } = useQuery<Department[]>({
-    queryKey: ['departments'],
-    queryFn: async () => (await api.get('/departments')).data,
-  });
-
-  const { data: batches } = useQuery<Batch[]>({
-    queryKey: ['batches'],
-    queryFn: async () => (await api.get('/batches')).data,
-  });
+  const {
+    users,
+    departments,
+    batches,
+    isLoading,
+    createUser,
+    toggleUserStatus,
+  } = useUsers({ role: roleFilter === 'ALL' ? undefined : roleFilter, search });
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userSchema),
@@ -64,27 +51,13 @@ export default function UsersPage() {
 
   const watchRole = form.watch('role');
 
-  const createMutation = useMutation({
-    mutationFn: (data: UserFormValues) => api.post('/users', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      toast.success('User created successfully');
+  const onSubmit = async (values: UserFormValues) => {
+    try {
+      await createUser(values);
       setCreateOpen(false);
       form.reset();
-    },
-    onError: () => toast.error('Failed to create user'),
-  });
-
-  const toggleStatusMutation = useMutation({
-    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
-      api.patch(`/users/${id}/${isActive ? 'deactivate' : 'activate'}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      toast.success('User status updated');
-    },
-  });
-
-  const onSubmit = (values: UserFormValues) => createMutation.mutate(values);
+    } catch (_) {}
+  };
 
   const columns = [
     { accessorKey: 'name', header: 'Name' },
@@ -113,7 +86,7 @@ export default function UsersPage() {
       header: 'Actions',
       cell: ({ row }: any) => (
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => toggleStatusMutation.mutate({ id: row.original.id, isActive: row.original.isActive })}>
+          <Button variant="ghost" size="icon" onClick={() => toggleUserStatus({ id: row.original.id, isActive: row.original.isActive })}>
             {row.original.isActive ? <PowerOff className="w-4 h-4 text-orange-400" /> : <Power className="w-4 h-4 text-emerald-400" />}
           </Button>
         </div>
@@ -121,7 +94,7 @@ export default function UsersPage() {
     },
   ];
 
-  const userList = Array.isArray((users as any)?.data?.items) ? (users as any).data.items : (Array.isArray((users as any)?.data) ? (users as any).data : (Array.isArray(users) ? users : ((users as any)?.items || [])));
+  const userList = users;
 
   return (
     <div className="space-y-6">

@@ -1,12 +1,10 @@
 import React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import toast from 'react-hot-toast';
 import { Save } from 'lucide-react';
 
-import { api } from '@/api/client';
+import { useSettings } from '@/hooks/useSettings';
 import PageHeader from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -22,23 +20,18 @@ const settingsSchema = z.object({
 type SettingsValues = z.infer<typeof settingsSchema>;
 
 export default function SettingsPage() {
-  const queryClient = useQueryClient();
+  const { settings, isLoading, updateSetting } = useSettings();
 
-  const { data: settings, isLoading } = useQuery({
-    queryKey: ['settings'],
-    queryFn: async () => {
-      const res = await api.get('/settings');
-      const defaultValues: any = {};
-      if (Array.isArray(res.data)) {
-         res.data.forEach((s: any) => defaultValues[s.key] = s.value);
-      }
-      return defaultValues;
-    },
-  });
+  const settingsMap: Record<string, any> = {};
+  if (Array.isArray(settings)) {
+    settings.forEach((s: any) => {
+      settingsMap[s.key] = s.value;
+    });
+  }
 
   const form = useForm<SettingsValues>({
     resolver: zodResolver(settingsSchema),
-    values: settings || {
+    values: Object.keys(settingsMap).length > 0 ? settingsMap as any : {
       max_team_size: 4,
       min_team_size: 2,
       abstract_max_words: 500,
@@ -46,17 +39,12 @@ export default function SettingsPage() {
     },
   });
 
-  const updateMutation = useMutation({
-    mutationFn: (data: SettingsValues) => api.put('/settings', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings'] });
-      toast.success('Settings updated successfully');
-    },
-    onError: () => toast.error('Failed to update settings'),
-  });
-
-  const onSubmit = (values: SettingsValues) => {
-    updateMutation.mutate(values);
+  const onSubmit = async (values: SettingsValues) => {
+    try {
+      for (const [key, value] of Object.entries(values)) {
+        await updateSetting({ key, value: String(value) });
+      }
+    } catch (_) {}
   };
 
   if (isLoading) return <div className="dark:text-white text-slate-900">Loading settings...</div>;
@@ -128,9 +116,9 @@ export default function SettingsPage() {
             </div>
 
             <div className="flex justify-end pt-4 border-t dark:border-white/10 border-slate-200">
-              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white h-11 px-8" disabled={updateMutation.isPending}>
+              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white h-11 px-8">
                 <Save className="w-4 h-4 mr-2" /> 
-                {updateMutation.isPending ? 'Saving...' : 'Save All Settings'}
+                Save All Settings
               </Button>
             </div>
           </form>

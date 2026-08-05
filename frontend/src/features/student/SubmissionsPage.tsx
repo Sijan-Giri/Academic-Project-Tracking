@@ -1,17 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
 import { FileText, FolderGit2, Calendar, FileDown } from 'lucide-react';
-import { getSubmissions, downloadFile } from '@/api/submissions.api';
+import { downloadFile } from '@/api/submissions.api';
 import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/shared/PageHeader';
 import toast from 'react-hot-toast';
+import { useSubmissions } from '@/hooks/useSubmissions';
 
 import { SubmissionsSkeleton } from '@/components/shared/Skeletons';
 
 export default function SubmissionsPage() {
-  const { data: res, isLoading } = useQuery({
-    queryKey: ['my-submissions'],
-    queryFn: getSubmissions
-  });
+  const { submissions, isLoading } = useSubmissions();
 
   const handleDownload = async (fileId: string, originalName?: string) => {
     try {
@@ -25,8 +22,6 @@ export default function SubmissionsPage() {
   if (isLoading) {
     return <SubmissionsSkeleton />;
   }
-
-  const submissions = (res as any)?.data?.items || (res as any)?.items || (res as any)?.data || (Array.isArray(res) ? res : []);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">

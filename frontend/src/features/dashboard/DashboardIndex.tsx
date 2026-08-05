@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/store/auth.store';
 import React, { lazy, Suspense } from 'react';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { DashboardSkeleton } from '@/components/shared/Skeletons';
 
 const AdminDashboard = lazy(() => import('./AdminDashboard'));
 const CoordinatorDashboard = lazy(() => import('./CoordinatorDashboard'));
@@ -18,7 +18,7 @@ export default function DashboardIndex() {
   };
 
   return (
-    <Suspense fallback={<LoadingSpinner className="min-h-[50vh]" />}>
+    <Suspense fallback={<DashboardSkeleton />}>
       {renderDashboard()}
     </Suspense>
   );

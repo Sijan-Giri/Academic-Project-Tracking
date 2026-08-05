@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus } from 'lucide-react';
-import toast from 'react-hot-toast';
 
-import { api } from '@/api/client';
+import { useSemesters } from '@/hooks/useSemesters';
 import PageHeader from '@/components/shared/PageHeader';
 import DataTable from '@/components/shared/DataTable';
 import { Button } from '@/components/ui/button';
@@ -26,31 +24,28 @@ const semesterSchema = z.object({
 type SemesterFormValues = z.infer<typeof semesterSchema>;
 
 export default function SemestersPage() {
-  const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
 
-  const { data: semesters, isLoading } = useQuery({
-    queryKey: ['semesters'],
-    queryFn: async () => (await api.get('/semesters')).data,
-  });
+  const {
+    semesters,
+    isLoading,
+    createSemester,
+    setCurrentSemester,
+  } = useSemesters();
 
-  const createMutation = useMutation({
-    mutationFn: (data: SemesterFormValues) => api.post('/semesters', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['semesters'] });
-      toast.success('Semester created successfully');
+  const handleCreate = async (data: SemesterFormValues) => {
+    try {
+      await createSemester(data);
       setCreateOpen(false);
-    },
-    onError: () => toast.error('Failed to create semester'),
-  });
+      form.reset();
+    } catch (_) {}
+  };
 
-  const setCurrentMutation = useMutation({
-    mutationFn: (id: string) => api.put(`/semesters/${id}/set-current`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['semesters'] });
-      toast.success('Current semester updated');
-    },
-  });
+  const handleSetCurrent = async (id: string) => {
+    try {
+      await setCurrentSemester(id);
+    } catch (_) {}
+  };
 
   const form = useForm<SemesterFormValues>({
     resolver: zodResolver(semesterSchema),
@@ -76,7 +71,7 @@ export default function SemestersPage() {
           variant="outline" 
           size="sm" 
           disabled={row.original.isCurrent}
-          onClick={() => setCurrentMutation.mutate(row.original.id)}
+          onClick={() => handleSetCurrent(row.original.id)}
           className="dark:border-white/10 dark:hover:bg-white/5 border-slate-300 hover:bg-slate-100"
         >
           Set as Current
@@ -85,7 +80,7 @@ export default function SemestersPage() {
     },
   ];
 
-  const semesterList = Array.isArray(semesters?.data) ? semesters.data : (Array.isArray(semesters) ? semesters : ((semesters as any)?.data?.items || []));
+  const semesterList = semesters;
 
   return (
     <div className="space-y-6">
@@ -106,7 +101,7 @@ export default function SemestersPage() {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader><DialogTitle>Add Semester</DialogTitle></DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit((v) => createMutation.mutate(v))} className="space-y-4">
+            <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
               )} />

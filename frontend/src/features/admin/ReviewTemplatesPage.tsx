@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
-import toast from 'react-hot-toast';
 
-import { api } from '@/api/client';
+import { useReviewTemplates } from '@/hooks/useReviewTemplates';
+import { useDepartments } from '@/hooks/useDepartments';
 import PageHeader from '@/components/shared/PageHeader';
 import DataTable from '@/components/shared/DataTable';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
@@ -33,59 +32,52 @@ const templateSchema = z.object({
 type TemplateFormValues = z.infer<typeof templateSchema>;
 
 export default function ReviewTemplatesPage() {
-  const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [editItem, setEditItem] = useState<any>(null);
   const [deleteItem, setDeleteItem] = useState<any>(null);
 
-  const { data: templates, isLoading } = useQuery({
-    queryKey: ['review-templates'],
-    queryFn: async () => (await api.get('/reviews/templates')).data,
-  });
+  const {
+    templates,
+    isLoading,
+    createTemplate,
+    updateTemplate,
+    deleteTemplate,
+  } = useReviewTemplates();
 
-  const { data: departments } = useQuery({
-    queryKey: ['departments'],
-    queryFn: async () => (await api.get('/departments')).data,
-  });
+  const { departments } = useDepartments();
+
+  const handleCreate = async (data: TemplateFormValues) => {
+    try {
+      await createTemplate({ ...data, departmentId: data.departmentId || undefined });
+      setCreateOpen(false);
+      form.reset();
+    } catch (_) {}
+  };
+
+  const handleUpdate = async (data: TemplateFormValues) => {
+    if (!editItem) return;
+    try {
+      await updateTemplate({ id: editItem.id, data: { ...data, departmentId: data.departmentId || undefined } });
+      setEditItem(null);
+    } catch (_) {}
+  };
+
+  const handleDelete = async () => {
+    if (!deleteItem) return;
+    try {
+      await deleteTemplate(deleteItem.id);
+      setDeleteItem(null);
+    } catch (_) {}
+  };
 
   const form = useForm<TemplateFormValues>({
     resolver: zodResolver(templateSchema),
     defaultValues: { name: '', type: 'REVIEW_1', description: '', order: 1, isDefault: false, departmentId: null },
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: TemplateFormValues) => api.post('/reviews/templates', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['review-templates'] });
-      toast.success('Template created');
-      setCreateOpen(false);
-      form.reset();
-    },
-    onError: () => toast.error('Failed to create'),
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: TemplateFormValues }) => api.put(`/reviews/templates/${id}`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['review-templates'] });
-      toast.success('Template updated');
-      setEditItem(null);
-    },
-    onError: () => toast.error('Failed to update'),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/reviews/templates/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['review-templates'] });
-      toast.success('Template deleted');
-      setDeleteItem(null);
-    },
-  });
-
   const onSubmit = (values: TemplateFormValues) => {
-    if (editItem) updateMutation.mutate({ id: editItem.id, data: values });
-    else createMutation.mutate(values);
+    if (editItem) handleUpdate(values);
+    else handleCreate(values);
   };
 
   const handleEdit = (item: any) => {
@@ -202,7 +194,7 @@ export default function ReviewTemplatesPage() {
       <ConfirmDialog
         open={!!deleteItem} onOpenChange={(open) => !open && setDeleteItem(null)}
         title="Delete Template" description="Are you sure you want to delete this review template?"
-        onConfirm={() => deleteItem && deleteMutation.mutate(deleteItem.id)} confirmText="Delete" variant="danger"
+        onConfirm={handleDelete} confirmText="Delete" variant="danger"
       />
     </div>
   );

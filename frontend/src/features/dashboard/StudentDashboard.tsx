@@ -1,52 +1,33 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle2, Circle, Clock, Calendar, Users, FileText, ArrowRight } from 'lucide-react';
-import { getMyProjects } from '@/api/projects.api';
-import { getMyTeam } from '@/api/teams.api';
-import { getAnnouncements } from '@/api/announcements.api';
-import { formatDistanceToNow, differenceInDays } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
+import StatsCard from '@/components/shared/StatsCard';
 import PageHeader from '@/components/shared/PageHeader';
 import { useAuthStore } from '@/store/auth.store';
 import { cn } from '@/lib/utils';
-
 import { DashboardSkeleton } from '@/components/shared/Skeletons';
-
-const STAGES = [
-  'Abstract Submission',
-  'Abstract Approved',
-  'Review 1',
-  'Review 2',
-  'Review 3',
-  'Pre-Submission',
-  'Final Submission'
-];
+import { useMyProjects } from '@/hooks/useMyProjects';
+import { useMyTeam } from '@/hooks/useMyTeam';
+import { useAnnouncements } from '@/hooks/useAnnouncements';
+import { ROUTES } from '@/constants/routes';
+import { LIFECYCLE_STAGES, PROJECT_LIFECYCLE_STAGE_MAP } from '@/constants/status';
+import { getDaysUntil } from '@/utils/formatUtils';
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
   const authUser = useAuthStore((s) => s.user);
 
-  const { data: projectsRes, isLoading: loadingProjects } = useQuery({ queryKey: ['my-projects'], queryFn: getMyProjects });
-  const { data: teamRes, isLoading: loadingTeam } = useQuery({ queryKey: ['my-team'], queryFn: getMyTeam });
-  const { data: announcementsRes } = useQuery({ queryKey: ['announcements'], queryFn: () => getAnnouncements() });
+  const { currentProject, isLoading: loadingProjects } = useMyProjects();
+  const { team, isLoading: loadingTeam } = useMyTeam();
+  const { announcements } = useAnnouncements();
 
   if (loadingProjects || loadingTeam) {
     return <DashboardSkeleton />;
   }
-
-  const projectList = Array.isArray((projectsRes as any)?.data?.items)
-    ? (projectsRes as any).data.items
-    : (Array.isArray((projectsRes as any)?.data) ? (projectsRes as any).data : (Array.isArray(projectsRes) ? projectsRes : []));
-
-  const currentProject = projectList[0] || null;
-  const team = (teamRes as any)?.data || teamRes;
-
-  const announcements = Array.isArray((announcementsRes as any)?.data?.items)
-    ? (announcementsRes as any).data.items
-    : (Array.isArray((announcementsRes as any)?.data) ? (announcementsRes as any).data : (Array.isArray(announcementsRes) ? announcementsRes : []));
 
   const milestones = currentProject?.milestones || [];
   const inProgressMilestone = milestones.find((m: any) => m.status === 'IN_PROGRESS' || m.status === 'NOT_STARTED');
@@ -71,7 +52,7 @@ export default function StudentDashboard() {
         }
         actions={
           !currentProject ? (
-            <Button onClick={() => navigate('/my-project/create')} className="btn-primary">
+            <Button onClick={() => navigate(ROUTES.MY_PROJECT_CREATE)} className="btn-primary">
               <FileText className="w-4 h-4 mr-2" /> Propose New Project
             </Button>
           ) : undefined
@@ -95,12 +76,12 @@ export default function StudentDashboard() {
         <StatsCard
           title="Next Milestone"
           value={inProgressMilestone?.name || 'All Clear'}
-          subtitle={nearestDeadline ? `${differenceInDays(new Date(nearestDeadline.deadline), new Date())} days left` : 'No Pending Deadlines'}
+          subtitle={nearestDeadline?.deadline ? `${getDaysUntil(nearestDeadline.deadline)} days left` : 'No Pending Deadlines'}
           icon={<Clock className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />}
         />
         <StatsCard
           title="Assigned Guide"
-          value={currentProject?.guideAssignment?.facultyProfile?.user?.name || currentProject?.guide?.name || 'Unassigned'}
+          value={(currentProject as any)?.guideAssignment?.facultyProfile?.user?.name || (currentProject as any)?.guide?.name || 'Unassigned'}
           subtitle={currentProject?.guideAssignment ? 'Active Mentor' : 'Awaiting Allocation'}
           icon={<Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />}
         />
@@ -123,7 +104,7 @@ export default function StudentDashboard() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate('/my-project')}
+                  onClick={() => navigate(ROUTES.MY_PROJECT)}
                   className="text-indigo-600 dark:text-indigo-400 font-medium"
                 >
                   View Details <ArrowRight className="w-4 h-4 ml-1" />
@@ -132,18 +113,8 @@ export default function StudentDashboard() {
             </CardHeader>
             <CardContent className="pt-6">
               <div className="flex flex-col space-y-3 relative before:absolute before:inset-0 before:ml-4 before:h-full before:w-0.5 before:bg-border">
-                {STAGES.map((stage, i) => {
-                  const statusMap: Record<string, number> = {
-                    DRAFT: 0,
-                    ABSTRACT_SUBMITTED: 0,
-                    ABSTRACT_APPROVED: 1,
-                    ABSTRACT_REJECTED: 0,
-                    IN_PROGRESS: 2,
-                    UNDER_REVIEW: 3,
-                    COMPLETED: 6,
-                    CANCELLED: 0,
-                  };
-                  const currentStatusIndex = statusMap[currentProject?.status || 'DRAFT'] ?? 0;
+                {LIFECYCLE_STAGES.map((stage, i) => {
+                  const currentStatusIndex = PROJECT_LIFECYCLE_STAGE_MAP[currentProject?.status || 'DRAFT'] ?? 0;
                   const isDone = i < currentStatusIndex;
                   const isCurrent = i === currentStatusIndex;
 
@@ -204,7 +175,7 @@ export default function StudentDashboard() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/my-team')}
+                onClick={() => navigate(ROUTES.MY_TEAM)}
                 className="text-indigo-600 dark:text-indigo-400 font-medium"
               >
                 Manage Team <ArrowRight className="w-4 h-4 ml-1" />
@@ -227,7 +198,7 @@ export default function StudentDashboard() {
               ) : (
                 <div className="text-center py-6">
                   <p className="text-muted-foreground text-sm mb-3">You are not part of an active team roster yet.</p>
-                  <Button onClick={() => navigate('/my-team')} size="sm" className="btn-primary">
+                  <Button onClick={() => navigate(ROUTES.MY_TEAM)} size="sm" className="btn-primary">
                     Create or Join Team
                   </Button>
                 </div>
@@ -247,7 +218,7 @@ export default function StudentDashboard() {
                 <p className="text-muted-foreground text-sm text-center py-4">No pending deadlines.</p>
               ) : (
                 upcomingDeadlines.slice(0, 5).map((m: any) => {
-                  const days = differenceInDays(new Date(m.deadline), new Date());
+                  const days = getDaysUntil(m.deadline);
                   const color = days < 0
                     ? 'text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-500/10 border-rose-200'
                     : days < 3
@@ -269,7 +240,7 @@ export default function StudentDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-4">
               <CardTitle className="text-base font-semibold">Announcements</CardTitle>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/announcements')} className="text-indigo-600 dark:text-indigo-400 font-medium text-xs">
+              <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.ANNOUNCEMENTS)} className="text-indigo-600 dark:text-indigo-400 font-medium text-xs">
                 View All
               </Button>
             </CardHeader>
@@ -292,20 +263,5 @@ export default function StudentDashboard() {
         </div>
       </div>
     </div>
-  );
-}
-
-function StatsCard({ title, value, subtitle, icon }: { title: string; value: React.ReactNode; subtitle?: string; icon: React.ReactNode }) {
-  return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{title}</span>
-        <div className="w-7 h-7 rounded-md bg-secondary border border-border flex items-center justify-center">
-          {icon}
-        </div>
-      </div>
-      <div className="text-base font-semibold text-foreground tracking-tight leading-snug">{value}</div>
-      {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
-    </Card>
   );
 }

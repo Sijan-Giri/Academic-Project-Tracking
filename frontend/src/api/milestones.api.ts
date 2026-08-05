@@ -1,5 +1,6 @@
 import { api } from './client';
-import { Milestone, ApiResponse, PaginatedResponse } from '@/types';
+import type { Milestone } from '@/types/project.types';
+import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
 
 export const getMilestones = async (params?: any) => (await api.get<ApiResponse<PaginatedResponse<Milestone>>>('/milestones', { params })).data;
 export const getMilestone = async (id: string) => (await api.get<ApiResponse<Milestone>>(`/milestones/${id}`)).data;

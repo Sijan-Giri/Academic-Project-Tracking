@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth.store';
-import { Role } from '@/types';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import type { Role } from '@/types/user.types';
+import { PageSkeleton } from '@/components/shared/Skeletons';
 import { refreshToken, getMe } from '@/api/auth.api';
 
 interface RoleGuardProps {
@@ -61,7 +61,7 @@ export default function RoleGuard({ allowedRoles }: RoleGuardProps) {
   }, []);
 
   if (isLoading) {
-    return <LoadingSpinner className="min-h-screen bg-[#0f1117]" />;
+    return <PageSkeleton />;
   }
 
   if (!isAuthenticated || !user) {

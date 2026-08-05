@@ -1,102 +1,69 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Users, UserPlus, LogOut, Info, AlertTriangle, Mail, Check, X } from 'lucide-react';
-import { getMyTeam, createTeam, inviteMember, removeMember, leaveTeam, getMyInvitations, acceptInvitation, declineInvitation } from '@/api/teams.api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import PageHeader from '@/components/shared/PageHeader';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { useAuthStore } from '@/store/auth.store';
-import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
+import { useMyTeam } from '@/hooks/useMyTeam';
 import { MyTeamSkeleton } from '@/components/shared/Skeletons';
 
 export default function MyTeamPage() {
-  const queryClient = useQueryClient();
   const authUser = useAuthStore(s => s.user);
 
   const [teamName, setTeamName] = useState('');
   const [inviteStudentId, setInviteStudentId] = useState('');
   const [activeTab, setActiveTab] = useState<'CREATE' | 'JOIN'>('CREATE');
 
-  // Fetch student's current team
-  const { data: teamRes, isLoading: teamLoading } = useQuery({
-    queryKey: ['my-team'],
-    queryFn: getMyTeam,
-    retry: false
-  });
+  const {
+    team,
+    invitations,
+    isLoading: teamLoading,
+    createTeam,
+    inviteMember,
+    removeMember,
+    leaveTeam,
+    acceptInvitation,
+    declineInvitation,
+  } = useMyTeam();
+  const handleCreateTeam = async () => {
+    if (!teamName.trim()) return;
+    try {
+      await createTeam({ name: teamName });
+      setTeamName('');
+    } catch (_) {}
+  };
 
-  // Fetch pending invitations sent TO this student
-  const { data: invRes, isLoading: invLoading } = useQuery({
-    queryKey: ['my-pending-invitations'],
-    queryFn: getMyInvitations,
-  });
-
-  // All Mutations declared unconditionally at top level
-  const createMut = useMutation({
-    mutationFn: createTeam,
-    onSuccess: () => {
-      toast.success('Team created successfully!');
-      queryClient.invalidateQueries({ queryKey: ['my-team'] });
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to create team')
-  });
-
-  const inviteMut = useMutation({
-    mutationFn: ({ teamId, studentId }: { teamId: string; studentId: string }) => inviteMember(teamId, studentId),
-    onSuccess: () => {
-      toast.success('Invitation sent!');
+  const handleInvite = async () => {
+    if (!inviteStudentId.trim() || !team) return;
+    try {
+      await inviteMember({ teamId: team.id, studentId: inviteStudentId });
       setInviteStudentId('');
-      queryClient.invalidateQueries({ queryKey: ['my-team'] });
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to send invitation')
-  });
+    } catch (_) {}
+  };
 
-  const removeMut = useMutation({
-    mutationFn: ({ teamId, memberId }: { teamId: string; memberId: string }) => removeMember(teamId, memberId),
-    onSuccess: () => {
-      toast.success('Member removed');
-      queryClient.invalidateQueries({ queryKey: ['my-team'] });
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to remove member')
-  });
+  const handleRemove = async (memberId: string) => {
+    if (!team) return;
+    try {
+      await removeMember({ teamId: team.id, memberId });
+    } catch (_) {}
+  };
 
-  const leaveMut = useMutation({
-    mutationFn: (teamId: string) => leaveTeam(teamId),
-    onSuccess: () => {
-      toast.success('You left the team');
-      queryClient.invalidateQueries({ queryKey: ['my-team'] });
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to leave team')
-  });
-
-  const acceptMut = useMutation({
-    mutationFn: acceptInvitation,
-    onSuccess: () => {
-      toast.success('Invitation accepted!');
-      queryClient.invalidateQueries({ queryKey: ['my-team'] });
-      queryClient.invalidateQueries({ queryKey: ['my-pending-invitations'] });
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to accept invitation')
-  });
-
-  const rejectMut = useMutation({
-    mutationFn: declineInvitation,
-    onSuccess: () => {
-      toast.success('Invitation declined');
-      queryClient.invalidateQueries({ queryKey: ['my-pending-invitations'] });
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to decline invitation')
-  });
+  const handleLeave = async () => {
+    if (!team) return;
+    try {
+      await leaveTeam(team.id);
+    } catch (_) {}
+  };
 
   // Early return for skeleton rendering AFTER all hooks are declared
-  if (teamLoading || invLoading) {
+  if (teamLoading) {
     return <MyTeamSkeleton />;
   }
 
-  const team = (teamRes as any)?.data ?? teamRes ?? null;
-  const myInvitations: any[] = (invRes as any)?.data ?? invRes ?? [];
+  const myInvitations = invitations;
 
   // Check if student is team leader
   const myMemberRecord = team?.members?.find(
@@ -104,7 +71,7 @@ export default function MyTeamPage() {
   );
   const isLeader = myMemberRecord?.isLeader ?? false;
 
-  const sentInvitations: any[] = team?.invitations || [];
+  const sentInvitations: any[] = (team as any)?.invitations || [];
 
   // ── No team ───────────────────────────────────────────────────────────────
 
@@ -140,8 +107,7 @@ export default function MyTeamPage() {
                   <div className="flex items-center gap-2 shrink-0">
                     <Button
                       size="sm"
-                      onClick={() => acceptMut.mutate(inv.id)}
-                      disabled={acceptMut.isPending}
+                      onClick={() => acceptInvitation(inv.id)}
                       className="btn-primary"
                     >
                       <Check className="w-4 h-4 mr-1.5" /> Accept
@@ -149,8 +115,7 @@ export default function MyTeamPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => rejectMut.mutate(inv.id)}
-                      disabled={rejectMut.isPending}
+                      onClick={() => declineInvitation(inv.id)}
                     >
                       <X className="w-4 h-4 mr-1.5" /> Decline
                     </Button>
@@ -214,8 +179,8 @@ export default function MyTeamPage() {
                   </div>
 
                   <Button
-                    onClick={() => createMut.mutate({ name: teamName })}
-                    disabled={!teamName.trim() || createMut.isPending}
+                    onClick={handleCreateTeam}
+                    disabled={!teamName.trim()}
                     className="btn-primary w-full"
                   >
                     Create Team & Continue
@@ -249,8 +214,7 @@ export default function MyTeamPage() {
         actions={
           <Button
             variant="outline"
-            onClick={() => leaveMut.mutate(team.id)}
-            disabled={leaveMut.isPending}
+            onClick={handleLeave}
             className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 text-xs font-semibold"
           >
             <LogOut className="w-4 h-4 mr-1.5" /> Leave Team
@@ -323,8 +287,7 @@ export default function MyTeamPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeMut.mutate({ teamId: team.id, memberId: m.id })}
-                          disabled={removeMut.isPending}
+                          onClick={() => handleRemove(m.id)}
                           className="text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 h-8 text-xs font-semibold"
                         >
                           Remove
@@ -360,8 +323,8 @@ export default function MyTeamPage() {
                 </div>
 
                 <Button
-                  onClick={() => inviteMut.mutate({ teamId: team.id, studentId: inviteStudentId })}
-                  disabled={!inviteStudentId.trim() || inviteMut.isPending}
+                  onClick={handleInvite}
+                  disabled={!inviteStudentId.trim()}
                   className="btn-primary w-full"
                 >
                   Send Invitation

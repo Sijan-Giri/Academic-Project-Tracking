@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
   Bell, AlertTriangle, MessageSquare, Megaphone, CheckCheck, ChevronRight,
@@ -10,9 +9,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton, SkeletonCircle, SkeletonBadge } from '@/components/ui/skeleton';
-import { getMyNotifications, getUnreadCount, markRead, markAllRead } from '@/api/notifications.api';
 import { cn } from '@/lib/utils';
-import { Notification } from '@/types';
+import type { Notification } from '@/types/notification.types';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export function NotificationDropdownSkeleton({ count = 4 }: { count?: number }) {
   return (
@@ -38,41 +37,14 @@ export default function NotificationDropdown() {
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<'ALL' | 'UNREAD'>('ALL');
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
-  const { data: countData } = useQuery({
-    queryKey: ['unread-count'],
-    queryFn: getUnreadCount,
-    refetchInterval: 30000,
-  });
-
-  const { data: notifData, isLoading } = useQuery({
-    queryKey: ['my-notifications'],
-    queryFn: () => getMyNotifications({ page: 1, limit: 15 }),
-    enabled: open,
-  });
-
-  const markReadMut = useMutation({
-    mutationFn: (id: string) => markRead(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
-      queryClient.invalidateQueries({ queryKey: ['my-notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-    },
-  });
-
-  const markAllReadMut = useMutation({
-    mutationFn: markAllRead,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
-      queryClient.invalidateQueries({ queryKey: ['my-notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-    },
-  });
-
-  const rawCount = typeof countData === 'number' ? countData : ((countData as any)?.data?.count ?? (countData as any)?.count ?? (countData as any)?.data ?? 0);
-  const unreadCount = typeof rawCount === 'number' ? rawCount : 0;
-  const notifications: Notification[] = Array.isArray(notifData) ? notifData : ((notifData as any)?.data?.items ?? (notifData as any)?.items ?? (notifData as any)?.data ?? []);
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    markRead: markReadMut,
+    markAllRead: markAllReadMut,
+  } = useNotifications();
 
   const filteredNotifications = filter === 'UNREAD'
     ? notifications.filter(n => !n.isRead)
@@ -80,7 +52,7 @@ export default function NotificationDropdown() {
 
   const handleItemClick = (notif: Notification) => {
     if (!notif.isRead) {
-      markReadMut.mutate(notif.id);
+      markReadMut(notif.id);
     }
     setOpen(false);
 
@@ -158,8 +130,7 @@ export default function NotificationDropdown() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => markAllReadMut.mutate()}
-              disabled={markAllReadMut.isPending}
+              onClick={() => markAllReadMut()}
               className="text-xs text-indigo-600 dark:text-indigo-400 hover:bg-secondary h-8 px-2"
             >
               <CheckCheck className="w-3.5 h-3.5 mr-1" /> Mark all read

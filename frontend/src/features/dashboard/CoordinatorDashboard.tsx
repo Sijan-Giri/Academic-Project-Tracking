@@ -1,20 +1,20 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, PieChart, Pie, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend } from 'recharts';
 import { Users, Book, Percent, CheckCircle, Megaphone, AlertTriangle, ArrowRight } from 'lucide-react';
-import { getProjects } from '@/api/projects.api';
-import { getTeams } from '@/api/teams.api';
-import { getAnnouncements } from '@/api/announcements.api';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import { useThemeStore } from '@/store/theme.store';
 import PageHeader from '@/components/shared/PageHeader';
+import StatsCard from '@/components/shared/StatsCard';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
-
 import { DashboardSkeleton } from '@/components/shared/Skeletons';
+import { useTheme } from '@/hooks/useTheme';
+import { useAnnouncements } from '@/hooks/useAnnouncements';
+import { useCoordinatorDashboardData } from '@/hooks/useDashboard';
+import { getChartTooltipStyle, getAxisStroke, getChartCursorFill } from '@/utils/chartUtils';
+import { ROUTES } from '@/constants/routes';
 
 const COLORS: Record<string, string> = {
   DRAFT: '#64748b',
@@ -29,41 +29,15 @@ const COLORS: Record<string, string> = {
 const PIE_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#06b6d4'];
 
 export default function CoordinatorDashboard() {
-  const { theme } = useThemeStore();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
   const navigate = useNavigate();
 
-  const { data: projectsRes, isLoading: loadingProjects } = useQuery({
-    queryKey: ['coordinator-projects'],
-    queryFn: () => getProjects(),
-  });
+  const { projects: projectsList, teams: teamsList, isLoading } = useCoordinatorDashboardData();
+  const { announcements: announcementList } = useAnnouncements();
 
-  const { data: teamsRes } = useQuery({
-    queryKey: ['coordinator-teams'],
-    queryFn: () => getTeams(),
-  });
-
-  const { data: announcementsRes } = useQuery({
-    queryKey: ['coordinator-announcements'],
-    queryFn: () => getAnnouncements(),
-  });
-
-  if (loadingProjects) {
+  if (isLoading) {
     return <DashboardSkeleton />;
   }
-
-  // Safe array unwrapping
-  const projectsList: any[] = Array.isArray((projectsRes as any)?.data?.items)
-    ? (projectsRes as any).data.items
-    : (Array.isArray((projectsRes as any)?.data) ? (projectsRes as any).data : (Array.isArray(projectsRes) ? projectsRes : []));
-
-  const teamsList: any[] = Array.isArray((teamsRes as any)?.data?.items)
-    ? (teamsRes as any).data.items
-    : (Array.isArray((teamsRes as any)?.data) ? (teamsRes as any).data : (Array.isArray(teamsRes) ? teamsRes : []));
-
-  const announcementList: any[] = Array.isArray((announcementsRes as any)?.data?.items)
-    ? (announcementsRes as any).data.items
-    : (Array.isArray((announcementsRes as any)?.data) ? (announcementsRes as any).data : (Array.isArray(announcementsRes) ? announcementsRes : []));
 
   // Compute live statistics
   const totalProjects = projectsList.length;
@@ -108,7 +82,7 @@ export default function CoordinatorDashboard() {
         title="Coordinator Dashboard"
         subtitle="Monitor department projects, teams, review schedules, and milestone progress."
         actions={
-          <Button onClick={() => navigate('/coordinator/projects')} className="btn-primary">
+          <Button onClick={() => navigate(ROUTES.COORDINATOR_PROJECTS)} className="btn-primary">
             View All Projects <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
         }
@@ -117,7 +91,7 @@ export default function CoordinatorDashboard() {
       {/* Row 1: Key Performance Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard title="Total Projects" value={totalProjects} icon={<Book className="text-indigo-600 dark:text-indigo-400 h-4 w-4" />} />
-        <div onClick={() => navigate('/coordinator/teams')} className="block cursor-pointer">
+        <div onClick={() => navigate(ROUTES.COORDINATOR_TEAMS)} className="block cursor-pointer">
           <StatsCard title="Pending Team Approvals" value={pendingTeams} icon={<Users className="text-amber-600 dark:text-amber-400 h-4 w-4" />} subtitle={`${teamsList.length} total teams · Review →`} />
         </div>
         <StatsCard title="Guide Assigned Rate" value={`${guideAssignedPercent}%`} icon={<Percent className="text-indigo-600 dark:text-indigo-400 h-4 w-4" />} subtitle={`${guidedProjects} assigned`} />
@@ -131,11 +105,11 @@ export default function CoordinatorDashboard() {
           <CardContent className="h-64 pt-4">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={statusData.length > 0 ? statusData : [{ name: 'No Data', count: 0, fill: '#6366f1' }]}>
-                <XAxis dataKey="name" stroke={isDark ? '#94a3b8' : '#64748b'} fontSize={11} />
-                <YAxis stroke={isDark ? '#94a3b8' : '#64748b'} fontSize={11} allowDecimals={false} />
+                <XAxis dataKey="name" stroke={getAxisStroke(isDark)} fontSize={11} />
+                <YAxis stroke={getAxisStroke(isDark)} fontSize={11} allowDecimals={false} />
                 <Tooltip 
-                  cursor={{ fill: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }} 
-                  contentStyle={{ backgroundColor: isDark ? '#11131c' : '#ffffff', border: isDark ? '1px solid #1e2333' : '1px solid #e2e8f0', color: isDark ? '#fff' : '#0f172a', borderRadius: '8px' }} 
+                  cursor={{ fill: getChartCursorFill(isDark) }} 
+                  contentStyle={getChartTooltipStyle(isDark)}
                 />
                 <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                   {statusData.map((entry, index) => (
@@ -157,7 +131,7 @@ export default function CoordinatorDashboard() {
                     <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: isDark ? '#11131c' : '#ffffff', border: isDark ? '1px solid #1e2333' : '1px solid #e2e8f0', color: isDark ? '#fff' : '#0f172a', borderRadius: '8px' }} />
+                <Tooltip contentStyle={getChartTooltipStyle(isDark)} />
                 <Legend formatter={(value) => <span className="text-xs text-muted-foreground font-medium">{value}</span>} />
               </PieChart>
             </ResponsiveContainer>
@@ -169,9 +143,9 @@ export default function CoordinatorDashboard() {
           <CardContent className="h-64 pt-4">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={activityData}>
-                <XAxis dataKey="name" stroke={isDark ? '#94a3b8' : '#64748b'} fontSize={11} />
-                <YAxis stroke={isDark ? '#94a3b8' : '#64748b'} fontSize={11} />
-                <Tooltip contentStyle={{ backgroundColor: isDark ? '#11131c' : '#ffffff', border: isDark ? '1px solid #1e2333' : '1px solid #e2e8f0', color: isDark ? '#fff' : '#0f172a', borderRadius: '8px' }} />
+                <XAxis dataKey="name" stroke={getAxisStroke(isDark)} fontSize={11} />
+                <YAxis stroke={getAxisStroke(isDark)} fontSize={11} />
+                <Tooltip contentStyle={getChartTooltipStyle(isDark)} />
                 <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={2} dot={{ fill: '#6366f1', r: 4 }} />
               </LineChart>
             </ResponsiveContainer>
@@ -186,7 +160,7 @@ export default function CoordinatorDashboard() {
             <CardTitle className="text-base font-semibold flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-500" /> Recent Projects
             </CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/coordinator/projects')} className="text-indigo-600 dark:text-indigo-400 font-medium text-xs">
+            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.COORDINATOR_PROJECTS)} className="text-indigo-600 dark:text-indigo-400 font-medium text-xs">
               Manage All
             </Button>
           </CardHeader>
@@ -201,7 +175,7 @@ export default function CoordinatorDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {loadingProjects ? (
+                {isLoading ? (
                   Array.from({ length: 4 }).map((_, i) => (
                     <TableRow key={i}>
                       <TableCell colSpan={4} className="h-10 bg-secondary/50 animate-pulse rounded" />
@@ -209,7 +183,7 @@ export default function CoordinatorDashboard() {
                   ))
                 ) : projectsList.length > 0 ? (
                   projectsList.slice(0, 5).map((p: any) => (
-                    <TableRow key={p.id} onClick={() => navigate(`/coordinator/projects/${p.id}`)} className="cursor-pointer hover:bg-secondary/50">
+                    <TableRow key={p.id} onClick={() => navigate(ROUTES.COORDINATOR_PROJECT_DETAIL(p.id))} className="cursor-pointer hover:bg-secondary/50">
                       <TableCell className="font-semibold text-foreground max-w-[200px] truncate px-5">{p.title}</TableCell>
                       <TableCell className="text-muted-foreground text-xs">{p.domain || 'N/A'}</TableCell>
                       <TableCell>
@@ -234,7 +208,7 @@ export default function CoordinatorDashboard() {
             <CardTitle className="text-base font-semibold flex items-center gap-2">
               <Megaphone className="h-4 w-4 text-indigo-600 dark:text-indigo-400" /> Announcements
             </CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/coordinator/announcements')} className="text-indigo-600 dark:text-indigo-400 font-medium text-xs">
+            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.COORDINATOR_ANNOUNCEMENTS)} className="text-indigo-600 dark:text-indigo-400 font-medium text-xs">
               Post Announcement
             </Button>
           </CardHeader>
@@ -258,20 +232,5 @@ export default function CoordinatorDashboard() {
         </Card>
       </div>
     </div>
-  );
-}
-
-function StatsCard({ title, value, icon, subtitle }: { title: string; value: React.ReactNode; icon: React.ReactNode; subtitle?: string }) {
-  return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{title}</span>
-        <div className="w-7 h-7 rounded-md bg-secondary border border-border flex items-center justify-center">
-          {icon}
-        </div>
-      </div>
-      <div className="text-xl font-bold text-foreground tracking-tight leading-snug">{value}</div>
-      {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
-    </Card>
   );
 }

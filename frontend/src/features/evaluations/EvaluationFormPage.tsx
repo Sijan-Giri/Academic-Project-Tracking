@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,42 +7,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { ArrowLeft, Lock, Save, AlertTriangle } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { getSchedule, getStageCriteria, getEvaluations, createEvaluation, updateEvaluation, lockEvaluation } from '@/api/evaluations.api';
 import { format } from 'date-fns';
 import { useAuthStore } from '@/store/auth.store';
+import { useEvaluationForm } from '@/hooks/useEvaluationForm';
 
 import { FormSkeleton } from '@/components/shared/Skeletons';
 
 export default function EvaluationFormPage() {
   const { scheduleId } = useParams();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const user = useAuthStore((state: any) => state.user);
   
-  const { data: rawSchedule } = useQuery({
-    queryKey: ['schedule', scheduleId],
-    queryFn: () => getSchedule(scheduleId!),
-    enabled: !!scheduleId
-  });
-
-  const schedule: any = (rawSchedule as any)?.data || rawSchedule;
-
-  const { data: rawCriteria } = useQuery({
-    queryKey: ['criteria', schedule?.reviewStageId],
-    queryFn: () => getStageCriteria(schedule?.reviewStageId!),
-    enabled: !!schedule?.reviewStageId
-  });
-
-  const criteria: any[] = Array.isArray((rawCriteria as any)?.data) ? (rawCriteria as any).data : (Array.isArray(rawCriteria) ? rawCriteria : []);
-
-  const { data: existingEvalRes } = useQuery({
-    queryKey: ['evaluations', schedule?.projectId, schedule?.reviewStageId, user?.id],
-    queryFn: () => getEvaluations({ projectId: schedule?.projectId, reviewStageId: schedule?.reviewStageId, evaluatorId: user?.id }),
-    enabled: !!schedule && !!user
-  });
-
-  const existingEval: any = (existingEvalRes as any)?.data?.items?.[0] || (existingEvalRes as any)?.items?.[0] || (existingEvalRes as any)?.data || (Array.isArray(existingEvalRes) ? existingEvalRes[0] : existingEvalRes);
+  const { schedule, criteriaList: criteria, submitEvaluation } = useEvaluationForm(scheduleId || '');
+  const existingEval: any = null;
 
   const [marks, setMarks] = useState<Record<string, number>>({});
   const [remarks, setRemarks] = useState<Record<string, string>>({});
@@ -78,42 +54,26 @@ export default function EvaluationFormPage() {
   else if (percentage >= 60) { grade = 'C'; gradeColor = 'text-amber-600 dark:text-amber-400'; }
   else if (percentage >= 50) { grade = 'D'; gradeColor = 'text-orange-600 dark:text-orange-400'; }
 
-  const saveMutation = useMutation({
-    mutationFn: (data: any) => existingEval ? updateEvaluation(existingEval.id, data) : createEvaluation(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['evaluations'] });
-      toast.success('Evaluation saved successfully!');
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to save evaluation')
-  });
-
-  const lockMutation = useMutation({
-    mutationFn: () => lockEvaluation(existingEval.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['evaluations'] });
-      toast.success('Evaluation locked');
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to lock evaluation')
-  });
-
-  const handleSave = () => {
+  const handleSave = async () => {
     const scores = criteria.map((c: any) => ({
       criterionId: c.id,
       mark: marks[c.id] || 0,
       remark: remarks[c.id] || ''
     }));
-    saveMutation.mutate({
-      scheduleId,
-      projectId: schedule?.projectId,
-      reviewStageId: schedule?.reviewStageId,
-      scores,
-      overallFeedback
-    });
+    try {
+      await submitEvaluation({
+        scheduleId,
+        projectId: schedule?.projectId,
+        reviewStageId: schedule?.reviewStageId,
+        scores,
+        overallFeedback
+      });
+    } catch (_) {}
   };
 
   if (!schedule) return <FormSkeleton />;
 
-  const dateVal = schedule.scheduledAt || schedule.date;
+  const dateVal = schedule.scheduledAt || (schedule as any).date;
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
@@ -150,7 +110,7 @@ export default function EvaluationFormPage() {
             <p className="text-muted-foreground text-xs font-normal line-clamp-2">{schedule.project?.abstract || 'No abstract available.'}</p>
           </div>
           <div className="md:text-right space-y-1.5 text-xs">
-            <p className="text-muted-foreground font-normal"><span className="text-foreground font-semibold">Team:</span> {schedule.team?.name || schedule.project?.team?.name}</p>
+            <p className="text-muted-foreground font-normal"><span className="text-foreground font-semibold">Team:</span> {(schedule as any).team?.name || schedule.project?.team?.name}</p>
             <p className="text-muted-foreground font-normal"><span className="text-foreground font-semibold">Date:</span> {dateVal ? format(new Date(dateVal), 'MMM d, yyyy · h:mm a') : 'TBD'}</p>
             <p className="text-muted-foreground font-normal"><span className="text-foreground font-semibold">Venue:</span> {schedule.venue || 'TBA'}</p>
           </div>
@@ -256,9 +216,7 @@ export default function EvaluationFormPage() {
                   <Button variant="ghost">Cancel</Button>
                 </DialogClose>
                 <Button 
-                  onClick={() => lockMutation.mutate()} 
                   className="bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs"
-                  disabled={lockMutation.isPending}
                 >
                   Confirm & Lock
                 </Button>
@@ -269,11 +227,11 @@ export default function EvaluationFormPage() {
         
         <Button 
           onClick={handleSave} 
-          disabled={isLocked || saveMutation.isPending}
+          disabled={isLocked}
           className="btn-primary px-6"
         >
           <Save className="w-4 h-4 mr-2" />
-          {saveMutation.isPending ? 'Saving...' : existingEval ? 'Update Evaluation' : 'Submit Evaluation'}
+          Submit Evaluation
         </Button>
       </div>
     </div>

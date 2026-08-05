@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { X, ChevronRight, ChevronLeft, Loader2, Save, CheckCircle2, AlertTriangle, FolderPlus, Users, Award } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -11,10 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import PageHeader from '@/components/shared/PageHeader';
-import { createProject } from '@/api/projects.api';
-import { getMyTeam } from '@/api/teams.api';
-import { getAvailableGuides } from '@/api/guides.api';
 import { cn } from '@/lib/utils';
+import { useCreateProject } from '@/hooks/useCreateProject';
 
 const projectInfoSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
@@ -32,6 +29,13 @@ export default function CreateProjectPage() {
   const [guidePrefs, setGuidePrefs] = useState<string[]>(['', '', '']);
   const navigate = useNavigate();
 
+  const {
+    team,
+    isLoading: teamLoading,
+    createProject: createProjectMutate,
+    isSubmitting: isPending,
+  } = useCreateProject();
+
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(projectInfoSchema),
     defaultValues: {
@@ -42,29 +46,7 @@ export default function CreateProjectPage() {
     }
   });
 
-  const { data: teamRes, isLoading: teamLoading } = useQuery({
-    queryKey: ['my-team'],
-    queryFn: getMyTeam,
-    retry: false,
-  });
-
-  const { data: guidesRes } = useQuery({ queryKey: ['available-guides'], queryFn: getAvailableGuides });
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: createProject,
-    onSuccess: () => {
-      toast.success('Project created successfully!');
-      navigate('/my-project');
-    },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to create project');
-    }
-  });
-
-  const team = (teamRes as any)?.data ?? teamRes ?? null;
-  const availableGuides: any[] = Array.isArray((guidesRes as any)?.data)
-    ? (guidesRes as any).data
-    : (Array.isArray(guidesRes) ? guidesRes : []);
+  const availableGuides: any[] = [];
 
   const addKeyword = () => {
     const val = kwInput.trim();
@@ -85,7 +67,7 @@ export default function CreateProjectPage() {
     }
     const cleanPrefs = guidePrefs.filter(Boolean);
 
-    mutate({
+    createProjectMutate({
       title: data.title,
       domain: data.domain,
       abstract: data.abstract,

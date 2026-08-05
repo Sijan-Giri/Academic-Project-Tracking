@@ -1,39 +1,29 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { BookOpen, Calendar, CheckSquare, Clock, ArrowRight } from 'lucide-react';
-import { getGuidedProjects } from '@/api/projects.api';
-import { getMySchedules } from '@/api/schedules.api';
-import { format } from 'date-fns';
-import { useThemeStore } from '@/store/theme.store';
 import PageHeader from '@/components/shared/PageHeader';
+import StatsCard from '@/components/shared/StatsCard';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
-
 import { DashboardSkeleton } from '@/components/shared/Skeletons';
+import { useTheme } from '@/hooks/useTheme';
+import { useFacultyDashboardData } from '@/hooks/useDashboard';
+import { getChartTooltipStyle, getAxisStroke, getChartCursorFill } from '@/utils/chartUtils';
+import { formatDate } from '@/utils/formatUtils';
+import { ROUTES } from '@/constants/routes';
 
 export default function FacultyDashboard() {
-  const { theme } = useThemeStore();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
   const navigate = useNavigate();
 
-  const { data: rawGuided, isLoading: loadingGuided } = useQuery({ queryKey: ['guided-projects'], queryFn: getGuidedProjects });
-  const { data: rawSchedules, isLoading: loadingSchedules } = useQuery({ queryKey: ['my-schedules'], queryFn: getMySchedules });
+  const { guidedProjects, schedules, isLoading } = useFacultyDashboardData();
 
-  if (loadingGuided || loadingSchedules) {
+  if (isLoading) {
     return <DashboardSkeleton />;
   }
-
-  const guidedProjects: any[] = Array.isArray((rawGuided as any)?.data?.items)
-    ? (rawGuided as any).data.items
-    : (Array.isArray((rawGuided as any)?.data) ? (rawGuided as any).data : (Array.isArray(rawGuided) ? rawGuided : []));
-
-  const schedules: any[] = Array.isArray((rawSchedules as any)?.data?.items)
-    ? (rawSchedules as any).data.items
-    : (Array.isArray((rawSchedules as any)?.data) ? (rawSchedules as any).data : (Array.isArray(rawSchedules) ? rawSchedules : []));
 
   // Stats
   const stats = {
@@ -44,10 +34,10 @@ export default function FacultyDashboard() {
   };
 
   const chartData = [
-    { name: 'Abstract', count: guidedProjects.filter(p => p.status === 'ABSTRACT_SUBMITTED' || p.status === 'ABSTRACT_APPROVED').length || 2 },
-    { name: 'In Progress', count: guidedProjects.filter(p => p.status === 'IN_PROGRESS').length || 4 },
-    { name: 'Under Review', count: guidedProjects.filter(p => p.status === 'UNDER_REVIEW').length || 3 },
-    { name: 'Completed', count: guidedProjects.filter(p => p.status === 'COMPLETED').length || 1 },
+    { name: 'Abstract', count: guidedProjects.filter((p: any) => p.status === 'ABSTRACT_SUBMITTED' || p.status === 'ABSTRACT_APPROVED').length || 2 },
+    { name: 'In Progress', count: guidedProjects.filter((p: any) => p.status === 'IN_PROGRESS').length || 4 },
+    { name: 'Under Review', count: guidedProjects.filter((p: any) => p.status === 'UNDER_REVIEW').length || 3 },
+    { name: 'Completed', count: guidedProjects.filter((p: any) => p.status === 'COMPLETED').length || 1 },
   ];
 
   return (
@@ -56,7 +46,7 @@ export default function FacultyDashboard() {
         title="Faculty Dashboard"
         subtitle="Overview of your guided student projects, upcoming evaluation schedules, and review tasks."
         actions={
-          <Button onClick={() => navigate('/faculty/projects')} className="btn-primary">
+          <Button onClick={() => navigate(ROUTES.FACULTY_PROJECTS)} className="btn-primary">
             Guided Projects <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
         }
@@ -79,11 +69,11 @@ export default function FacultyDashboard() {
           <CardContent className="h-72 pt-4">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData}>
-                <XAxis dataKey="name" stroke={isDark ? '#94a3b8' : '#64748b'} fontSize={11} />
-                <YAxis stroke={isDark ? '#94a3b8' : '#64748b'} fontSize={11} allowDecimals={false} />
+                <XAxis dataKey="name" stroke={getAxisStroke(isDark)} fontSize={11} />
+                <YAxis stroke={getAxisStroke(isDark)} fontSize={11} allowDecimals={false} />
                 <Tooltip 
-                  cursor={{ fill: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }} 
-                  contentStyle={{ backgroundColor: isDark ? '#11131c' : '#ffffff', border: isDark ? '1px solid #1e2333' : '1px solid #e2e8f0', borderRadius: '8px', color: isDark ? '#fff' : '#0f172a' }} 
+                  cursor={{ fill: getChartCursorFill(isDark) }} 
+                  contentStyle={getChartTooltipStyle(isDark)} 
                 />
                 <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -94,13 +84,13 @@ export default function FacultyDashboard() {
         <Card className="flex flex-col">
           <CardHeader className="border-b border-border pb-3 flex flex-row items-center justify-between">
             <CardTitle className="text-base font-semibold">Upcoming Schedules</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/my-schedules')} className="text-indigo-600 dark:text-indigo-400 font-semibold text-xs">
+            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.MY_SCHEDULES)} className="text-indigo-600 dark:text-indigo-400 font-semibold text-xs">
               View All
             </Button>
           </CardHeader>
           <CardContent className="pt-4 space-y-3 flex-1">
             {schedules.slice(0, 4).map((s: any) => (
-              <div key={s.id} onClick={() => navigate('/my-schedules')} className="p-3 rounded-lg bg-secondary/50 border border-border flex flex-col space-y-1.5 cursor-pointer hover:bg-secondary transition-colors">
+              <div key={s.id} onClick={() => navigate(ROUTES.MY_SCHEDULES)} className="p-3 rounded-lg bg-secondary/50 border border-border flex flex-col space-y-1.5 cursor-pointer hover:bg-secondary transition-colors">
                 <div className="flex justify-between items-start">
                   <span className="font-semibold text-xs text-foreground line-clamp-1">{s.project?.title || 'Presentation Slot'}</span>
                   <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
@@ -110,7 +100,7 @@ export default function FacultyDashboard() {
                   </span>
                 </div>
                 <div className="flex justify-between text-[11px] text-muted-foreground font-normal">
-                  <span>{s.scheduledAt ? format(new Date(s.scheduledAt), 'MMM d, h:mm a') : 'TBD'}</span>
+                  <span>{s.scheduledAt ? formatDate(s.scheduledAt) : 'TBD'}</span>
                   <span className="font-medium text-foreground">{s.venue || 'Room TBD'}</span>
                 </div>
               </div>
@@ -124,7 +114,7 @@ export default function FacultyDashboard() {
       <Card>
         <CardHeader className="border-b border-border pb-3 flex flex-row items-center justify-between">
           <CardTitle className="text-base font-semibold">Guided Projects Roster</CardTitle>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/faculty/projects')} className="text-indigo-600 dark:text-indigo-400 font-semibold text-xs">
+          <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.FACULTY_PROJECTS)} className="text-indigo-600 dark:text-indigo-400 font-semibold text-xs">
             Manage Projects
           </Button>
         </CardHeader>
@@ -147,7 +137,7 @@ export default function FacultyDashboard() {
                     <StatusBadge status={p.status || 'IN_PROGRESS'} type="project" />
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground text-xs font-medium px-5">
-                    {p.assignmentDate ? format(new Date(p.assignmentDate), 'MMM d, yyyy') : 'Active'}
+                    {p.assignmentDate ? formatDate(p.assignmentDate) : 'Active'}
                   </TableCell>
                 </TableRow>
               ))}
@@ -161,19 +151,5 @@ export default function FacultyDashboard() {
         </CardContent>
       </Card>
     </div>
-  );
-}
-
-function StatsCard({ title, value, icon }: { title: string; value: React.ReactNode; icon: React.ReactNode }) {
-  return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{title}</span>
-        <div className="w-7 h-7 rounded-md bg-secondary border border-border flex items-center justify-center">
-          {icon}
-        </div>
-      </div>
-      <div className="text-xl font-bold text-foreground tracking-tight leading-snug">{value}</div>
-    </Card>
   );
 }

@@ -1,0 +1,1 @@
+import{n as s}from"./index-BfIdqsKx.js";const r=async e=>(await s.get("/semesters",{params:e})).data,c=async e=>(await s.post("/semesters",e)).data,n=async(e,t)=>(await s.put(`/semesters/${e}`,t)).data,m=async e=>(await s.delete(`/semesters/${e}`)).data,o=async e=>(await s.post(`/semesters/${e}/set-current`)).data;export{c,m as d,r as g,o as s,n as u};

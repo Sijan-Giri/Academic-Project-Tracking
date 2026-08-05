@@ -1,45 +1,29 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Bell, Clock, MessageSquare, Megaphone, Check, AlertTriangle, ShieldCheck, Inbox } from 'lucide-react';
-import { getNotifications, markAllRead, markRead } from '@/api/notifications.api';
 import PageHeader from '@/components/shared/PageHeader';
 import { Skeleton, SkeletonCircle } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [unreadOnly, setUnreadOnly] = useState(false);
 
-  const { data: rawNotifs, isLoading } = useQuery({ queryKey: ['notifications'], queryFn: getNotifications });
-  const notifications: any[] = Array.isArray(rawNotifs) ? rawNotifs : ((rawNotifs as any)?.items ?? (rawNotifs as any)?.data?.items ?? []);
-
-  const markAllMutation = useMutation({
-    mutationFn: markAllRead,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
-      queryClient.invalidateQueries({ queryKey: ['my-notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-    }
-  });
-
-  const markReadMutation = useMutation({
-    mutationFn: markRead,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
-      queryClient.invalidateQueries({ queryKey: ['my-notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-    }
-  });
+  const {
+    notifications,
+    isLoading,
+    markRead,
+    markAllRead,
+  } = useNotifications();
 
   const handleNotificationClick = (n: any) => {
-    if (!n.isRead) markReadMutation.mutate(n.id);
+    if (!n.isRead) markRead(n.id);
 
     if (n.type === 'ANNOUNCEMENT' || n.title.toLowerCase().includes('announcement')) {
       navigate('/announcements');
@@ -80,8 +64,7 @@ export default function NotificationsPage() {
         actions={
           <Button
             variant="outline"
-            onClick={() => markAllMutation.mutate()}
-            disabled={markAllMutation.isPending}
+            onClick={() => markAllRead()}
             className="btn-outline"
           >
             <Check className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" /> Mark All as Read

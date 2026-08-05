@@ -1,5 +1,6 @@
 import { api } from './client';
-import { ReviewSchedule, ApiResponse, PaginatedResponse } from '@/types';
+import type { ReviewSchedule } from '@/types/review.types';
+import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
 
 export const createSchedule = async (data: Partial<ReviewSchedule>) => (await api.post<ApiResponse<ReviewSchedule>>('/schedules', data)).data;
 export const getSchedules = async (params?: any) => (await api.get<ApiResponse<PaginatedResponse<ReviewSchedule>>>('/schedules', { params })).data;

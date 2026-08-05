@@ -1,12 +1,11 @@
 import { Menu, Sun, Moon, User as UserIcon, Settings as SettingsIcon, LogOut as LogOutIcon } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import NotificationDropdown from '@/components/shared/NotificationDropdown';
 import { useAuthStore } from '@/store/auth.store';
-import { useThemeStore } from '@/store/theme.store';
+import { useTheme } from '@/hooks/useTheme';
+import { useMyProjects } from '@/hooks/useMyProjects';
+import { useMyTeam } from '@/hooks/useMyTeam';
 import { logout as logoutApi } from '@/api/auth.api';
-import { getMyProjects } from '@/api/projects.api';
-import { getMyTeam } from '@/api/teams.api';
 import { useSidebar } from '@/layouts/DashboardLayout';
 import {
   DropdownMenu,
@@ -19,35 +18,21 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ROUTES } from '@/constants/routes';
 
 interface HeaderProps { className?: string; }
 
 export default function Header({ className }: HeaderProps) {
   const { toggle } = useSidebar();
   const { user, clearAuth } = useAuthStore();
-  const { theme, toggleTheme } = useThemeStore();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
 
   const isStudent = user?.role === 'STUDENT';
 
-  const { data: projectsRes } = useQuery({
-    queryKey: ['my-projects'],
-    queryFn: getMyProjects,
-    enabled: isStudent,
-  });
-
-  const { data: teamRes } = useQuery({
-    queryKey: ['my-team'],
-    queryFn: getMyTeam,
-    enabled: isStudent,
-  });
-
-  const projectList = Array.isArray((projectsRes as any)?.data?.items)
-    ? (projectsRes as any).data.items
-    : (Array.isArray((projectsRes as any)?.data) ? (projectsRes as any).data : (Array.isArray(projectsRes) ? projectsRes : []));
-  const currentProject = projectList[0] || null;
-  const currentTeam = (teamRes as any)?.data || teamRes;
+  const { currentProject } = useMyProjects(isStudent);
+  const { team: currentTeam } = useMyTeam(isStudent);
 
   const getPageTitle = () => {
     const path = location.pathname;
@@ -55,16 +40,16 @@ export default function Header({ className }: HeaderProps) {
       return user?.name ? `${user.name}'s Dashboard` : 'Dashboard';
     }
     if (path === '/my-project' || path.startsWith('/my-project/')) {
-      if (path === '/my-project/abstract') return 'Project Abstract Proposal';
-      if (path === '/my-project/milestones') return 'Milestone Deliverables';
-      if (path === '/my-project/submissions') return 'Submission History';
-      if (path === '/my-project/create') return 'Create Project Proposal';
+      if (path === ROUTES.MY_PROJECT_ABSTRACT) return 'Project Abstract Proposal';
+      if (path === ROUTES.MY_PROJECT_MILESTONES) return 'Milestone Deliverables';
+      if (path === ROUTES.MY_PROJECT_SUBMISSIONS) return 'Submission History';
+      if (path === ROUTES.MY_PROJECT_CREATE) return 'Create Project Proposal';
       return currentProject?.title ? currentProject.title : 'My Capstone Project';
     }
-    if (path === '/my-team') {
+    if (path === ROUTES.MY_TEAM) {
       return currentTeam?.name ? `Team ${currentTeam.name}` : 'Team Roster';
     }
-    if (path.includes('/coordinator/projects')) return 'Academic Projects';
+    if (path.includes(ROUTES.COORDINATOR_PROJECTS)) return 'Academic Projects';
 
     const segments = path.split('/').filter(Boolean);
     const last = segments[segments.length - 1];
@@ -123,13 +108,13 @@ export default function Header({ className }: HeaderProps) {
             
             <DropdownMenuSeparator className="dark:bg-white/10 bg-slate-100" />
             
-            <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer font-bold">
+            <DropdownMenuItem onClick={() => navigate(ROUTES.PROFILE)} className="cursor-pointer font-bold">
               <UserIcon className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
               View Profile
             </DropdownMenuItem>
 
             {user?.role === 'ADMIN' && (
-              <DropdownMenuItem onClick={() => navigate('/admin/settings')} className="cursor-pointer font-bold">
+              <DropdownMenuItem onClick={() => navigate(ROUTES.ADMIN_SETTINGS)} className="cursor-pointer font-bold">
                 <SettingsIcon className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
                 System Settings
               </DropdownMenuItem>
@@ -141,7 +126,7 @@ export default function Header({ className }: HeaderProps) {
               onClick={async () => {
                 try { await logoutApi(); } catch (_) {}
                 clearAuth();
-                navigate('/login');
+                navigate(ROUTES.LOGIN);
               }}
               className="text-rose-600 dark:text-rose-400 focus:bg-rose-50 dark:focus:bg-rose-500/10 focus:text-rose-700 dark:focus:text-rose-300 font-bold cursor-pointer"
             >

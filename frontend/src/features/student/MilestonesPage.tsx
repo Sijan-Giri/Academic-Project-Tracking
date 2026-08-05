@@ -1,8 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Calendar, Upload, FileText, Clock, X, FolderUp, Loader2 } from 'lucide-react';
-import { getMilestones } from '@/api/milestones.api';
-import { createSubmission } from '@/api/submissions.api';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
 import PageHeader from '@/components/shared/PageHeader';
@@ -10,37 +7,19 @@ import FileUploadZone from '@/components/shared/FileUploadZone';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useMilestones } from '@/hooks/useMilestones';
 
 import { MilestonesSkeleton } from '@/components/shared/Skeletons';
 
 export default function MilestonesPage() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [selectedMilestone, setSelectedMilestone] = useState<any>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [notes, setNotes] = useState('');
 
-  const { data: res, isLoading } = useQuery({
-    queryKey: ['my-milestones'],
-    queryFn: getMilestones
-  });
+  const { milestones, isLoading, uploadSubmission, isSubmitting } = useMilestones();
 
-  const submitMutation = useMutation({
-    mutationFn: (formData: FormData) => createSubmission(formData),
-    onSuccess: () => {
-      toast.success('Files submitted successfully!');
-      setSelectedMilestone(null);
-      setSelectedFiles([]);
-      setNotes('');
-      queryClient.invalidateQueries({ queryKey: ['my-milestones'] });
-      queryClient.invalidateQueries({ queryKey: ['my-submissions'] });
-    },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to upload files');
-    }
-  });
-
-  const handleUploadSubmit = () => {
+  const handleUploadSubmit = async () => {
     if (!selectedFiles || selectedFiles.length === 0) {
       toast.error('Please select at least one file to upload');
       return;
@@ -51,16 +30,19 @@ export default function MilestonesPage() {
     selectedFiles.forEach((file) => {
       formData.append('files', file);
     });
-    submitMutation.mutate(formData);
+    try {
+      await uploadSubmission(formData);
+      setSelectedMilestone(null);
+      setSelectedFiles([]);
+      setNotes('');
+    } catch (_) {}
   };
 
   if (isLoading) {
     return <MilestonesSkeleton />;
   }
 
-  const milestonesList: any[] = Array.isArray((res as any)?.data?.items)
-    ? (res as any).data.items
-    : (Array.isArray((res as any)?.data) ? (res as any).data : (Array.isArray(res) ? res : []));
+  const milestonesList = milestones;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -217,16 +199,16 @@ export default function MilestonesPage() {
               <Button
                 variant="outline"
                 onClick={() => setSelectedMilestone(null)}
-                disabled={submitMutation.isPending}
+                disabled={isSubmitting}
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleUploadSubmit}
-                disabled={submitMutation.isPending || selectedFiles.length === 0}
+                disabled={isSubmitting || selectedFiles.length === 0}
                 className="btn-primary"
               >
-                {submitMutation.isPending ? (
+                {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Uploading...
                   </>

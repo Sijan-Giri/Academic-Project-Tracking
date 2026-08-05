@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus, Trash2 } from 'lucide-react';
-import toast from 'react-hot-toast';
 
-import { api } from '@/api/client';
+import { useBatches } from '@/hooks/useBatches';
 import PageHeader from '@/components/shared/PageHeader';
 import DataTable from '@/components/shared/DataTable';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
@@ -25,34 +23,31 @@ const batchSchema = z.object({
 type BatchFormValues = z.infer<typeof batchSchema>;
 
 export default function BatchesPage() {
-  const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteItem, setDeleteItem] = useState<any>(null);
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/batches/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['batches'] });
-      toast.success('Batch deleted successfully');
-      setDeleteItem(null);
-    },
-    onError: () => toast.error('Failed to delete batch'),
-  });
+  const {
+    batches,
+    isLoading,
+    createBatch,
+    deleteBatch,
+  } = useBatches();
 
-  const { data: batches, isLoading } = useQuery({
-    queryKey: ['batches'],
-    queryFn: async () => (await api.get('/batches')).data,
-  });
-
-  const createMutation = useMutation({
-    mutationFn: (data: BatchFormValues) => api.post('/batches', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['batches'] });
-      toast.success('Batch created successfully');
+  const handleCreate = async (data: BatchFormValues) => {
+    try {
+      await createBatch(data);
       setCreateOpen(false);
-    },
-    onError: () => toast.error('Failed to create batch'),
-  });
+      form.reset();
+    } catch (_) {}
+  };
+
+  const handleDelete = async () => {
+    if (!deleteItem) return;
+    try {
+      await deleteBatch(deleteItem.id);
+      setDeleteItem(null);
+    } catch (_) {}
+  };
 
   const form = useForm<BatchFormValues>({
     resolver: zodResolver(batchSchema),
@@ -83,7 +78,7 @@ export default function BatchesPage() {
     },
   ];
 
-  const batchList = Array.isArray(batches?.data) ? batches.data : (Array.isArray(batches) ? batches : ((batches as any)?.data?.items || []));
+  const batchList = batches;
 
   return (
     <div className="space-y-6">
@@ -104,7 +99,7 @@ export default function BatchesPage() {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader><DialogTitle>Add Batch</DialogTitle></DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit((v) => createMutation.mutate(v))} className="space-y-4">
+            <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Batch Name</FormLabel>
@@ -126,7 +121,7 @@ export default function BatchesPage() {
         onOpenChange={(o) => !o && setDeleteItem(null)}
         title="Delete Batch"
         description={`Are you sure you want to delete batch "${deleteItem?.name}"?`}
-        onConfirm={() => deleteItem && deleteMutation.mutate(deleteItem.id)}
+        onConfirm={handleDelete}
         variant="danger"
       />
     </div>

@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Calendar, Trash2, PlusCircle, Loader2, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Plus, Calendar, Trash2, PlusCircle, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,10 +13,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import PageHeader from '@/components/shared/PageHeader';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import EmptyState from '@/components/shared/EmptyState';
-import { getReviewStages, createReviewStage, deleteReviewStage, getTemplates, addCriteria, deleteCriteria } from '@/api/reviews.api';
-import { getSemesters } from '@/api/semesters.api';
-import { getDepartments } from '@/api/departments.api';
 import { REVIEW_STAGE_LABELS } from '@/lib/constants';
+import { useReviewStages } from '@/hooks/useReviewStages';
+import { useSemesters } from '@/hooks/useSemesters';
+import { useDepartments } from '@/hooks/useDepartments';
+import { useReviewTemplates } from '@/hooks/useReviewTemplates';
 
 const stageSchema = z.object({
   templateId: z.string().min(1, 'Template required'),
@@ -51,34 +50,24 @@ const STAGE_TYPE_CLASSES: Record<string, string> = {
 };
 
 export default function ReviewStagesPage() {
-  const qc = useQueryClient();
   const [semesterFilter, setSemesterFilter] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteStageId, setDeleteStageId] = useState<string | null>(null);
   const [criteriaModal, setCriteriaModal] = useState<string | null>(null); // stageId
   const [expandedStage, setExpandedStage] = useState<string | null>(null);
 
-  const { data: stagesData, isLoading } = useQuery({
-    queryKey: ['review-stages', semesterFilter],
-    queryFn: () => getReviewStages(semesterFilter ? { semesterId: semesterFilter } : undefined),
-  });
+  const {
+    reviewStages: stages,
+    isLoading,
+    createReviewStage,
+    deleteReviewStage,
+    addCriteria,
+    deleteCriteria,
+  } = useReviewStages(semesterFilter ? { semesterId: semesterFilter } : undefined);
 
-  const { data: templatesData } = useQuery({ queryKey: ['review-templates'], queryFn: getTemplates });
-  const { data: semestersData } = useQuery({ queryKey: ['semesters'], queryFn: () => getSemesters() });
-  const { data: deptsData } = useQuery({ queryKey: ['departments'], queryFn: getDepartments });
-
-  const rawStages = stagesData as any;
-  const stages: any[] = Array.isArray(rawStages)
-    ? rawStages
-    : Array.isArray(rawStages?.data?.items)
-    ? rawStages.data.items
-    : Array.isArray(rawStages?.data)
-    ? rawStages.data
-    : [];
-
-  const templates: any[] = Array.isArray(templatesData) ? templatesData : (templatesData as any)?.data || [];
-  const semesters: any[] = Array.isArray(semestersData) ? semestersData : (semestersData as any)?.data?.items || (semestersData as any)?.data || [];
-  const departments: any[] = Array.isArray(deptsData) ? deptsData : (deptsData as any)?.data || [];
+  const { semesters } = useSemesters();
+  const { departments } = useDepartments();
+  const { templates } = useReviewTemplates();
 
   // Stage form
   const stageForm = useForm<StageForm>({
@@ -92,46 +81,36 @@ export default function ReviewStagesPage() {
     defaultValues: { order: 1, maxMarks: 20 },
   });
 
-  const createStageMut = useMutation({
-    mutationFn: (data: StageForm) => createReviewStage(data as any),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['review-stages'] });
-      toast.success('Review stage created');
+  const handleCreateStage = async (data: StageForm) => {
+    try {
+      await createReviewStage(data as any);
       setCreateOpen(false);
       stageForm.reset();
-    },
-    onError: (e: any) => toast.error(e?.response?.data?.message || 'Failed to create stage'),
-  });
+    } catch (_) {}
+  };
 
-  const deleteStageMut = useMutation({
-    mutationFn: (id: string) => deleteReviewStage(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['review-stages'] });
-      toast.success('Stage deleted');
+  const handleDeleteStage = async () => {
+    if (!deleteStageId) return;
+    try {
+      await deleteReviewStage(deleteStageId);
       setDeleteStageId(null);
-    },
-    onError: () => toast.error('Failed to delete stage'),
-  });
+    } catch (_) {}
+  };
 
-  const addCriteriaMut = useMutation({
-    mutationFn: ({ stageId, data }: { stageId: string; data: CriteriaForm }) => addCriteria(stageId, data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['review-stages'] });
-      toast.success('Criteria added');
+  const handleAddCriteria = async (data: CriteriaForm) => {
+    if (!criteriaModal) return;
+    try {
+      await addCriteria({ stageId: criteriaModal, data });
       setCriteriaModal(null);
       criteriaForm.reset();
-    },
-    onError: () => toast.error('Failed to add criteria'),
-  });
+    } catch (_) {}
+  };
 
-  const deleteCriteriaMut = useMutation({
-    mutationFn: ({ stageId, criteriaId }: { stageId: string; criteriaId: string }) => deleteCriteria(stageId, criteriaId),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['review-stages'] });
-      toast.success('Criteria removed');
-    },
-    onError: () => toast.error('Failed to remove criteria'),
-  });
+  const handleDeleteCriteria = async (stageId: string, criteriaId: string) => {
+    try {
+      await deleteCriteria({ stageId, criteriaId });
+    } catch (_) {}
+  };
 
   const openCreate = () => {
     stageForm.reset({
@@ -258,7 +237,7 @@ export default function ReviewStagesPage() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => deleteCriteriaMut.mutate({ stageId: stg.id, criteriaId: c.id })}
+                                onClick={() => handleDeleteCriteria(stg.id, c.id)}
                                 className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-600"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
@@ -280,7 +259,7 @@ export default function ReviewStagesPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader><DialogTitle className="text-base font-semibold">Create Review Stage</DialogTitle></DialogHeader>
-          <form onSubmit={stageForm.handleSubmit(d => createStageMut.mutate(d))} className="space-y-4">
+          <form onSubmit={stageForm.handleSubmit(handleCreateStage)} className="space-y-4">
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Template</Label>
               <Select value={stageForm.watch('templateId')} onValueChange={v => stageForm.setValue('templateId', v)}>
@@ -335,8 +314,8 @@ export default function ReviewStagesPage() {
             </div>
             <DialogFooter className="gap-2 pt-2">
               <Button variant="ghost" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={createStageMut.isPending} id="submit-stage-btn" className="btn-primary">
-                {createStageMut.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Create Stage
+              <Button type="submit" id="submit-stage-btn" className="btn-primary">
+                Create Stage
               </Button>
             </DialogFooter>
           </form>
@@ -347,7 +326,7 @@ export default function ReviewStagesPage() {
       <Dialog open={!!criteriaModal} onOpenChange={o => !o && setCriteriaModal(null)}>
         <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader><DialogTitle className="text-base font-semibold">Add Evaluation Criteria</DialogTitle></DialogHeader>
-          <form onSubmit={criteriaForm.handleSubmit(d => criteriaModal && addCriteriaMut.mutate({ stageId: criteriaModal, data: d }))} className="space-y-4">
+          <form onSubmit={criteriaForm.handleSubmit(handleAddCriteria)} className="space-y-4">
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Criteria Name</Label>
               <Input {...criteriaForm.register('name')} placeholder="e.g. Methodology & Implementation Quality" id="criteria-name-input" />
@@ -368,8 +347,8 @@ export default function ReviewStagesPage() {
             </div>
             <DialogFooter className="gap-2 pt-2">
               <Button variant="ghost" onClick={() => setCriteriaModal(null)}>Cancel</Button>
-              <Button type="submit" disabled={addCriteriaMut.isPending} id="submit-criteria-btn" className="btn-primary">
-                {addCriteriaMut.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Add Criteria
+              <Button type="submit" id="submit-criteria-btn" className="btn-primary">
+                Add Criteria
               </Button>
             </DialogFooter>
           </form>
@@ -382,7 +361,7 @@ export default function ReviewStagesPage() {
         onOpenChange={o => !o && setDeleteStageId(null)}
         title="Delete Review Stage"
         description="Are you sure? This will remove this review stage and all associated criteria."
-        onConfirm={() => deleteStageId && deleteStageMut.mutate(deleteStageId)}
+        onConfirm={handleDeleteStage}
         variant="danger"
       />
     </div>

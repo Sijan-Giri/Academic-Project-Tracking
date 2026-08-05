@@ -1,22 +1,18 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { MapPin, Users, ExternalLink, Calendar as CalendarIcon } from 'lucide-react';
-import { getMySchedules } from '@/api/schedules.api';
 import { format, isPast, isFuture } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '@/components/shared/PageHeader';
 import EmptyState from '@/components/shared/EmptyState';
+import { useMySchedules } from '@/hooks/useMySchedules';
 
 export default function MySchedulesPage() {
   const navigate = useNavigate();
-  const { data: rawSchedules } = useQuery({ queryKey: ['my-schedules'], queryFn: getMySchedules });
-  const schedules: any[] = Array.isArray((rawSchedules as any)?.data?.items)
-    ? (rawSchedules as any).data.items
-    : (Array.isArray((rawSchedules as any)?.data) ? (rawSchedules as any).data : (Array.isArray(rawSchedules) ? rawSchedules : []));
+  const { schedules } = useMySchedules();
 
   const [activeTab, setActiveTab] = useState('upcoming');
 

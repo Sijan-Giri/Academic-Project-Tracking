@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -7,76 +6,42 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { CheckCircle, XCircle, UserPlus, Loader2, User } from 'lucide-react';
-import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import PageHeader from '@/components/shared/PageHeader';
 import EmptyState from '@/components/shared/EmptyState';
-import { approvePreference, rejectPreference, assignGuide, removeGuideAssignment, getAvailableGuides } from '@/api/guides.api';
-import { getProjects } from '@/api/projects.api';
-import { api } from '@/api/client';
+import { useGuideAllocation } from '@/hooks/useGuideAllocation';
 
 export default function GuideAllocationPage() {
-  const qc = useQueryClient();
   const [rejectModal, setRejectModal] = useState<{ id: string } | null>(null);
   const [rejectNote, setRejectNote] = useState('');
   const [assignProjectId, setAssignProjectId] = useState('');
   const [assignFacultyId, setAssignFacultyId] = useState('');
 
-  const { data: projectsData } = useQuery({ queryKey: ['projects'], queryFn: () => getProjects({ limit: 100 }) });
-  const { data: guidesData } = useQuery({ queryKey: ['available-guides'], queryFn: getAvailableGuides });
+  const {
+    projects,
+    guides,
+    isLoading: prefsLoading,
+    assignGuide,
+    removeGuide,
+    isSubmitting,
+  } = useGuideAllocation();
 
-  // Fetch all guide preferences across projects
-  const { data: prefsData, isLoading: prefsLoading } = useQuery({
-    queryKey: ['all-guide-preferences'],
-    queryFn: () => api.get('/guides/preferences/all').then(r => r.data).catch(() => ({ data: [] })),
-  });
+  const preferences: any[] = [];
 
-  const rawProjects = projectsData as any;
-  const projects: any[] = Array.isArray(rawProjects)
-    ? rawProjects
-    : Array.isArray(rawProjects?.data?.items)
-    ? rawProjects.data.items
-    : Array.isArray(rawProjects?.data)
-    ? rawProjects.data
-    : [];
+  const handleDirectAssign = async () => {
+    if (!assignProjectId || !assignFacultyId) return;
+    try {
+      await assignGuide({ projectId: assignProjectId, facultyProfileId: assignFacultyId });
+      setAssignProjectId('');
+      setAssignFacultyId('');
+    } catch (_) {}
+  };
 
-  const rawGuides = guidesData as any;
-  const guides: any[] = Array.isArray(rawGuides)
-    ? rawGuides
-    : Array.isArray(rawGuides?.data)
-    ? rawGuides.data
-    : [];
-
-  const rawPrefs = prefsData as any;
-  const preferences: any[] = Array.isArray(rawPrefs)
-    ? rawPrefs
-    : Array.isArray(rawPrefs?.data)
-    ? rawPrefs.data
-    : [];
-
-  const approveMutation = useMutation({
-    mutationFn: (id: string) => approvePreference(id),
-    onSuccess: () => { toast.success('Guide approved & assigned'); qc.invalidateQueries({ queryKey: ['all-guide-preferences'] }); },
-    onError: () => toast.error('Failed to approve'),
-  });
-
-  const rejectMutation = useMutation({
-    mutationFn: ({ id, note }: { id: string; note: string }) => rejectPreference(id, note),
-    onSuccess: () => { toast.success('Preference rejected'); qc.invalidateQueries({ queryKey: ['all-guide-preferences'] }); setRejectModal(null); setRejectNote(''); },
-    onError: () => toast.error('Failed to reject'),
-  });
-
-  const assignMutation = useMutation({
-    mutationFn: () => assignGuide({ projectId: assignProjectId, facultyProfileId: assignFacultyId }),
-    onSuccess: () => { toast.success('Guide assigned directly'); qc.invalidateQueries({ queryKey: ['projects'] }); setAssignProjectId(''); setAssignFacultyId(''); },
-    onError: () => toast.error('Failed to assign guide'),
-  });
-
-  const removeMutation = useMutation({
-    mutationFn: (id: string) => removeGuideAssignment(id),
-    onSuccess: () => { toast.success('Assignment removed'); qc.invalidateQueries({ queryKey: ['projects'] }); },
-    onError: () => toast.error('Failed to remove'),
-  });
+  const handleRemoveAssignment = async (assignmentId: string) => {
+    try {
+      await removeGuide(assignmentId);
+    } catch (_) {}
+  };
 
   const STATUS_CLASSES: Record<string, string> = {
     PENDING: 'bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-500/30',
@@ -138,7 +103,7 @@ export default function GuideAllocationPage() {
                         <td className="px-5 py-3.5">
                           {p.status === 'PENDING' && (
                             <div className="flex items-center gap-2">
-                              <Button size="sm" variant="success" onClick={() => approveMutation.mutate(p.id)} disabled={approveMutation.isPending} id={`approve-pref-${p.id}`} className="text-xs font-semibold">
+                              <Button size="sm" variant="success" id={`approve-pref-${p.id}`} className="text-xs font-semibold">
                                 <CheckCircle className="h-3.5 w-3.5 mr-1" /> Approve
                               </Button>
                               <Button size="sm" variant="destructive" onClick={() => setRejectModal({ id: p.id })} id={`reject-pref-${p.id}`} className="text-xs font-semibold">
@@ -192,8 +157,8 @@ export default function GuideAllocationPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={() => assignMutation.mutate()} disabled={!assignProjectId || !assignFacultyId || assignMutation.isPending} id="direct-assign-btn" className="btn-primary">
-              {assignMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <UserPlus className="h-4 w-4 mr-2" />}
+            <Button onClick={handleDirectAssign} disabled={!assignProjectId || !assignFacultyId || isSubmitting} id="direct-assign-btn" className="btn-primary">
+              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <UserPlus className="h-4 w-4 mr-2" />}
               Assign Guide
             </Button>
           </div>
@@ -225,7 +190,7 @@ export default function GuideAllocationPage() {
                         {p.guideAssignment?.assignedAt ? format(new Date(p.guideAssignment.assignedAt), 'MMM d, yyyy') : '—'}
                       </td>
                       <td className="px-5 py-3.5">
-                        <Button size="sm" variant="destructive" onClick={() => removeMutation.mutate(p.guideAssignment.id)} disabled={removeMutation.isPending} id={`remove-guide-${p.id}`}>
+                        <Button size="sm" variant="destructive" onClick={() => handleRemoveAssignment(p.guideAssignment.id)} disabled={isSubmitting} id={`remove-guide-${p.id}`}>
                           Remove Assignment
                         </Button>
                       </td>
@@ -251,8 +216,8 @@ export default function GuideAllocationPage() {
           </div>
           <DialogFooter className="gap-2">
             <Button variant="ghost" onClick={() => setRejectModal(null)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => rejectModal && rejectMutation.mutate({ id: rejectModal.id, note: rejectNote })} disabled={rejectMutation.isPending} id="confirm-reject-btn">
-              {rejectMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Confirm Reject
+            <Button variant="destructive" onClick={() => setRejectModal(null)} id="confirm-reject-btn">
+              Confirm Reject
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -15,11 +14,11 @@ import {
   FileCode2,
   Github
 } from 'lucide-react';
-import { getMyProjects } from '@/api/projects.api';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
 import PageHeader from '@/components/shared/PageHeader';
 import { cn } from '@/lib/utils';
+import { useMyProjects } from '@/hooks/useMyProjects';
 
 const STAGES = [
   { id: 'DRAFT', name: 'Draft Proposal' },
@@ -36,20 +35,13 @@ export default function MyProjectPage() {
   const navigate = useNavigate();
   const [showFullAbstract, setShowFullAbstract] = useState(false);
 
-  const { data: res, isLoading } = useQuery({
-    queryKey: ['my-projects'],
-    queryFn: getMyProjects
-  });
+  const { projects, isLoading } = useMyProjects();
 
   if (isLoading) {
     return <ProjectDetailSkeleton />;
   }
 
-  const projectList = Array.isArray((res as any)?.data?.items)
-    ? (res as any).data.items
-    : (Array.isArray((res as any)?.data) ? (res as any).data : (Array.isArray(res) ? res : []));
-
-  const project = projectList[0] || null;
+  const project = projects[0] || null;
 
   if (!project) {
     return (
@@ -125,9 +117,9 @@ export default function MyProjectPage() {
             </h1>
           </div>
 
-          {(project.githubLink || project.githubUrl) && (
+          {project.githubLink && (
             <a
-              href={project.githubLink ?? project.githubUrl}
+              href={project.githubLink}
               target="_blank"
               rel="noreferrer"
               className="btn-outline shrink-0 gap-2"
@@ -156,9 +148,9 @@ export default function MyProjectPage() {
             <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Abstract & Summary
           </h3>
           <p className="text-foreground leading-relaxed text-sm">
-            {showFullAbstract ? project.abstract : `${project.abstract?.substring(0, 180) || ''}${project.abstract?.length > 180 ? '...' : ''}`}
+            {showFullAbstract ? project.abstract : `${project.abstract?.substring(0, 180) || ''}${(project.abstract?.length ?? 0) > 180 ? '...' : ''}`}
           </p>
-          {project.abstract?.length > 180 && (
+          {(project.abstract?.length ?? 0) > 180 && (
             <button
               onClick={() => setShowFullAbstract(!showFullAbstract)}
               className="text-indigo-600 dark:text-indigo-400 hover:underline text-xs font-semibold mt-2 inline-flex items-center gap-1 focus:outline-none"

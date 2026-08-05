@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { FileText, AlertCircle, CheckCircle2, RefreshCw, Copy, Check, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
 import PageHeader from '@/components/shared/PageHeader';
-import { getMyProjects } from '@/api/projects.api';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useAbstract } from '@/hooks/useAbstract';
 
 import { AbstractSkeleton } from '@/components/shared/Skeletons';
 
@@ -14,18 +13,11 @@ export default function AbstractPage() {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
 
-  const { data: projectRes, isLoading } = useQuery({
-    queryKey: ['my-project'],
-    queryFn: getMyProjects
-  });
+  const { project, isLoading } = useAbstract();
 
   if (isLoading) {
     return <AbstractSkeleton />;
   }
-
-  const raw = projectRes as any;
-  const projectList: any[] = Array.isArray(raw) ? raw : Array.isArray(raw?.data) ? raw.data : [];
-  const project = projectList[0] ?? null;
 
   if (!project) {
     return (
@@ -114,7 +106,7 @@ export default function AbstractPage() {
             <div>
               <h4 className="font-semibold text-sm">Revision Requested</h4>
               <p className="text-xs mt-0.5 opacity-90 leading-relaxed max-w-xl font-normal">
-                {(project as any).abstractComments || project.rejectionReason || 'Please review coordinator comments and update your project abstract.'}
+                {(project as any).abstractComments || (project as any).rejectionReason || 'Please review coordinator comments and update your project abstract.'}
               </p>
             </div>
           </div>

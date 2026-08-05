@@ -1,14 +1,10 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus, Megaphone, Trash2, Calendar, Loader2 } from 'lucide-react';
-import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 
-import { createAnnouncement, getAnnouncements, deleteAnnouncement } from '@/api/announcements.api';
-import { getDepartments } from '@/api/departments.api';
 import PageHeader from '@/components/shared/PageHeader';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { Button } from '@/components/ui/button';
@@ -18,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { CardsGridSkeleton } from '@/components/shared/Skeletons';
+import { useAnnouncementsManage } from '@/hooks/useAnnouncementsManage';
 
 const announcementSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
@@ -30,57 +27,46 @@ const announcementSchema = z.object({
 type AnnouncementFormValues = z.infer<typeof announcementSchema>;
 
 export default function CoordinatorAnnouncementsPage() {
-  const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteItem, setDeleteItem] = useState<any>(null);
 
-  const { data: announcementsRes, isLoading } = useQuery({
-    queryKey: ['announcements'],
-    queryFn: () => getAnnouncements(),
-  });
-
-  const { data: deptRes } = useQuery({
-    queryKey: ['departments'],
-    queryFn: () => getDepartments()
-  });
+  const {
+    announcements: list,
+    departments,
+    isLoading,
+    createAnnouncement,
+    deleteAnnouncement,
+    isSubmitting,
+  } = useAnnouncementsManage();
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<AnnouncementFormValues>({
     resolver: zodResolver(announcementSchema),
     defaultValues: { title: '', content: '', departmentIds: [], batchIds: [], semesterIds: [] },
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: AnnouncementFormValues) => createAnnouncement(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['announcements'] });
-      toast.success('Announcement broadcasted successfully!');
+  const handleCreate = async (data: AnnouncementFormValues) => {
+    try {
+      await createAnnouncement(data);
       setCreateOpen(false);
       reset();
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to broadcast announcement'),
-  });
+    } catch (_) {}
+  };
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteAnnouncement(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['announcements'] });
-      toast.success('Announcement deleted');
+  const handleDelete = async () => {
+    if (!deleteItem) return;
+    try {
+      await deleteAnnouncement(deleteItem.id);
       setDeleteItem(null);
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to delete announcement'),
-  });
+    } catch (_) {}
+  };
 
   // Early return for skeleton rendering AFTER all hooks are called
   if (isLoading) {
     return <CardsGridSkeleton cards={6} />;
   }
 
-  // Safe response unwrapping
-  const announcementList: any[] = Array.isArray((announcementsRes as any)?.data?.items)
-    ? (announcementsRes as any).data.items
-    : (Array.isArray((announcementsRes as any)?.data) ? (announcementsRes as any).data : (Array.isArray(announcementsRes) ? announcementsRes : []));
-
-  const departmentsList: any[] = Array.isArray((deptRes as any)?.data) ? (deptRes as any).data : (Array.isArray(deptRes) ? deptRes : []);
+  const announcementList = list;
+  const departmentsList = departments;
 
   const selectedDepts = watch('departmentIds') || [];
 
@@ -91,10 +77,6 @@ export default function CoordinatorAnnouncementsPage() {
     } else {
       setValue(field, [...current, id]);
     }
-  };
-
-  const onSubmit = (data: AnnouncementFormValues) => {
-    createMutation.mutate(data);
   };
 
   return (
@@ -165,7 +147,7 @@ export default function CoordinatorAnnouncementsPage() {
           <DialogHeader>
             <DialogTitle className="text-base font-semibold">Post New Announcement</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
+          <form onSubmit={handleSubmit(handleCreate)} className="space-y-4 pt-2">
             <div className="space-y-1.5">
               <Label htmlFor="title" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Title</Label>
               <Input id="title" placeholder="e.g. Milestone 1 Defense Schedule Published" {...register('title')} />
@@ -209,8 +191,8 @@ export default function CoordinatorAnnouncementsPage() {
               <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={createMutation.isPending} className="btn-primary">
-                {createMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              <Button type="submit" disabled={isSubmitting} className="btn-primary">
+                {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Broadcast Notice
               </Button>
             </div>
@@ -224,7 +206,7 @@ export default function CoordinatorAnnouncementsPage() {
         onOpenChange={(open) => !open && setDeleteItem(null)}
         title="Delete Announcement"
         description={`Are you sure you want to delete "${deleteItem?.title}"?`}
-        onConfirm={() => deleteItem && deleteMutation.mutate(deleteItem.id)}
+        onConfirm={handleDelete}
         variant="danger"
       />
     </div>

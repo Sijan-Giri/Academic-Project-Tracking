@@ -1,5 +1,6 @@
 import { api } from './client';
-import { Semester, ApiResponse, PaginatedResponse } from '@/types';
+import type { Semester } from '@/types/system.types';
+import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
 
 export const getSemesters = async (params?: any) => (await api.get<ApiResponse<PaginatedResponse<Semester>>>('/semesters', { params })).data;
 export const getSemester = async (id: string) => (await api.get<ApiResponse<Semester>>(`/semesters/${id}`)).data;

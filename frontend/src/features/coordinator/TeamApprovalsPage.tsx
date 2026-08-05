@@ -1,61 +1,41 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { CheckCircle, XCircle, Eye, Users, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
-import toast from 'react-hot-toast';
 
 import PageHeader from '@/components/shared/PageHeader';
 import DataTable from '@/components/shared/DataTable';
-import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import StatusBadge from '@/components/shared/StatusBadge';
+import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { getTeams, approveTeam, rejectTeam } from '@/api/teams.api';
+import { useTeamApprovals } from '@/hooks/useTeamApprovals';
 
 export default function TeamApprovalsPage() {
-  const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [rejectItem, setRejectItem] = useState<any>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [viewTeam, setViewTeam] = useState<any>(null);
 
-  const { data: teamsRes, isLoading } = useQuery({
-    queryKey: ['teams-list', statusFilter],
-    queryFn: () => getTeams(statusFilter !== 'ALL' ? { status: statusFilter } : undefined),
-  });
+  const {
+    teams: teamsList,
+    isLoading,
+    approveTeam,
+    rejectTeam,
+  } = useTeamApprovals(statusFilter !== 'ALL' ? { status: statusFilter } : undefined);
 
-  const approveMutation = useMutation({
-    mutationFn: (id: string) => approveTeam(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['teams-list'] });
-      toast.success('Team approved successfully!');
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to approve team'),
-  });
+  const handleApprove = async (id: string) => {
+    try {
+      await approveTeam(id);
+    } catch (_) {}
+  };
 
-  const rejectMutation = useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason: string }) => rejectTeam(id, reason),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['teams-list'] });
-      toast.success('Team rejected');
+  const handleConfirmReject = async () => {
+    if (!rejectItem) return;
+    try {
+      await rejectTeam({ id: rejectItem.id, reason: rejectReason });
       setRejectItem(null);
       setRejectReason('');
-    },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to reject team'),
-  });
-
-  // Safely unwrap data
-  const raw = teamsRes as any;
-  const teamsList: any[] = Array.isArray(raw?.data)
-    ? raw.data
-    : Array.isArray(raw?.data?.items)
-    ? raw.data.items
-    : Array.isArray(raw)
-    ? raw
-    : [];
-
-  const handleApprove = (id: string) => {
-    approveMutation.mutate(id);
+    } catch (_) {}
   };
 
   const getLeader = (team: any) => {
@@ -125,7 +105,6 @@ export default function TeamApprovalsPage() {
               variant="ghost"
               size="sm"
               onClick={() => handleApprove(row.original.id)}
-              disabled={approveMutation.isPending}
               className="bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 border border-emerald-200 dark:border-emerald-500/20 text-xs font-semibold"
             >
               <CheckCircle className="w-3.5 h-3.5 mr-1" /> Approve
@@ -190,7 +169,7 @@ export default function TeamApprovalsPage() {
         onOpenChange={(open) => !open && setRejectItem(null)}
         title="Reject Team"
         description={`Are you sure you want to reject team "${rejectItem?.name}"? You may optionally provide a reason.`}
-        onConfirm={() => rejectItem && rejectMutation.mutate({ id: rejectItem.id, reason: rejectReason })}
+        onConfirm={handleConfirmReject}
         confirmText="Reject Team"
         variant="danger"
       >
@@ -258,7 +237,6 @@ export default function TeamApprovalsPage() {
                     handleApprove(viewTeam.id);
                     setViewTeam(null);
                   }}
-                  disabled={approveMutation.isPending}
                   className="btn-primary"
                 >
                   Approve Team

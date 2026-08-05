@@ -1,6 +1,6 @@
 import { Bell, AlertCircle, MessageSquare, Megaphone, CheckCheck } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { Notification } from '@/types';
+import type { Notification } from '@/types/notification.types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Skeleton, SkeletonCircle, SkeletonBadge } from '@/components/ui/skeleton';

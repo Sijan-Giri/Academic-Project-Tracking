@@ -1,5 +1,6 @@
 import { api } from './client';
-import { Department, ApiResponse } from '@/types';
+import type { Department } from '@/types/system.types';
+import type { ApiResponse } from '@/types/api.types';
 
 export const getDepartments = async () => (await api.get<ApiResponse<Department[]>>('/departments')).data;
 export const getDepartment = async (id: string) => (await api.get<ApiResponse<Department>>(`/departments/${id}`)).data;

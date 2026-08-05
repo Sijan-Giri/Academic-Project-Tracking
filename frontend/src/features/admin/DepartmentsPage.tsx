@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useDepartments } from '@/hooks/useDepartments';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus, Edit, Trash2 } from 'lucide-react';
-import toast from 'react-hot-toast';
 
-import { api } from '@/api/client';
 import PageHeader from '@/components/shared/PageHeader';
 import DataTable from '@/components/shared/DataTable';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
@@ -17,7 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Department } from '@/types';
+import type { Department } from '@/types/system.types';
 
 const departmentSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -28,50 +25,44 @@ const departmentSchema = z.object({
 
 type DepartmentFormValues = z.infer<typeof departmentSchema>;
 
+import React, { useState } from 'react';
+
 export default function DepartmentsPage() {
-  const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [editItem, setEditItem] = useState<Department | null>(null);
   const [deleteItem, setDeleteItem] = useState<Department | null>(null);
 
-  const { data: departments, isLoading } = useQuery<Department[]>({
-    queryKey: ['departments'],
-    queryFn: async () => {
-      const res = await api.get('/departments');
-      return res.data;
-    },
-  });
+  const {
+    departments,
+    isLoading,
+    createDepartment,
+    updateDepartment,
+    deleteDepartment,
+  } = useDepartments();
 
-  const createMutation = useMutation({
-    mutationFn: (data: DepartmentFormValues) => api.post('/departments', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['departments'] });
-      toast.success('Department created successfully');
+  const handleCreate = async (data: DepartmentFormValues) => {
+    try {
+      await createDepartment(data);
       setCreateOpen(false);
       form.reset();
-    },
-    onError: () => toast.error('Failed to create department'),
-  });
+    } catch (_) {}
+  };
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: DepartmentFormValues }) => api.put(`/departments/${id}`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['departments'] });
-      toast.success('Department updated successfully');
+  const handleUpdate = async (data: DepartmentFormValues) => {
+    if (!editItem) return;
+    try {
+      await updateDepartment({ id: editItem.id, data });
       setEditItem(null);
-    },
-    onError: () => toast.error('Failed to update department'),
-  });
+    } catch (_) {}
+  };
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/departments/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['departments'] });
-      toast.success('Department deleted successfully');
+  const handleDelete = async () => {
+    if (!deleteItem) return;
+    try {
+      await deleteDepartment(deleteItem.id);
       setDeleteItem(null);
-    },
-    onError: () => toast.error('Failed to delete department'),
-  });
+    } catch (_) {}
+  };
 
   const form = useForm<DepartmentFormValues>({
     resolver: zodResolver(departmentSchema),
@@ -95,9 +86,9 @@ export default function DepartmentsPage() {
 
   const onSubmit = (values: DepartmentFormValues) => {
     if (editItem) {
-      updateMutation.mutate({ id: editItem.id, data: values });
+      handleUpdate(values);
     } else {
-      createMutation.mutate(values);
+      handleCreate(values);
     }
   };
 
@@ -211,7 +202,7 @@ export default function DepartmentsPage() {
         onOpenChange={(open) => !open && setDeleteItem(null)}
         title="Delete Department"
         description={`Are you sure you want to delete ${deleteItem?.name}? This action cannot be undone.`}
-        onConfirm={() => deleteItem && deleteMutation.mutate(deleteItem.id)}
+        onConfirm={handleDelete}
         confirmText="Delete"
         variant="danger"
       />
