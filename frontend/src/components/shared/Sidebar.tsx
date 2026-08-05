@@ -59,11 +59,12 @@ export default function Sidebar({ className }: SidebarProps) {
             <NavLink
               key={item.path}
               to={item.path}
+              end={item.path === '/my-project' || item.path === '/dashboard'}
               className={({ isActive }) =>
                 cn(
                   'flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                   isActive
-                    ? 'dark:bg-indigo-500/20 dark:text-indigo-400 bg-indigo-50 text-indigo-600 font-semibold border-l-2 border-indigo-600 dark:border-indigo-400'
+                    ? 'dark:bg-indigo-500/20 dark:text-indigo-400 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-sm shadow-indigo-500/20'
                     : 'dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 )
               }

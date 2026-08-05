@@ -1,30 +1,30 @@
 export const API_BASE_URL = 'http://localhost:4000/api';
 
-export const PROJECT_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  DRAFT: { label: 'Draft', color: 'text-white', bg: 'bg-gray-500/20' },
-  ABSTRACT_SUBMITTED: { label: 'Abstract Submitted', color: 'text-blue-400', bg: 'bg-blue-500/20' },
-  ABSTRACT_APPROVED: { label: 'Abstract Approved', color: 'text-green-400', bg: 'bg-green-500/20' },
-  ABSTRACT_REJECTED: { label: 'Abstract Rejected', color: 'text-red-400', bg: 'bg-red-500/20' },
-  IN_PROGRESS: { label: 'In Progress', color: 'text-indigo-400', bg: 'bg-indigo-500/20' },
-  UNDER_REVIEW: { label: 'Under Review', color: 'text-yellow-400', bg: 'bg-yellow-500/20' },
-  COMPLETED: { label: 'Completed', color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-  CANCELLED: { label: 'Cancelled', color: 'text-red-400', bg: 'bg-red-500/20' },
+export const PROJECT_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border?: string }> = {
+  DRAFT: { label: 'Draft', color: 'dark:text-slate-300 text-slate-700', bg: 'dark:bg-slate-500/20 bg-slate-100', border: 'dark:border-slate-500/30 border-slate-200' },
+  ABSTRACT_SUBMITTED: { label: 'Abstract Submitted', color: 'dark:text-blue-400 text-blue-700', bg: 'dark:bg-blue-500/20 bg-blue-50', border: 'dark:border-blue-500/30 border-blue-200' },
+  ABSTRACT_APPROVED: { label: 'Abstract Approved', color: 'dark:text-emerald-400 text-emerald-700', bg: 'dark:bg-emerald-500/20 bg-emerald-50', border: 'dark:border-emerald-500/30 border-emerald-200' },
+  ABSTRACT_REJECTED: { label: 'Abstract Rejected', color: 'dark:text-rose-400 text-rose-700', bg: 'dark:bg-rose-500/20 bg-rose-50', border: 'dark:border-rose-500/30 border-rose-200' },
+  IN_PROGRESS: { label: 'In Progress', color: 'dark:text-indigo-400 text-indigo-700', bg: 'dark:bg-indigo-500/20 bg-indigo-50', border: 'dark:border-indigo-500/30 border-indigo-200' },
+  UNDER_REVIEW: { label: 'Under Review', color: 'dark:text-amber-400 text-amber-700', bg: 'dark:bg-amber-500/20 bg-amber-50', border: 'dark:border-amber-500/30 border-amber-200' },
+  COMPLETED: { label: 'Completed', color: 'dark:text-emerald-400 text-emerald-700', bg: 'dark:bg-emerald-500/20 bg-emerald-50', border: 'dark:border-emerald-500/30 border-emerald-200' },
+  CANCELLED: { label: 'Cancelled', color: 'dark:text-rose-400 text-rose-700', bg: 'dark:bg-rose-500/20 bg-rose-50', border: 'dark:border-rose-500/30 border-rose-200' },
 };
 
-export const MILESTONE_STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  NOT_STARTED: { label: 'Not Started', color: 'text-gray-400' },
-  IN_PROGRESS: { label: 'In Progress', color: 'text-blue-400' },
-  SUBMITTED: { label: 'Submitted', color: 'text-indigo-400' },
-  UNDER_REVIEW: { label: 'Under Review', color: 'text-yellow-400' },
-  APPROVED: { label: 'Approved', color: 'text-green-400' },
-  REJECTED: { label: 'Rejected', color: 'text-red-400' },
-  REVISION_NEEDED: { label: 'Revision Needed', color: 'text-orange-400' },
+export const MILESTONE_STATUS_CONFIG: Record<string, { label: string; color: string; bg?: string; border?: string }> = {
+  NOT_STARTED: { label: 'Not Started', color: 'dark:text-slate-400 text-slate-600', bg: 'dark:bg-slate-500/20 bg-slate-100', border: 'dark:border-slate-500/30 border-slate-200' },
+  IN_PROGRESS: { label: 'In Progress', color: 'dark:text-blue-400 text-blue-700', bg: 'dark:bg-blue-500/20 bg-blue-50', border: 'dark:border-blue-500/30 border-blue-200' },
+  SUBMITTED: { label: 'Submitted', color: 'dark:text-indigo-400 text-indigo-700', bg: 'dark:bg-indigo-500/20 bg-indigo-50', border: 'dark:border-indigo-500/30 border-indigo-200' },
+  UNDER_REVIEW: { label: 'Under Review', color: 'dark:text-amber-400 text-amber-700', bg: 'dark:bg-amber-500/20 bg-amber-50', border: 'dark:border-amber-500/30 border-amber-200' },
+  APPROVED: { label: 'Approved', color: 'dark:text-emerald-400 text-emerald-700', bg: 'dark:bg-emerald-500/20 bg-emerald-50', border: 'dark:border-emerald-500/30 border-emerald-200' },
+  REJECTED: { label: 'Rejected', color: 'dark:text-rose-400 text-rose-700', bg: 'dark:bg-rose-500/20 bg-rose-50', border: 'dark:border-rose-500/30 border-rose-200' },
+  REVISION_NEEDED: { label: 'Revision Needed', color: 'dark:text-orange-400 text-orange-700', bg: 'dark:bg-orange-500/20 bg-orange-50', border: 'dark:border-orange-500/30 border-orange-200' },
 };
 
-export const TEAM_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  PENDING: { label: 'Pending Approval', color: 'text-yellow-400', bg: 'bg-yellow-500/20' },
-  APPROVED: { label: 'Approved', color: 'text-green-400', bg: 'bg-green-500/20' },
-  REJECTED: { label: 'Rejected', color: 'text-red-400', bg: 'bg-red-500/20' },
+export const TEAM_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border?: string }> = {
+  PENDING: { label: 'Pending Approval', color: 'dark:text-amber-400 text-amber-700', bg: 'dark:bg-amber-500/20 bg-amber-50', border: 'dark:border-amber-500/30 border-amber-200' },
+  APPROVED: { label: 'Approved', color: 'dark:text-emerald-400 text-emerald-700', bg: 'dark:bg-emerald-500/20 bg-emerald-50', border: 'dark:border-emerald-500/30 border-emerald-200' },
+  REJECTED: { label: 'Rejected', color: 'dark:text-rose-400 text-rose-700', bg: 'dark:bg-rose-500/20 bg-rose-50', border: 'dark:border-rose-500/30 border-rose-200' },
 };
 
 export const ROLE_LABELS: Record<string, string> = {

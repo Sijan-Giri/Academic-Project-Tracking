@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Users, UserPlus, Crown, LogOut, Loader2, Info, AlertTriangle,
-  CheckCircle2, Clock, Mail, Check, X, Send
+  CheckCircle2, Clock, Mail, Check, X, Send, Sparkles
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import StatusBadge from '@/components/shared/StatusBadge';
+import PageHeader from '@/components/shared/PageHeader';
 import {
   getMyTeam, createTeam, inviteMember, leaveTeam, removeMember,
   getMyInvitations, acceptInvitation, declineInvitation, getTeamInvitations
@@ -29,7 +30,7 @@ export default function MyTeamPage() {
   });
 
   // Pending invitations received (shown when student has no team)
-  const { data: myInvitationsRes, isLoading: _invitesLoading } = useQuery({
+  const { data: myInvitationsRes } = useQuery({
     queryKey: ['my-invitations'],
     queryFn: getMyInvitations,
     retry: false,
@@ -66,7 +67,7 @@ export default function MyTeamPage() {
   const createMut = useMutation({
     mutationFn: (data: { name: string }) => createTeam(data),
     onSuccess: () => {
-      toast.success('Team created!');
+      toast.success('Team created successfully!');
       queryClient.invalidateQueries({ queryKey: ['my-team'] });
     },
     onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to create team'),
@@ -76,7 +77,7 @@ export default function MyTeamPage() {
     mutationFn: ({ teamId, rollNo }: { teamId: string; rollNo: string }) =>
       inviteMember(teamId, rollNo),
     onSuccess: () => {
-      toast.success('Invitation sent! They must accept it to join.');
+      toast.success('Invitation sent! Member must accept to join.');
       setInviteRollNo('');
       queryClient.invalidateQueries({ queryKey: ['team-invitations', team?.id] });
     },
@@ -121,56 +122,69 @@ export default function MyTeamPage() {
     onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to decline invitation'),
   });
 
-  // ── Loading ───────────────────────────────────────────────────────────────
+  // ── Loading Skeleton ───────────────────────────────────────────────────────
 
   if (isLoading) {
-    return <div className="animate-pulse h-64 bg-white/5 rounded-2xl border border-white/10" />;
+    return (
+      <div className="max-w-4xl mx-auto space-y-6 animate-pulse">
+        <div className="h-44 dark:bg-white/5 bg-slate-200/60 rounded-3xl border dark:border-white/10 border-slate-200" />
+        <div className="h-64 dark:bg-white/5 bg-slate-200/60 rounded-3xl border dark:border-white/10 border-slate-200" />
+      </div>
+    );
   }
 
   // ── No team — show create + received invitations ──────────────────────────
 
   if (!team) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <PageHeader
+          title="Team Management"
+          subtitle="Form a new capstone project team or accept an invitation from your team leader."
+        />
 
-        {/* Pending received invitations */}
+        {/* Pending received invitations banner */}
         {myInvitations.length > 0 && (
-          <div className="bg-white/5 backdrop-blur-md border border-indigo-500/30 rounded-2xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
-              <Mail className="w-5 h-5 text-indigo-400" />
-              Pending Team Invitations
-              <span className="ml-1 px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-300 text-xs font-bold">
-                {myInvitations.length}
-              </span>
-            </h2>
-            <p className="text-gray-400 text-sm mb-5">Accept an invitation to join a team, or decline if you're not interested.</p>
-            <div className="space-y-3">
+          <div className="relative overflow-hidden rounded-3xl dark:bg-indigo-500/10 bg-indigo-50/80 border dark:border-indigo-500/30 border-indigo-200/80 p-6 md:p-7 shadow-sm">
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <h2 className="text-xl font-extrabold dark:text-white text-slate-900 flex items-center gap-2.5">
+                <Mail className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                Pending Team Invitations
+                <span className="px-2.5 py-0.5 rounded-full dark:bg-indigo-500/30 dark:text-indigo-300 bg-indigo-100 text-indigo-700 text-xs font-bold border border-indigo-200">
+                  {myInvitations.length} new
+                </span>
+              </h2>
+            </div>
+            <p className="dark:text-gray-300 text-slate-600 text-sm mb-5 font-medium">
+              Accept an invitation to join a capstone team, or decline if you're not joining.
+            </p>
+            <div className="space-y-3.5">
               {myInvitations.map((inv: any) => {
                 const inviterUser = inv.invitedBy?.user;
                 const teamMembers = inv.team?.members ?? [];
                 return (
-                  <div key={inv.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-black/20 border border-white/5 rounded-xl p-4">
+                  <div key={inv.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 dark:bg-black/20 bg-white border dark:border-white/10 border-slate-200/80 rounded-2xl p-4 md:p-5 shadow-xs">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-lg shrink-0">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-extrabold text-xl shadow-md shadow-indigo-500/20 shrink-0">
                         {inv.team?.name?.charAt(0) ?? 'T'}
                       </div>
                       <div>
-                        <p className="text-white font-semibold text-base">{inv.team?.name}</p>
-                        <p className="text-gray-400 text-sm">
-                          Invited by <span className="text-indigo-300">{inviterUser?.name ?? 'Team Leader'}</span>
-                          {' · '}{teamMembers.length} member{teamMembers.length !== 1 ? 's' : ''}
+                        <p className="dark:text-white text-slate-900 font-extrabold text-base">{inv.team?.name}</p>
+                        <p className="dark:text-gray-400 text-slate-500 text-sm font-medium">
+                          Invited by <strong className="dark:text-indigo-300 text-indigo-700">{inviterUser?.name ?? 'Team Leader'}</strong>
+                          {' • '}{teamMembers.length} member{teamMembers.length !== 1 ? 's' : ''}
                         </p>
-                        <p className="text-gray-600 text-xs mt-1">
-                          {new Date(inv.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        <p className="dark:text-gray-500 text-slate-400 text-xs mt-1 font-medium">
+                          Sent {new Date(inv.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-2 sm:shrink-0">
+                    <div className="flex gap-2.5 sm:shrink-0">
                       <Button
                         size="sm"
                         onClick={() => declineMut.mutate(inv.id)}
                         disabled={declineMut.isPending || acceptMut.isPending}
-                        className="bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/20"
+                        className="dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/30 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded-xl"
                       >
                         <X className="w-4 h-4 mr-1" /> Decline
                       </Button>
@@ -178,10 +192,10 @@ export default function MyTeamPage() {
                         size="sm"
                         onClick={() => acceptMut.mutate(inv.id)}
                         disabled={acceptMut.isPending || declineMut.isPending}
-                        className="bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/20"
+                        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold shadow-md shadow-emerald-500/20 rounded-xl"
                       >
-                        {acceptMut.isPending ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Check className="w-4 h-4 mr-1" />}
-                        Accept
+                        {acceptMut.isPending ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Check className="w-4 h-4 mr-1.5" />}
+                        Accept Invitation
                       </Button>
                     </div>
                   </div>
@@ -191,42 +205,54 @@ export default function MyTeamPage() {
           </div>
         )}
 
-        {/* Create / Join */}
+        {/* Create or Join Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="dark:bg-white/5 dark:border-white/10 bg-white border border-slate-200 shadow-sm rounded-2xl p-8 text-center flex flex-col items-center backdrop-blur-md">
-            <div className="w-16 h-16 dark:bg-indigo-500/20 bg-indigo-100 dark:text-indigo-400 text-indigo-600 rounded-full flex items-center justify-center mb-6">
-              <Users className="w-8 h-8" />
+          {/* Create Team Card */}
+          <div className="dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 rounded-3xl p-7 md:p-8 flex flex-col justify-between">
+            <div>
+              <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-md shadow-indigo-500/20">
+                <Users className="w-7 h-7" />
+              </div>
+              <h2 className="text-2xl font-extrabold dark:text-white text-slate-900 mb-2 tracking-tight">Create a New Team</h2>
+              <p className="dark:text-gray-400 text-slate-500 text-sm mb-6 leading-relaxed font-medium">
+                Start a team as leader, give it a unique name, and invite your project teammates by roll number.
+              </p>
             </div>
-            <h2 className="text-2xl font-bold dark:text-white text-slate-900 mb-2">Create a New Team</h2>
-            <p className="dark:text-gray-400 text-slate-500 mb-6">Start a new team as a leader and invite your peers.</p>
-            <div className="w-full space-y-4">
+            <div className="w-full space-y-4 pt-2">
               <Input
                 value={teamName}
                 onChange={e => setTeamName(e.target.value)}
-                placeholder="Enter team name"
-                className="w-full"
+                placeholder="Enter team name (e.g. Apex Innovators)"
+                className="w-full h-11 dark:bg-white/5 bg-slate-50 border dark:border-white/10 border-slate-200 rounded-xl"
               />
               <Button
                 onClick={() => createMut.mutate({ name: teamName })}
                 disabled={!teamName || createMut.isPending}
-                className="w-full bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white"
+                className="w-full h-11 bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold shadow-md shadow-indigo-500/25 rounded-xl"
               >
-                {createMut.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                {createMut.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
                 Create Team
               </Button>
             </div>
           </div>
 
-          <div className="dark:bg-white/5 dark:border-white/10 bg-white border border-slate-200 shadow-sm rounded-2xl p-8 text-center flex flex-col items-center justify-center backdrop-blur-md">
-            <div className="w-16 h-16 dark:bg-violet-500/20 bg-violet-100 dark:text-violet-400 text-violet-600 rounded-full flex items-center justify-center mb-6">
-              <UserPlus className="w-8 h-8" />
+          {/* Join Team Card */}
+          <div className="dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 rounded-3xl p-7 md:p-8 flex flex-col justify-between">
+            <div>
+              <div className="w-14 h-14 bg-gradient-to-br from-violet-600 to-purple-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-md shadow-violet-500/20">
+                <UserPlus className="w-7 h-7" />
+              </div>
+              <h2 className="text-2xl font-extrabold dark:text-white text-slate-900 mb-2 tracking-tight">Join an Existing Team</h2>
+              <p className="dark:text-gray-400 text-slate-500 text-sm leading-relaxed font-medium">
+                {myInvitations.length > 0
+                  ? 'You have pending invitations above. Accept an invitation to join your team.'
+                  : 'Ask your team leader to send an invitation to your student roll number. Your invitation will appear here automatically.'}
+              </p>
             </div>
-            <h2 className="text-2xl font-bold dark:text-white text-slate-900 mb-2">Join an Existing Team</h2>
-            <p className="dark:text-gray-400 text-slate-500">
-              {myInvitations.length > 0
-                ? 'You have pending invitations above. Accept one to join.'
-                : 'Ask your team leader to invite you using your roll number. The invitation will appear here.'}
-            </p>
+            <div className="p-4 rounded-2xl dark:bg-white/5 bg-slate-50 border dark:border-white/5 border-slate-200/70 text-xs font-semibold dark:text-gray-300 text-slate-600 flex items-center gap-2 mt-6">
+              <Info className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+              Invitations require leader approval and student acceptance.
+            </div>
           </div>
         </div>
       </div>
@@ -239,78 +265,113 @@ export default function MyTeamPage() {
   const historySentInvites = sentInvitations.filter((i: any) => i.status !== 'PENDING');
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 dark:bg-white/5 dark:border-white/10 bg-white border border-slate-200 shadow-sm backdrop-blur-md rounded-2xl p-6">
-        <div>
-          <h1 className="text-3xl font-bold dark:text-white text-slate-900 flex items-center gap-3">
-            {team.name}
-            <StatusBadge status={team.status} type="team" />
-          </h1>
-          <p className="dark:text-gray-400 text-slate-500 mt-1">Manage your team members and invitations.</p>
+    <div className="max-w-4xl mx-auto space-y-8">
+      {/* Page Header */}
+      <PageHeader
+        title="My Team"
+        subtitle="Manage your capstone project team roster, invites, and approval status."
+      />
+
+      {/* Team Info Header Card */}
+      <div className="relative overflow-hidden rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200/80 p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="px-3 py-1 rounded-full text-xs font-bold dark:bg-indigo-500/20 dark:text-indigo-300 bg-indigo-50 text-indigo-700 border border-indigo-200">
+                Team #{team.id.substring(0, 8)}
+              </span>
+              <StatusBadge status={team.status} type="team" />
+            </div>
+            <h1 className="text-3xl font-extrabold dark:text-white text-slate-900 tracking-tight">
+              {team.name}
+            </h1>
+          </div>
+          {!isLeader && team.status === 'PENDING' && (
+            <Button
+              variant="destructive"
+              onClick={() => leaveMut.mutate(team.id)}
+              disabled={leaveMut.isPending}
+              className="dark:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500/30 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded-xl"
+            >
+              <LogOut className="w-4 h-4 mr-2" /> Leave Team
+            </Button>
+          )}
         </div>
-        {!isLeader && team.status === 'PENDING' && (
-          <Button variant="destructive" onClick={() => leaveMut.mutate(team.id)} disabled={leaveMut.isPending} className="dark:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500/30 bg-rose-100 text-rose-700 hover:bg-rose-200 border border-rose-200">
-            <LogOut className="w-4 h-4 mr-2" /> Leave Team
-          </Button>
-        )}
       </div>
 
-      {/* Status banners */}
+      {/* Status Alert Banners */}
       {team.status === 'PENDING' && (
-        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 flex items-start gap-3">
-          <Info className="w-5 h-5 text-yellow-400 mt-0.5" />
+        <div className="rounded-2xl dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-300 bg-amber-50 border border-amber-200 text-amber-800 p-4 md:p-5 flex items-start gap-3.5 shadow-xs">
+          <Info className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
           <div>
-            <h4 className="text-yellow-400 font-medium">Approval Pending</h4>
-            <p className="text-yellow-400/80 text-sm mt-1">Your team is waiting for coordinator approval. You can still invite members.</p>
+            <h4 className="font-bold text-sm">Coordinator Approval Pending</h4>
+            <p className="text-xs mt-1 opacity-90 leading-relaxed">
+              Your team is currently pending approval by the project coordinator. You can still invite team members in the meantime.
+            </p>
           </div>
         </div>
       )}
       {team.status === 'REJECTED' && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-red-400 mt-0.5" />
+        <div className="rounded-2xl dark:bg-rose-500/10 dark:border-rose-500/20 dark:text-rose-300 bg-rose-50 border border-rose-200 text-rose-800 p-4 md:p-5 flex items-start gap-3.5 shadow-xs">
+          <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 mt-0.5 shrink-0" />
           <div>
-            <h4 className="text-red-400 font-medium">Team Rejected</h4>
-            <p className="text-red-400/80 text-sm mt-1">{team.rejectionReason || 'Contact coordinator for details.'}</p>
+            <h4 className="font-bold text-sm">Team Proposal Rejected</h4>
+            <p className="text-xs mt-1 opacity-90 leading-relaxed">
+              {team.rejectionReason || 'Your team registration was declined by the coordinator. Please contact your coordinator for details.'}
+            </p>
           </div>
         </div>
       )}
       {team.status === 'APPROVED' && (
-        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-start gap-3">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 mt-0.5" />
+        <div className="rounded-2xl dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:text-emerald-300 bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 md:p-5 flex items-start gap-3.5 shadow-xs">
+          <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
           <div>
-            <h4 className="text-emerald-400 font-medium">Team Approved</h4>
-            <p className="text-emerald-400/80 text-sm mt-1">Your team is approved. As team leader, you can still update team name or invite additional members if needed.</p>
+            <h4 className="font-bold text-sm">Team Approved Officially</h4>
+            <p className="text-xs mt-1 opacity-90 leading-relaxed">
+              Your team is officially registered and approved by the academic coordinator.
+            </p>
           </div>
         </div>
       )}
 
-      {/* Members */}
-      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-        <h3 className="text-xl font-semibold text-white mb-5 flex items-center gap-2">
-          <Users className="w-5 h-5 text-indigo-400" />
-          Members <span className="text-gray-500 text-base font-normal">({team.members?.length || 0})</span>
+      {/* Team Roster Card */}
+      <div className="rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200/80 p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300">
+        <h3 className="text-xl font-extrabold dark:text-white text-slate-900 mb-6 flex items-center justify-between">
+          <span className="flex items-center gap-2.5">
+            <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            Team Members
+          </span>
+          <span className="px-3 py-1 rounded-full text-xs font-bold dark:bg-indigo-500/20 dark:text-indigo-300 bg-indigo-50 text-indigo-700 border border-indigo-200">
+            {team.members?.length || 0} Members
+          </span>
         </h3>
 
-        <div className="space-y-3">
+        <div className="space-y-3.5">
           {team.members?.map((member: any) => {
             const memberUser = member.studentProfile?.user;
-            const displayName = memberUser?.name ?? 'Unknown';
+            const displayName = memberUser?.name ?? 'Student Member';
             const rollNumber = member.studentProfile?.studentId ?? '';
             const displayEmail = memberUser?.email ?? '';
             return (
-              <div key={member.id} className="flex items-center justify-between bg-black/20 border border-white/5 rounded-xl p-4">
+              <div
+                key={member.id}
+                className="flex items-center justify-between p-4 rounded-2xl dark:bg-white/5 bg-slate-50 border dark:border-white/5 border-slate-200/70 hover:border-indigo-200 transition-colors"
+              >
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-medium text-sm">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-indigo-500/20 shrink-0">
                     {displayName.charAt(0).toUpperCase()}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium flex items-center gap-2">
+                  <div>
+                    <p className="dark:text-white text-slate-900 font-extrabold text-base flex items-center gap-2">
                       {displayName}
-                      {member.isLeader && <Crown className="w-4 h-4 text-yellow-500" />}
+                      {member.isLeader && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-50 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
+                          <Crown className="w-3.5 h-3.5 mr-1 text-amber-500" /> Leader
+                        </span>
+                      )}
                     </p>
-                    <p className="text-gray-500 text-sm truncate">
-                      {rollNumber}{rollNumber && displayEmail ? ' · ' : ''}{displayEmail}
+                    <p className="dark:text-gray-400 text-slate-500 text-xs font-medium mt-0.5">
+                      {rollNumber}{rollNumber && displayEmail ? ' • ' : ''}{displayEmail}
                     </p>
                   </div>
                 </div>
@@ -320,9 +381,9 @@ export default function MyTeamPage() {
                     size="sm"
                     onClick={() => removeMut.mutate({ teamId: team.id, memberId: member.id })}
                     disabled={removeMut.isPending}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs"
+                    className="dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/10 text-rose-600 hover:text-rose-700 hover:bg-rose-50 text-xs font-bold rounded-xl"
                   >
-                    Remove
+                    Remove Member
                   </Button>
                 )}
               </div>
@@ -331,23 +392,23 @@ export default function MyTeamPage() {
         </div>
       </div>
 
-      {/* Invite + sent invitations (leader only, non-rejected team) */}
+      {/* Invite Section (Leader only, non-rejected) */}
       {isLeader && team.status !== 'REJECTED' && (
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 space-y-6">
-          {/* Invite input */}
+        <div className="rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200/80 p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300 space-y-8">
+          {/* Invite input form */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
-              <Send className="w-5 h-5 text-indigo-400" /> Invite a Member
+            <h3 className="text-xl font-extrabold dark:text-white text-slate-900 mb-2 flex items-center gap-2.5">
+              <Send className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Invite a New Teammate
             </h3>
-            <p className="text-gray-400 text-sm mb-4">
-              Enter the student's roll number. They will receive a notification and must <strong className="text-white">accept</strong> the invitation to join.
+            <p className="dark:text-gray-400 text-slate-500 text-sm mb-5 font-medium">
+              Enter a student's roll number. They will receive a notification and must <strong className="dark:text-white text-slate-800">accept</strong> the invitation before joining.
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 max-w-lg">
               <Input
                 value={inviteRollNo}
                 onChange={e => setInviteRollNo(e.target.value)}
-                placeholder="Student Roll Number"
-                className="bg-white/5 border-white/10 text-white max-w-xs"
+                placeholder="Student Roll Number (e.g. CS2023004)"
+                className="h-11 dark:bg-white/5 bg-slate-50 border dark:border-white/10 border-slate-200 rounded-xl"
                 onKeyDown={e => {
                   if (e.key === 'Enter' && inviteRollNo) {
                     inviteMut.mutate({ teamId: team.id, rollNo: inviteRollNo });
@@ -357,10 +418,10 @@ export default function MyTeamPage() {
               <Button
                 onClick={() => inviteMut.mutate({ teamId: team.id, rollNo: inviteRollNo })}
                 disabled={!inviteRollNo || inviteMut.isPending}
-                className="bg-indigo-500 hover:bg-indigo-600 text-white"
+                className="h-11 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold shadow-md shadow-indigo-500/20 rounded-xl sm:shrink-0"
               >
                 {inviteMut.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
-                Send Invite
+                Send Invitation
               </Button>
             </div>
           </div>
@@ -368,25 +429,28 @@ export default function MyTeamPage() {
           {/* Pending sent invitations */}
           {pendingSentInvites.length > 0 && (
             <div>
-              <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                <Clock className="w-4 h-4" /> Awaiting Response ({pendingSentInvites.length})
+              <h4 className="text-xs font-bold uppercase tracking-wider dark:text-gray-400 text-slate-500 mb-3 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-amber-500" /> Awaiting Student Response ({pendingSentInvites.length})
               </h4>
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {pendingSentInvites.map((inv: any) => {
                   const invitee = inv.studentProfile?.user;
                   return (
-                    <div key={inv.id} className="flex items-center justify-between bg-yellow-500/5 border border-yellow-500/20 rounded-xl px-4 py-3">
+                    <div
+                      key={inv.id}
+                      className="flex items-center justify-between rounded-2xl dark:bg-amber-500/10 dark:border-amber-500/20 bg-amber-50/80 border border-amber-200/80 p-4"
+                    >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-sm font-bold">
+                        <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-300 font-extrabold flex items-center justify-center text-sm border border-amber-200 dark:border-amber-500/30">
                           {invitee?.name?.charAt(0) ?? '?'}
                         </div>
                         <div>
-                          <p className="text-white text-sm font-medium">{invitee?.name ?? 'Unknown'}</p>
-                          <p className="text-gray-500 text-xs">{inv.studentProfile?.studentId ?? invitee?.email}</p>
+                          <p className="dark:text-white text-slate-900 font-bold text-sm">{invitee?.name ?? 'Student'}</p>
+                          <p className="dark:text-gray-400 text-slate-500 text-xs font-medium">{inv.studentProfile?.studentId ?? invitee?.email}</p>
                         </div>
                       </div>
-                      <span className="text-xs text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 px-2 py-1 rounded-full font-medium">
-                        Pending
+                      <span className="text-xs font-extrabold px-3 py-1 rounded-full dark:bg-amber-500/20 dark:text-amber-300 bg-amber-100 text-amber-800 border border-amber-200">
+                        Pending Accept
                       </span>
                     </div>
                   );
@@ -395,39 +459,50 @@ export default function MyTeamPage() {
             </div>
           )}
 
-          {/* Invitation history */}
+          {/* Invitation History */}
           {historySentInvites.length > 0 && (
             <div>
-              <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Invitation History</h4>
-              <div className="space-y-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider dark:text-gray-400 text-slate-500 mb-3">
+                Invitation Activity History
+              </h4>
+              <div className="space-y-2.5">
                 {historySentInvites.map((inv: any) => {
                   const invitee = inv.studentProfile?.user;
                   const isAccepted = inv.status === 'ACCEPTED';
                   return (
-                    <div key={inv.id} className={cn(
-                      'flex items-center justify-between rounded-xl px-4 py-3 border',
-                      isAccepted
-                        ? 'bg-emerald-500/5 border-emerald-500/20'
-                        : 'bg-red-500/5 border-red-500/20'
-                    )}>
+                    <div
+                      key={inv.id}
+                      className={cn(
+                        'flex items-center justify-between rounded-2xl p-4 border',
+                        isAccepted
+                          ? 'dark:bg-emerald-500/10 dark:border-emerald-500/20 bg-emerald-50/80 border-emerald-200/80'
+                          : 'dark:bg-rose-500/10 dark:border-rose-500/20 bg-rose-50/80 border-rose-200/80'
+                      )}
+                    >
                       <div className="flex items-center gap-3">
-                        <div className={cn(
-                          'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold',
-                          isAccepted ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
-                        )}>
+                        <div
+                          className={cn(
+                            'w-9 h-9 rounded-xl font-extrabold flex items-center justify-center text-sm border',
+                            isAccepted
+                              ? 'dark:bg-emerald-500/20 dark:text-emerald-300 bg-emerald-100 text-emerald-800 border-emerald-200'
+                              : 'dark:bg-rose-500/20 dark:text-rose-300 bg-rose-100 text-rose-800 border-rose-200'
+                          )}
+                        >
                           {invitee?.name?.charAt(0) ?? '?'}
                         </div>
                         <div>
-                          <p className="text-white text-sm font-medium">{invitee?.name ?? 'Unknown'}</p>
-                          <p className="text-gray-500 text-xs">{inv.studentProfile?.studentId ?? invitee?.email}</p>
+                          <p className="dark:text-white text-slate-900 font-bold text-sm">{invitee?.name ?? 'Student'}</p>
+                          <p className="dark:text-gray-400 text-slate-500 text-xs font-medium">{inv.studentProfile?.studentId ?? invitee?.email}</p>
                         </div>
                       </div>
-                      <span className={cn(
-                        'text-xs px-2 py-1 rounded-full font-medium border',
-                        isAccepted
-                          ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                          : 'text-red-400 bg-red-500/10 border-red-500/20'
-                      )}>
+                      <span
+                        className={cn(
+                          'text-xs font-extrabold px-3 py-1 rounded-full border',
+                          isAccepted
+                            ? 'dark:bg-emerald-500/20 dark:text-emerald-300 bg-emerald-100 text-emerald-800 border-emerald-200'
+                            : 'dark:bg-rose-500/20 dark:text-rose-300 bg-rose-100 text-rose-800 border-rose-200'
+                        )}
+                      >
                         {isAccepted ? 'Accepted' : 'Declined'}
                       </span>
                     </div>

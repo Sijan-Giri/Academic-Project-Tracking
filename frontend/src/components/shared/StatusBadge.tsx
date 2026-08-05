@@ -17,7 +17,7 @@ export default function StatusBadge({ status, type, className }: StatusBadgeProp
   if (!config) return <Badge variant="outline" className={className}>{status}</Badge>;
 
   return (
-    <span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold', (config as any).bg || 'bg-white/10', config.color || 'text-white', className)}>
+    <span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold border', (config as any).bg || 'dark:bg-white/10 bg-slate-100', (config as any).border || 'dark:border-white/10 border-slate-200', config.color || 'dark:text-white text-slate-800', className)}>
       {config.label}
     </span>
   );

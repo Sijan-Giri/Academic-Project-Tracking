@@ -8,13 +8,13 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-gradient-to-r from-indigo-500 to-violet-600 text-white hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/25',
-        destructive: 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30',
-        outline: 'border border-white/20 bg-transparent text-white hover:bg-white/10',
-        secondary: 'bg-white/10 text-white hover:bg-white/20',
-        ghost: 'hover:bg-white/10 text-gray-400 hover:text-white',
-        link: 'text-indigo-400 underline-offset-4 hover:underline',
-        success: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30',
+        default: 'bg-gradient-to-r from-indigo-500 to-violet-600 text-white hover:from-indigo-600 hover:to-violet-700 shadow-md shadow-indigo-500/20 active:scale-[0.98]',
+        destructive: 'dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30 dark:hover:bg-red-500/30 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100',
+        outline: 'dark:border-white/20 dark:bg-transparent dark:text-white dark:hover:bg-white/10 border-slate-300 bg-white text-slate-800 hover:bg-slate-100 shadow-xs',
+        secondary: 'dark:bg-white/10 dark:text-white dark:hover:bg-white/20 bg-slate-100 text-slate-900 hover:bg-slate-200',
+        ghost: 'dark:hover:bg-white/10 dark:text-gray-400 dark:hover:text-white text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+        link: 'text-indigo-600 dark:text-indigo-400 underline-offset-4 hover:underline',
+        success: 'dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30 dark:hover:bg-emerald-500/30 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100',
       },
       size: {
         default: 'h-10 px-4 py-2',

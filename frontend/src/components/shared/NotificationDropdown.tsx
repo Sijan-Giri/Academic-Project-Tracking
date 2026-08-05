@@ -113,10 +113,10 @@ export default function NotificationDropdown() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative text-gray-400 hover:text-white transition-colors">
+        <Button variant="ghost" size="icon" className="relative dark:text-gray-400 dark:hover:text-white text-slate-600 hover:text-slate-900 transition-colors">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex min-w-[18px] h-[18px] px-1 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-rose-600 text-[10px] font-extrabold text-white shadow-md shadow-red-500/50 ring-2 ring-[#0f1117] animate-pulse">
+            <span className="absolute -top-1 -right-1 flex min-w-[18px] h-[18px] px-1 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-rose-600 text-[10px] font-extrabold text-white shadow-md shadow-red-500/50 ring-2 dark:ring-[#0f1117] ring-white animate-pulse">
               {unreadCount > 99 ? '99+' : unreadCount}
             </span>
           )}

@@ -1,0 +1,1 @@
+import{J as f,at as n,au as c}from"./index-BK_9FBfD.js";function o(s){const t=f(s);return t.setHours(0,0,0,0),t}function d(s,t){const a=o(s),e=o(t),r=+a-n(a),i=+e-n(e);return Math.round((r-i)/c)}export{d};
