@@ -1,9 +1,12 @@
 import { Menu, Sun, Moon, User as UserIcon, Settings as SettingsIcon, LogOut as LogOutIcon } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import NotificationDropdown from '@/components/shared/NotificationDropdown';
 import { useAuthStore } from '@/store/auth.store';
 import { useThemeStore } from '@/store/theme.store';
 import { logout as logoutApi } from '@/api/auth.api';
+import { getMyProjects } from '@/api/projects.api';
+import { getMyTeam } from '@/api/teams.api';
 import { useSidebar } from '@/layouts/DashboardLayout';
 import {
   DropdownMenu,
@@ -26,11 +29,43 @@ export default function Header({ className }: HeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const isStudent = user?.role === 'STUDENT';
+
+  const { data: projectsRes } = useQuery({
+    queryKey: ['my-projects'],
+    queryFn: getMyProjects,
+    enabled: isStudent,
+  });
+
+  const { data: teamRes } = useQuery({
+    queryKey: ['my-team'],
+    queryFn: getMyTeam,
+    enabled: isStudent,
+  });
+
+  const projectList = Array.isArray((projectsRes as any)?.data?.items)
+    ? (projectsRes as any).data.items
+    : (Array.isArray((projectsRes as any)?.data) ? (projectsRes as any).data : (Array.isArray(projectsRes) ? projectsRes : []));
+  const currentProject = projectList[0] || null;
+  const currentTeam = (teamRes as any)?.data || teamRes;
+
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path === '/dashboard') return 'Dashboard';
-    if (path.includes('/my-project')) return 'My Project';
-    if (path.includes('/coordinator/projects')) return 'Projects';
+    if (path === '/dashboard') {
+      return user?.name ? `${user.name}'s Dashboard` : 'Dashboard';
+    }
+    if (path === '/my-project' || path.startsWith('/my-project/')) {
+      if (path === '/my-project/abstract') return 'Project Abstract Proposal';
+      if (path === '/my-project/milestones') return 'Milestone Deliverables';
+      if (path === '/my-project/submissions') return 'Submission History';
+      if (path === '/my-project/create') return 'Create Project Proposal';
+      return currentProject?.title ? currentProject.title : 'My Capstone Project';
+    }
+    if (path === '/my-team') {
+      return currentTeam?.name ? `Team ${currentTeam.name}` : 'Team Roster';
+    }
+    if (path.includes('/coordinator/projects')) return 'Academic Projects';
+
     const segments = path.split('/').filter(Boolean);
     const last = segments[segments.length - 1];
     if (!last) return 'Dashboard';
@@ -39,14 +74,16 @@ export default function Header({ className }: HeaderProps) {
 
   return (
     <header className={cn('flex h-16 items-center justify-between px-4 lg:px-8', className)}>
-      <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="icon" onClick={toggle} className="lg:hidden text-slate-600 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white">
+      <div className="flex items-center space-x-4 min-w-0">
+        <Button variant="ghost" size="icon" onClick={toggle} className="lg:hidden text-slate-600 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white shrink-0">
           <Menu className="h-5 w-5" />
         </Button>
-        <h2 className="text-lg font-extrabold dark:text-white text-slate-900 hidden sm:block tracking-tight">{getPageTitle()}</h2>
+        <h2 className="text-lg font-extrabold dark:text-white text-slate-900 hidden sm:block tracking-tight truncate max-w-md" title={getPageTitle()}>
+          {getPageTitle()}
+        </h2>
       </div>
 
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3 shrink-0">
         {/* Theme Switcher Toggle Button */}
         <Button
           variant="ghost"

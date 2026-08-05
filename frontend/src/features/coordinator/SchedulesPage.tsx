@@ -9,7 +9,6 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -37,8 +36,6 @@ export default function SchedulesPage() {
   const qc = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [completeId, setCompleteId] = useState<string | null>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [stageFilter, setStageFilter] = useState('');
 
   const { data: schedulesData, isLoading } = useQuery({
@@ -54,245 +51,232 @@ export default function SchedulesPage() {
   const stages: any[] = Array.isArray(stagesData) ? stagesData : ((stagesData as any)?.data?.items || (stagesData as any)?.data || []);
   const guides: any[] = Array.isArray(guidesData) ? guidesData : ((guidesData as any)?.data || []);
 
-  const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<ScheduleForm>({
+  const { register, handleSubmit, reset, setValue, watch } = useForm<ScheduleForm>({
     resolver: zodResolver(scheduleSchema),
     defaultValues: { mode: 'OFFLINE', panelMemberIds: [] },
   });
 
-  const selectedPanel = watch('panelMemberIds');
+  const selectedPanelIds = watch('panelMemberIds') || [];
 
-  const createMutation = useMutation({
-    mutationFn: createSchedule,
-    onSuccess: () => { toast.success('Schedule created'); qc.invalidateQueries({ queryKey: ['schedules'] }); setCreateOpen(false); reset(); },
-    onError: () => toast.error('Failed to create schedule'),
+  const createMut = useMutation({
+    mutationFn: (data: ScheduleForm) => createSchedule(data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['schedules'] });
+      toast.success('Schedule created & panel notified');
+      setCreateOpen(false);
+      reset();
+    },
+    onError: (e: any) => toast.error(e?.response?.data?.message || 'Failed to create schedule'),
   });
 
-  const deleteMutation = useMutation({
+  const deleteMut = useMutation({
     mutationFn: (id: string) => deleteSchedule(id),
-    onSuccess: () => { toast.success('Schedule deleted'); qc.invalidateQueries({ queryKey: ['schedules'] }); setDeleteId(null); },
-    onError: () => toast.error('Failed to delete'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['schedules'] });
+      toast.success('Schedule deleted');
+      setDeleteId(null);
+    },
+    onError: () => toast.error('Failed to delete schedule'),
   });
 
-  const completeMutation = useMutation({
+  const completeMut = useMutation({
     mutationFn: (id: string) => completeSchedule(id),
-    onSuccess: () => { toast.success('Schedule marked complete'); qc.invalidateQueries({ queryKey: ['schedules'] }); setCompleteId(null); },
-    onError: () => toast.error('Failed to complete'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['schedules'] });
+      toast.success('Schedule marked completed');
+    },
+    onError: () => toast.error('Failed to complete schedule'),
   });
 
-  const togglePanel = (id: string) => {
-    const curr = selectedPanel || [];
-    setValue('panelMemberIds', curr.includes(id) ? curr.filter((p: string) => p !== id) : [...curr, id]);
+  const togglePanelMember = (id: string) => {
+    const current = [...selectedPanelIds];
+    const idx = current.indexOf(id);
+    if (idx >= 0) current.splice(idx, 1);
+    else current.push(id);
+    setValue('panelMemberIds', current);
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       <PageHeader
-        title="Review Schedules"
-        subtitle="Schedule project review sessions with panel members"
-        actions={<Button onClick={() => setCreateOpen(true)} id="create-schedule-btn"><Plus className="h-4 w-4 mr-2" /> Schedule Review</Button>}
+        title="Review Schedules & Panel Assignments"
+        subtitle="Schedule project presentation slots, assign panel evaluators, and set venues."
+        actions={
+          <Button onClick={() => setCreateOpen(true)} id="create-schedule-btn" className="btn-primary">
+            <Plus className="h-4 w-4 mr-2" /> Schedule Presentation
+          </Button>
+        }
       />
 
-      {/* Filter */}
-      <div className="flex items-center gap-3">
-        <Label className="text-gray-400 whitespace-nowrap text-sm">Filter by Stage:</Label>
-        <Select value={stageFilter} onValueChange={setStageFilter}>
-          <SelectTrigger className="bg-white/5 border-white/10 text-white w-60" id="stage-filter">
-            <SelectValue placeholder="All stages" />
+      {/* Filter Bar */}
+      <div className="flex items-center gap-4 bg-card border border-border p-4 rounded-xl shadow-xs max-w-xs">
+        <Select value={stageFilter} onValueChange={v => setStageFilter(v === 'ALL' ? '' : v)}>
+          <SelectTrigger className="input-field" id="schedule-stage-filter">
+            <SelectValue placeholder="All Review Stages" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1a1a2e] border-white/10">
-            <SelectItem value="" className="text-gray-300">All stages</SelectItem>
-            {stages.map((s: any) => <SelectItem key={s.id} value={s.id} className="text-gray-300">{s.name}</SelectItem>)}
+          <SelectContent className="bg-card border-border text-foreground">
+            <SelectItem value="ALL">All Review Stages</SelectItem>
+            {stages.map((st: any) => (
+              <SelectItem key={st.id} value={st.id}>{st.name}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
 
-      {/* Schedules Table */}
-      <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
-        {isLoading ? (
-          <div className="space-y-px">{[...Array(5)].map((_, i) => <div key={i} className="h-14 bg-white/5 animate-pulse" />)}</div>
-        ) : schedules.length === 0 ? (
-          <EmptyState icon={Calendar} title="No schedules" description="Schedule review sessions for projects" actionLabel="Schedule Review" onAction={() => setCreateOpen(true)} />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/10 bg-white/5">
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Project</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Stage</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Date & Time</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Venue</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Mode</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Panel</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Status</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {schedules.map((s: any) => (
-                  <>
-                    <tr key={s.id} className="border-b border-white/5 hover:bg-white/5 cursor-pointer" onClick={() => setExpandedId(expandedId === s.id ? null : s.id)}>
-                      <td className="px-4 py-3 text-white font-medium">{s.project?.title || '—'}</td>
-                      <td className="px-4 py-3 text-gray-300">{s.reviewStage?.name || '—'}</td>
-                      <td className="px-4 py-3 text-gray-300 whitespace-nowrap">
-                        {format(new Date(s.scheduledAt), 'MMM d, yyyy')}
-                        <div className="text-xs text-gray-500">{format(new Date(s.scheduledAt), 'h:mm a')}</div>
-                      </td>
-                      <td className="px-4 py-3 text-gray-400">
-                        <div className="flex items-center gap-1"><MapPin className="h-3 w-3" />{s.venue || '—'}</div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${s.mode === 'ONLINE' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-slate-500/20 text-slate-400'}`}>
-                          {s.mode === 'ONLINE' ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-                          {s.mode}
+      {/* Schedules List */}
+      {isLoading ? (
+        <div className="p-8 text-center text-muted-foreground font-normal">Loading review schedules…</div>
+      ) : schedules.length === 0 ? (
+        <EmptyState icon={Calendar} title="No review schedules found" description="Schedule presentation slots for project evaluation panels." />
+      ) : (
+        <div className="space-y-4">
+          {schedules.map((sch: any) => {
+            const isCompleted = sch.isCompleted;
+            const scheduledDate = sch.scheduledAt ? new Date(sch.scheduledAt) : null;
+            const panelMembers: any[] = sch.panelAssignments || sch.panel || [];
+
+            return (
+              <div key={sch.id} className="bg-card border border-border rounded-xl shadow-xs p-6 transition-all">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4 mb-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+                        {sch.reviewStage?.name || 'Review Stage'}
+                      </span>
+                      <span className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
+                        sch.mode === 'ONLINE' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-secondary border-border text-foreground'
+                      }`}>
+                        {sch.mode === 'ONLINE' ? <Wifi className="w-3 h-3 inline mr-1" /> : <WifiOff className="w-3 h-3 inline mr-1" />}
+                        {sch.mode}
+                      </span>
+                      {isCompleted && (
+                        <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                          Completed
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="flex items-center gap-1 text-gray-400 text-xs">
-                          <Users className="h-3.5 w-3.5" />{s.panelAssignments?.length || 0} members
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${s.isCompleted ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
-                          {s.isCompleted ? 'Completed' : 'Pending'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-1.5" onClick={e => e.stopPropagation()}>
-                          {!s.isCompleted && (
-                            <Button size="sm" variant="success" onClick={() => setCompleteId(s.id)} id={`complete-${s.id}`}>
-                              <CheckCircle className="h-3.5 w-3.5 mr-1" /> Done
-                            </Button>
-                          )}
-                          <Button size="sm" variant="destructive" onClick={() => setDeleteId(s.id)} id={`delete-sched-${s.id}`}>
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                    {expandedId === s.id && (
-                      <tr key={`${s.id}-expand`} className="border-b border-white/5 bg-white/3">
-                        <td colSpan={8} className="px-8 py-4">
-                          <div className="grid grid-cols-2 gap-6">
-                            <div>
-                              <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Panel Members</p>
-                              {s.panelAssignments?.length > 0 ? (
-                                <div className="space-y-1.5">
-                                  {s.panelAssignments.map((pa: any) => (
-                                    <div key={pa.id} className="flex items-center justify-between px-3 py-2 bg-white/5 rounded-lg">
-                                      <span className="text-sm text-white">{pa.facultyProfile?.user?.name}</span>
-                                      <span className={`text-xs px-1.5 py-0.5 rounded-full ${pa.isPresent === true ? 'bg-green-500/20 text-green-400' : pa.isPresent === false ? 'bg-red-500/20 text-red-400' : 'bg-gray-500/20 text-gray-400'}`}>
-                                        {pa.isPresent === true ? 'Present' : pa.isPresent === false ? 'Absent' : 'TBD'}
-                                      </span>
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : <p className="text-gray-500 text-sm">No panel members assigned</p>}
-                            </div>
-                            {s.notes && (
-                              <div>
-                                <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Notes</p>
-                                <p className="text-sm text-gray-300">{s.notes}</p>
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
+                      )}
+                    </div>
+                    <h3 className="text-base font-semibold text-foreground">{sch.project?.title || 'Project Presentation'}</h3>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {!isCompleted && (
+                      <Button size="sm" variant="success" onClick={() => completeMut.mutate(sch.id)} disabled={completeMut.isPending} id={`complete-sch-${sch.id}`} className="text-xs font-semibold">
+                        <CheckCircle className="h-3.5 w-3.5 mr-1" /> Mark Complete
+                      </Button>
                     )}
-                  </>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                    <Button size="sm" variant="ghost" onClick={() => setDeleteId(sch.id)} id={`delete-sch-${sch.id}`}>
+                      <Trash2 className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                    </Button>
+                  </div>
+                </div>
 
-      {/* Create Schedule Dialog */}
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="bg-[#1a1a2e] border-white/10 text-white max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Schedule Review Session</DialogTitle></DialogHeader>
-          <form onSubmit={handleSubmit(d => createMutation.mutate(d))} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label>Project</Label>
-              <Select onValueChange={v => setValue('projectId', v)}>
-                <SelectTrigger className="bg-white/5 border-white/10 text-white" id="sched-project"><SelectValue placeholder="Select project" /></SelectTrigger>
-                <SelectContent className="bg-[#1a1a2e] border-white/10 max-h-48">
-                  {projects.map((p: any) => <SelectItem key={p.id} value={p.id} className="text-gray-300">{p.title}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              {errors.projectId && <p className="text-red-400 text-xs">{errors.projectId.message}</p>}
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                  <div className="flex items-center gap-2 text-muted-foreground font-normal">
+                    <Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                    <span>Time: <strong className="text-foreground font-semibold">{scheduledDate ? format(scheduledDate, 'MMM d, yyyy · h:mm a') : 'Unscheduled'}</strong></span>
+                  </div>
 
-            <div className="space-y-1.5">
-              <Label>Review Stage</Label>
-              <Select onValueChange={v => setValue('reviewStageId', v)}>
-                <SelectTrigger className="bg-white/5 border-white/10 text-white" id="sched-stage"><SelectValue placeholder="Select stage" /></SelectTrigger>
-                <SelectContent className="bg-[#1a1a2e] border-white/10">
-                  {stages.map((s: any) => <SelectItem key={s.id} value={s.id} className="text-gray-300">{s.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              {errors.reviewStageId && <p className="text-red-400 text-xs">{errors.reviewStageId.message}</p>}
-            </div>
+                  <div className="flex items-center gap-2 text-muted-foreground font-normal">
+                    <MapPin className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                    <span>Venue: <strong className="text-foreground font-semibold">{sch.venue || 'TBD'}</strong></span>
+                  </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label>Date & Time</Label>
-                <Input {...register('scheduledAt')} type="datetime-local" id="sched-datetime" />
-                {errors.scheduledAt && <p className="text-red-400 text-xs">{errors.scheduledAt.message}</p>}
-              </div>
-              <div className="space-y-1.5">
-                <Label>Venue</Label>
-                <Input {...register('venue')} placeholder="e.g. Seminar Hall A" id="sched-venue" />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Mode</Label>
-              <div className="flex gap-4">
-                {['OFFLINE', 'ONLINE'].map(m => (
-                  <label key={m} className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" value={m} {...register('mode')} className="text-indigo-500" />
-                    <span className="text-sm text-gray-300 flex items-center gap-1">
-                      {m === 'ONLINE' ? <Wifi className="h-3.5 w-3.5" /> : <WifiOff className="h-3.5 w-3.5" />} {m}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Notes (optional)</Label>
-              <Textarea {...register('notes')} placeholder="Additional instructions…" rows={2} id="sched-notes" />
-            </div>
-
-            {guides.length > 0 && (
-              <div className="space-y-2">
-                <Label className="text-gray-400 text-xs uppercase tracking-wide">Panel Members (optional)</Label>
-                <div className="max-h-40 overflow-y-auto space-y-1.5 pr-1">
-                  {guides.map((g: any) => (
-                    <label key={g.id} className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg hover:bg-white/5">
-                      <Checkbox checked={(selectedPanel || []).includes(g.facultyProfile?.id || g.id)} onCheckedChange={() => togglePanel(g.facultyProfile?.id || g.id)} />
-                      <div>
-                        <span className="text-sm text-white">{g.name}</span>
-                        <span className="ml-2 text-xs text-gray-500">{g.facultyProfile?.designation}</span>
-                      </div>
-                    </label>
-                  ))}
+                  <div className="flex items-center gap-2 text-muted-foreground font-normal">
+                    <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                    <span>Panel: <strong className="text-foreground font-semibold">{panelMembers.length} Evaluators</strong></span>
+                  </div>
                 </div>
               </div>
-            )}
+            );
+          })}
+        </div>
+      )}
 
-            <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => { setCreateOpen(false); reset(); }}>Cancel</Button>
-              <Button type="submit" disabled={createMutation.isPending} id="create-sched-submit">
-                {createMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />} Schedule
+      {/* Modal: Schedule Presentation */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="bg-card border-border text-foreground max-w-lg">
+          <DialogHeader><DialogTitle className="text-base font-semibold">Schedule Review Presentation</DialogTitle></DialogHeader>
+          <form onSubmit={handleSubmit(d => createMut.mutate(d))} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Review Stage</Label>
+              <Select value={watch('reviewStageId')} onValueChange={v => setValue('reviewStageId', v)}>
+                <SelectTrigger className="input-field" id="sch-stage-select"><SelectValue placeholder="Choose Stage" /></SelectTrigger>
+                <SelectContent className="bg-card border-border text-foreground">
+                  {stages.map((st: any) => <SelectItem key={st.id} value={st.id}>{st.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Project</Label>
+              <Select value={watch('projectId')} onValueChange={v => setValue('projectId', v)}>
+                <SelectTrigger className="input-field" id="sch-project-select"><SelectValue placeholder="Choose Project" /></SelectTrigger>
+                <SelectContent className="bg-card border-border text-foreground">
+                  {projects.map((p: any) => <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Date & Time</Label>
+                <Input type="datetime-local" {...register('scheduledAt')} id="sch-date-input" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Mode</Label>
+                <Select value={watch('mode')} onValueChange={v => setValue('mode', v as any)}>
+                  <SelectTrigger className="input-field" id="sch-mode-select"><SelectValue placeholder="Mode" /></SelectTrigger>
+                  <SelectContent className="bg-card border-border text-foreground">
+                    <SelectItem value="OFFLINE">OFFLINE</SelectItem>
+                    <SelectItem value="ONLINE">ONLINE</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Venue / Room / Link</Label>
+              <Input {...register('venue')} placeholder="e.g. Lab 402 or Google Meet URL" id="sch-venue-input" />
+            </div>
+
+            {/* Panel Evaluators Selection */}
+            <div className="space-y-2 pt-2 border-t border-border">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Assign Panel Evaluators</Label>
+              <div className="max-h-36 overflow-y-auto space-y-2 border border-border rounded-lg p-3 bg-secondary/30">
+                {guides.map((g: any) => {
+                  const profId = g.facultyProfileId || g.facultyProfile?.id || g.id;
+                  const isChecked = selectedPanelIds.includes(profId);
+                  return (
+                    <div key={profId} className="flex items-center space-x-2">
+                      <Checkbox id={`panel-${profId}`} checked={isChecked} onCheckedChange={() => togglePanelMember(profId)} />
+                      <label htmlFor={`panel-${profId}`} className="text-xs font-semibold text-foreground cursor-pointer select-none">
+                        {g.name} ({g.facultyProfile?.designation || 'Faculty'})
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <DialogFooter className="gap-2 pt-2">
+              <Button variant="ghost" onClick={() => setCreateOpen(false)}>Cancel</Button>
+              <Button type="submit" disabled={createMut.isPending} id="submit-sch-btn" className="btn-primary">
+                {createMut.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Schedule Review
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      <ConfirmDialog open={!!deleteId} onOpenChange={o => !o && setDeleteId(null)} onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} title="Delete Schedule" description="This will permanently delete this review schedule." confirmLabel="Delete" variant="danger" />
-      <ConfirmDialog open={!!completeId} onOpenChange={o => !o && setCompleteId(null)} onConfirm={() => completeId && completeMutation.mutate(completeId)} title="Mark as Completed" description="Mark this review session as completed? This cannot be undone." confirmLabel="Complete" />
+      {/* Delete Confirm */}
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={o => !o && setDeleteId(null)}
+        title="Delete Schedule Slot"
+        description="Are you sure you want to delete this presentation schedule?"
+        onConfirm={() => deleteId && deleteMut.mutate(deleteId)}
+        variant="danger"
+      />
     </div>
   );
 }

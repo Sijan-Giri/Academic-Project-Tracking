@@ -1,7 +1,7 @@
 import { api } from './client';
 import { Project, ApiResponse, PaginatedResponse } from '@/types';
 
-export const createProject = async (data: Partial<Project>) => (await api.post<ApiResponse<Project>>('/projects', data)).data;
+export const createProject = async (data: any) => (await api.post<ApiResponse<Project>>('/projects', data)).data;
 export const getProjects = async (params?: any) => (await api.get<ApiResponse<PaginatedResponse<Project>>>('/projects', { params })).data;
 export const getProject = async (id: string) => (await api.get<ApiResponse<Project>>(`/projects/${id}`)).data;
 export const updateProject = async (id: string, data: Partial<Project>) => (await api.put<ApiResponse<Project>>(`/projects/${id}`, data)).data;

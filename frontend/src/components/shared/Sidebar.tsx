@@ -45,15 +45,15 @@ export default function Sidebar({ className }: SidebarProps) {
   const allowedItems = NAV_ITEMS.filter(item => user && item.roles.includes(user.role as Role));
 
   return (
-    <aside className={cn('flex flex-col dark:bg-[#1e1e2e] dark:border-white/10 bg-white border-r border-slate-200 text-slate-800 shadow-sm', className)}>
-      <div className="flex h-16 shrink-0 items-center px-4 overflow-hidden">
+    <aside className={cn('flex flex-col bg-card border-r border-border text-foreground shadow-xs', className)}>
+      <div className="flex h-16 shrink-0 items-center px-4 overflow-hidden border-b border-border">
         <div className="flex items-center space-x-3 text-indigo-600 dark:text-indigo-400">
-          <GraduationCap className="h-8 w-8 shrink-0" />
-          <span className="text-xl font-bold tracking-tight dark:text-white text-slate-900 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap">APTS</span>
+          <GraduationCap className="h-7 w-7 shrink-0" />
+          <span className="text-lg font-extrabold tracking-tight text-foreground lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap">APTS</span>
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto overflow-x-hidden py-4">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden py-3">
         <nav className="space-y-1 px-2">
           {allowedItems.map((item) => (
             <NavLink
@@ -62,28 +62,28 @@ export default function Sidebar({ className }: SidebarProps) {
               end={item.path === '/my-project' || item.path === '/dashboard'}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                  'flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                   isActive
-                    ? 'dark:bg-indigo-500/20 dark:text-indigo-400 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-sm shadow-indigo-500/20'
-                    : 'dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold border-l-2 border-indigo-600 dark:border-indigo-500'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
                 )
               }
             >
-              <item.icon className="h-5 w-5 shrink-0" />
+              <item.icon className="h-4 h-4 shrink-0" />
               <span className="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap">{item.label}</span>
             </NavLink>
           ))}
         </nav>
       </div>
 
-      <div className="dark:border-white/10 border-t border-slate-200 p-4 shrink-0 overflow-hidden">
+      <div className="border-t border-border p-3 shrink-0 overflow-hidden">
         <div className="flex items-center space-x-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-bold">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold text-xs">
             {user?.name?.charAt(0) || 'U'}
           </div>
           <div className="flex-1 min-w-0 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
-            <p className="truncate text-sm font-medium dark:text-white text-slate-900">{user?.name}</p>
-            <p className="truncate text-xs dark:text-gray-400 text-slate-500">{user?.role}</p>
+            <p className="truncate text-sm font-semibold text-foreground">{user?.name}</p>
+            <p className="truncate text-xs text-muted-foreground">{user?.role}</p>
           </div>
           <button
             onClick={async () => {
@@ -91,9 +91,9 @@ export default function Sidebar({ className }: SidebarProps) {
               clearAuth();
               window.location.href = '/login';
             }}
-            className="p-2 dark:text-gray-400 dark:hover:text-red-400 text-slate-500 hover:text-red-600 transition-colors lg:opacity-0 lg:group-hover:opacity-100"
+            className="p-1.5 text-muted-foreground hover:text-rose-600 dark:hover:text-rose-400 transition-colors lg:opacity-0 lg:group-hover:opacity-100 rounded-md"
           >
-            <LogOut className="h-5 w-5 shrink-0" />
+            <LogOut className="h-4 w-4 shrink-0" />
           </button>
         </div>
       </div>

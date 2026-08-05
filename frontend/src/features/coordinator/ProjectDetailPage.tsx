@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, FileText, CheckCircle2, Github } from 'lucide-react';
+import { ArrowLeft, Download, FileText, CheckCircle2, Github, Users, GraduationCap } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { getProject, updateProjectStatus } from '@/api/projects.api';
@@ -48,8 +48,8 @@ export default function ProjectDetailPage() {
   const raw = projectRes as any;
   const project = raw?.data ?? raw;
 
-  if (isLoading) return <div className="p-8 text-white">Loading project details...</div>;
-  if (!project || !project.id) return <div className="p-8 text-white">Project not found.</div>;
+  if (isLoading) return <div className="p-8 text-muted-foreground font-normal">Loading project details...</div>;
+  if (!project || !project.id) return <div className="p-8 text-muted-foreground font-normal">Project not found.</div>;
 
   const isCoordinatorOrAdmin = user?.role === 'COORDINATOR' || user?.role === 'ADMIN';
   const guideUser = project.guideAssignment?.facultyProfile?.user;
@@ -58,39 +58,39 @@ export default function ProjectDetailPage() {
   return (
     <div className="space-y-6 pb-12 max-w-7xl mx-auto">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => navigate(-1)} className="text-gray-400 hover:text-white">
-          <ArrowLeft className="w-5 h-5 mr-2" /> Back
+        <Button variant="ghost" onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Projects
         </Button>
       </div>
 
       {/* Header card with status changer */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/5 p-6 rounded-2xl border border-white/10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-6 rounded-xl border border-border shadow-xs">
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-sm font-medium border border-indigo-500/30">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold">
               {project.domain || 'General'}
             </span>
             <StatusBadge status={project.status} type="project" />
           </div>
-          <h1 className="text-2xl font-bold text-white">{project.title}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{project.title}</h1>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Status Change selector for Coordinator & Admin */}
           {isCoordinatorOrAdmin && (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400 font-medium">Change Status:</span>
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Change Status:</span>
               <Select
                 value={project.status}
                 onValueChange={(val) => statusMutation.mutate(val)}
                 disabled={statusMutation.isPending}
               >
-                <SelectTrigger className="w-[200px] bg-black/40 border-white/20 text-white font-medium text-xs h-9">
+                <SelectTrigger className="w-[180px] bg-card border-input text-foreground font-semibold text-xs h-9">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1a2e] border-white/10 text-white">
+                <SelectContent className="bg-card border-border text-foreground">
                   {STATUS_OPTIONS.map((st) => (
-                    <SelectItem key={st} value={st} className="text-xs">
+                    <SelectItem key={st} value={st} className="text-xs font-medium">
                       {st.replace('_', ' ')}
                     </SelectItem>
                   ))}
@@ -100,9 +100,9 @@ export default function ProjectDetailPage() {
           )}
 
           {(project.githubLink || project.githubUrl) && (
-            <Button variant="outline" className="border-white/10 hover:bg-white/5 text-gray-300" asChild>
+            <Button variant="outline" className="btn-outline shrink-0 gap-2" asChild>
               <a href={project.githubLink || project.githubUrl} target="_blank" rel="noopener noreferrer">
-                <Github className="w-4 h-4 mr-2" /> Repository
+                <Github className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Repository
               </a>
             </Button>
           )}
@@ -110,26 +110,26 @@ export default function ProjectDetailPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-white/5 border-white/10 w-full justify-start rounded-xl p-1 h-auto mb-6">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-2.5 px-6 rounded-lg">Overview</TabsTrigger>
-          <TabsTrigger value="milestones" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-2.5 px-6 rounded-lg">Milestones</TabsTrigger>
-          <TabsTrigger value="submissions" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-2.5 px-6 rounded-lg">Submissions</TabsTrigger>
-          <TabsTrigger value="evaluations" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-2.5 px-6 rounded-lg">Evaluations</TabsTrigger>
+        <TabsList className="bg-card border border-border w-full justify-start rounded-xl p-1 h-auto mb-6">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-2 px-5 rounded-lg text-xs font-semibold">Overview</TabsTrigger>
+          <TabsTrigger value="milestones" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-2 px-5 rounded-lg text-xs font-semibold">Milestones</TabsTrigger>
+          <TabsTrigger value="submissions" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-2 px-5 rounded-lg text-xs font-semibold">Submissions</TabsTrigger>
+          <TabsTrigger value="evaluations" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-2 px-5 rounded-lg text-xs font-semibold">Evaluations</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6 mt-0">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2 bg-white/5 border-white/10 text-white">
-              <CardHeader>
-                <CardTitle className="text-lg">Abstract</CardTitle>
+            <Card className="lg:col-span-2">
+              <CardHeader className="border-b border-border pb-3">
+                <CardTitle className="text-base font-semibold">Project Abstract</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap text-sm">{project.abstract || 'No abstract provided.'}</p>
+              <CardContent className="pt-4">
+                <p className="text-foreground leading-relaxed whitespace-pre-wrap text-sm font-normal">{project.abstract || 'No abstract provided.'}</p>
                 {project.keywords?.length > 0 && (
-                  <div className="mt-6 flex flex-wrap gap-2">
+                  <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t border-border">
                     {project.keywords.map((kw: string, i: number) => (
-                      <span key={i} className="px-2.5 py-1 rounded-md bg-white/5 text-gray-300 text-xs border border-white/10">
-                        {kw}
+                      <span key={i} className="px-2 py-0.5 rounded-md bg-secondary text-foreground text-xs font-medium border border-border">
+                        #{kw}
                       </span>
                     ))}
                   </div>
@@ -139,21 +139,23 @@ export default function ProjectDetailPage() {
 
             <div className="space-y-6">
               {/* Team Details */}
-              <Card className="bg-white/5 border-white/10 text-white">
-                <CardHeader>
-                  <CardTitle className="text-lg">Team Details</CardTitle>
+              <Card>
+                <CardHeader className="border-b border-border pb-3">
+                  <CardTitle className="text-base font-semibold flex items-center gap-2">
+                    <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Team Roster
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="font-medium text-indigo-400 pb-2 border-b border-white/10 flex justify-between items-center">
+                <CardContent className="pt-4 space-y-3">
+                  <div className="font-semibold text-foreground pb-2 border-b border-border flex justify-between items-center text-sm">
                     <span>{project.team?.name || 'Unnamed Team'}</span>
                     {project.team?.status && <StatusBadge status={project.team.status} type="team" />}
                   </div>
                   {project.team?.members?.map((m: any) => {
                     const memberUser = m.studentProfile?.user;
                     return (
-                      <div key={m.id} className="flex justify-between items-center text-sm">
-                        <span className="text-gray-200">{memberUser?.name || 'Unknown'}</span>
-                        {m.isLeader && <span className="text-[10px] bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-2 py-0.5 rounded-full font-bold">Leader</span>}
+                      <div key={m.id} className="flex justify-between items-center text-xs">
+                        <span className="text-foreground font-semibold">{memberUser?.name || 'Unknown'}</span>
+                        {m.isLeader && <span className="text-[10px] bg-amber-50 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2 py-0.5 rounded-md font-bold">Leader</span>}
                       </div>
                     );
                   })}
@@ -161,26 +163,28 @@ export default function ProjectDetailPage() {
               </Card>
 
               {/* Guide Details */}
-              <Card className="bg-white/5 border-white/10 text-white">
-                <CardHeader>
-                  <CardTitle className="text-lg">Guide Details</CardTitle>
+              <Card>
+                <CardHeader className="border-b border-border pb-3">
+                  <CardTitle className="text-base font-semibold flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Assigned Mentor
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-4">
                   {guideUser ? (
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-sm text-white shrink-0">
+                      <div className="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
                         {guideUser.name?.charAt(0)}
                       </div>
                       <div>
-                        <p className="font-medium text-white text-sm">{guideUser.name}</p>
-                        <p className="text-xs text-gray-400">{guideInfo?.designation || 'Faculty'}</p>
-                        <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-md bg-green-500/20 text-green-400 text-xs font-medium">
-                          <CheckCircle2 className="w-3 h-3" /> Assigned
+                        <p className="font-semibold text-foreground text-sm">{guideUser.name}</p>
+                        <p className="text-xs text-muted-foreground font-normal">{guideInfo?.designation || 'Faculty Guide'}</p>
+                        <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs font-semibold">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Assigned
                         </span>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-gray-500 italic text-sm">No guide assigned yet.</p>
+                    <p className="text-muted-foreground italic text-xs font-normal">No faculty guide assigned yet.</p>
                   )}
                 </CardContent>
               </Card>
@@ -189,20 +193,20 @@ export default function ProjectDetailPage() {
         </TabsContent>
 
         <TabsContent value="milestones" className="mt-0">
-          <Card className="bg-white/5 border-white/10 text-white">
-            <CardHeader><CardTitle className="text-lg">Project Milestones</CardTitle></CardHeader>
-            <CardContent>
+          <Card>
+            <CardHeader className="border-b border-border pb-3"><CardTitle className="text-base font-semibold">Project Milestones</CardTitle></CardHeader>
+            <CardContent className="pt-4">
               <div className="space-y-3">
                 {project.milestones?.length ? project.milestones.map((m: any) => (
-                  <div key={m.id} className="p-4 bg-black/20 rounded-xl border border-white/5 flex justify-between items-center">
+                  <div key={m.id} className="p-4 bg-secondary/50 rounded-lg border border-border flex justify-between items-center">
                     <div>
-                      <p className="font-medium text-white text-sm">{m.name}</p>
-                      <p className="text-xs text-gray-400">{m.description}</p>
+                      <p className="font-semibold text-foreground text-sm">{m.name}</p>
+                      <p className="text-xs text-muted-foreground font-normal">{m.description}</p>
                     </div>
                     <StatusBadge status={m.status} type="milestone" />
                   </div>
                 )) : (
-                  <p className="text-gray-500 text-center py-8 text-sm">No milestones defined yet.</p>
+                  <p className="text-muted-foreground text-center py-8 text-xs font-normal">No milestones defined yet.</p>
                 )}
               </div>
             </CardContent>
@@ -210,27 +214,27 @@ export default function ProjectDetailPage() {
         </TabsContent>
 
         <TabsContent value="submissions" className="mt-0">
-          <Card className="bg-white/5 border-white/10 text-white">
-            <CardHeader><CardTitle className="text-lg">Document Submissions</CardTitle></CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+          <Card>
+            <CardHeader className="border-b border-border pb-3"><CardTitle className="text-base font-semibold">Document Submissions</CardTitle></CardHeader>
+            <CardContent className="pt-4">
+              <div className="space-y-3">
                 {project.submissions?.length ? project.submissions.map((sub: any) => (
-                  <div key={sub.id} className="flex justify-between items-center p-4 bg-black/20 rounded-xl border border-white/5">
+                  <div key={sub.id} className="flex justify-between items-center p-4 bg-secondary/50 rounded-lg border border-border">
                     <div className="flex items-center gap-3">
-                      <FileText className="w-8 h-8 text-indigo-400" />
+                      <FileText className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                       <div>
-                        <p className="font-medium text-sm text-white">{sub.title}</p>
-                        <p className="text-xs text-gray-400">Submitted on {new Date(sub.submittedAt).toLocaleDateString()}</p>
+                        <p className="font-semibold text-sm text-foreground">{sub.title}</p>
+                        <p className="text-xs text-muted-foreground font-normal">Submitted on {new Date(sub.submittedAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                     {sub.fileUrl && (
-                      <Button variant="outline" size="sm" className="border-white/10 text-xs" asChild>
+                      <Button variant="outline" size="sm" className="btn-outline text-xs" asChild>
                         <a href={sub.fileUrl} target="_blank" rel="noreferrer"><Download className="w-3.5 h-3.5 mr-1.5"/> Download</a>
                       </Button>
                     )}
                   </div>
                 )) : (
-                  <p className="text-gray-500 text-center py-8 text-sm">No submissions uploaded yet.</p>
+                  <p className="text-muted-foreground text-center py-8 text-xs font-normal">No submissions uploaded yet.</p>
                 )}
               </div>
             </CardContent>
@@ -238,10 +242,10 @@ export default function ProjectDetailPage() {
         </TabsContent>
 
         <TabsContent value="evaluations" className="mt-0">
-          <Card className="bg-white/5 border-white/10 text-white">
-            <CardHeader><CardTitle className="text-lg">Panel Evaluations</CardTitle></CardHeader>
-            <CardContent>
-              <p className="text-gray-500 text-center py-8 text-sm">No evaluation records found for this project.</p>
+          <Card>
+            <CardHeader className="border-b border-border pb-3"><CardTitle className="text-base font-semibold">Panel Evaluations</CardTitle></CardHeader>
+            <CardContent className="pt-4">
+              <p className="text-muted-foreground text-center py-8 text-xs font-normal">No evaluation records found for this project.</p>
             </CardContent>
           </Card>
         </TabsContent>

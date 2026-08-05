@@ -9,12 +9,9 @@ import { format } from 'date-fns';
 
 import { createAnnouncement, getAnnouncements, deleteAnnouncement } from '@/api/announcements.api';
 import { getDepartments } from '@/api/departments.api';
-import { getBatches } from '@/api/batches.api';
-import { getSemesters } from '@/api/semesters.api';
 import PageHeader from '@/components/shared/PageHeader';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -42,8 +39,6 @@ export default function CoordinatorAnnouncementsPage() {
   });
 
   const { data: deptRes } = useQuery({ queryKey: ['departments'], queryFn: () => getDepartments() });
-  const { data: batchRes } = useQuery({ queryKey: ['batches'], queryFn: () => getBatches() });
-  const { data: semRes } = useQuery({ queryKey: ['semesters'], queryFn: () => getSemesters() });
 
   // Safe response unwrapping
   const announcementList: any[] = Array.isArray((announcementsRes as any)?.data?.items)
@@ -51,17 +46,11 @@ export default function CoordinatorAnnouncementsPage() {
     : (Array.isArray((announcementsRes as any)?.data) ? (announcementsRes as any).data : (Array.isArray(announcementsRes) ? announcementsRes : []));
 
   const departmentsList: any[] = Array.isArray((deptRes as any)?.data) ? (deptRes as any).data : (Array.isArray(deptRes) ? deptRes : []);
-  const batchesList: any[] = Array.isArray((batchRes as any)?.data) ? (batchRes as any).data : (Array.isArray(batchRes) ? batchRes : []);
-  const semestersList: any[] = Array.isArray((semRes as any)?.data) ? (semRes as any).data : (Array.isArray(semRes) ? semRes : []);
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<AnnouncementFormValues>({
     resolver: zodResolver(announcementSchema),
     defaultValues: { title: '', content: '', departmentIds: [], batchIds: [], semesterIds: [] },
   });
-
-  const selectedDepts = watch('departmentIds') || [];
-  const selectedBatches = watch('batchIds') || [];
-  const selectedSems = watch('semesterIds') || [];
 
   const createMutation = useMutation({
     mutationFn: (data: AnnouncementFormValues) => createAnnouncement(data),
@@ -71,9 +60,7 @@ export default function CoordinatorAnnouncementsPage() {
       setCreateOpen(false);
       reset();
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to post announcement');
-    },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to broadcast announcement'),
   });
 
   const deleteMutation = useMutation({
@@ -83,195 +70,146 @@ export default function CoordinatorAnnouncementsPage() {
       toast.success('Announcement deleted');
       setDeleteItem(null);
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to delete announcement');
-    },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to delete announcement'),
   });
 
-  const toggleSelection = (field: 'departmentIds' | 'batchIds' | 'semesterIds', id: string) => {
+  const selectedDepts = watch('departmentIds') || [];
+
+  const toggleTarget = (field: 'departmentIds' | 'batchIds' | 'semesterIds', id: string) => {
     const current = watch(field) || [];
     if (current.includes(id)) {
-      setValue(field, current.filter((item: string) => item !== id));
+      setValue(field, current.filter((x: string) => x !== id));
     } else {
       setValue(field, [...current, id]);
     }
   };
 
+  const onSubmit = (data: AnnouncementFormValues) => {
+    createMutation.mutate(data);
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       <PageHeader
-        title="Announcements Broadcast"
-        subtitle="Publish updates to specific departments, batches, or semesters"
+        title="Broadcast Announcements"
+        subtitle="Post department-wide notices, review stage guidelines, and presentation schedules."
         actions={
-          <Button onClick={() => setCreateOpen(true)} className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white">
-            <Plus className="w-4 h-4 mr-2" /> New Announcement
+          <Button onClick={() => setCreateOpen(true)} className="btn-primary">
+            <Plus className="w-4 h-4 mr-2" /> Post Announcement
           </Button>
         }
       />
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-48 dark:bg-white/5 bg-slate-200 animate-pulse rounded-xl dark:border-white/10 border-slate-200" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {announcementList.map((ann: any) => {
-            const dateVal = ann.createdAt || ann.date || Date.now();
+      {/* Announcements Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader className="h-16 bg-secondary/50" />
+              <CardContent className="h-24 bg-secondary/30 mt-2" />
+            </Card>
+          ))
+        ) : announcementList.length > 0 ? (
+          announcementList.map((item: any) => {
+            const dateVal = item.createdAt || item.date || Date.now();
             const dateStr = format(new Date(dateVal), 'MMM d, yyyy');
-            const targets = ann.targets || [];
-
             return (
-              <Card key={ann.id} className="hover:border-indigo-500/50 transition-colors flex flex-col relative group">
-                <CardHeader className="pb-3 border-b dark:border-white/10 border-slate-200 flex flex-row items-start justify-between space-y-0">
-                  <div className="flex gap-3">
-                    <div className="w-9 h-9 rounded-full dark:bg-indigo-500/20 bg-indigo-100 flex items-center justify-center shrink-0">
-                      <Megaphone className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <Card key={item.id} className="flex flex-col justify-between">
+                <CardHeader className="border-b border-border pb-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center shrink-0">
+                      <Megaphone className="w-4 h-4" />
                     </div>
-                    <div>
-                      <CardTitle className="text-base font-bold dark:text-white text-slate-900 leading-tight">{ann.title}</CardTitle>
-                      <p className="text-[11px] dark:text-gray-400 text-slate-500 mt-1 flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-indigo-500" /> {dateStr}
-                      </p>
-                    </div>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {dateStr}
+                    </span>
                   </div>
+                  <CardTitle className="text-base font-semibold text-foreground pt-2 line-clamp-1">{item.title}</CardTitle>
+                </CardHeader>
+
+                <CardContent className="py-4">
+                  <p className="text-foreground text-xs font-normal leading-relaxed whitespace-pre-line line-clamp-4">{item.content}</p>
+                </CardContent>
+
+                <CardFooter className="border-t border-border pt-3 flex justify-between items-center text-xs">
+                  <span className="text-muted-foreground font-normal">Posted by Coordinator</span>
                   <Button
                     variant="ghost"
-                    size="icon"
-                    onClick={() => setDeleteItem(ann)}
-                    className="dark:text-gray-400 text-slate-400 hover:text-red-500 dark:hover:bg-red-500/10 hover:bg-rose-50 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    size="sm"
+                    onClick={() => setDeleteItem(item)}
+                    className="text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-500/10 h-7 text-xs font-semibold"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5 mr-1" /> Delete
                   </Button>
-                </CardHeader>
-                <CardContent className="pt-4 flex-1">
-                  <p className="text-sm dark:text-slate-300 text-slate-700 whitespace-pre-wrap leading-relaxed">{ann.content}</p>
-                </CardContent>
-                <CardFooter className="pt-3 border-t dark:border-white/10 border-slate-200 flex flex-wrap gap-1.5">
-                  {targets.length > 0 ? (
-                    targets.map((t: any, i: number) => (
-                      <Badge key={i} variant="outline" className="text-[11px] dark:border-indigo-500/30 dark:text-indigo-300 dark:bg-indigo-500/10 border-indigo-200 text-indigo-700 bg-indigo-50">
-                        {t.department?.name || t.batch?.name || t.semester?.name || 'Targeted'}
-                      </Badge>
-                    ))
-                  ) : (
-                    <Badge variant="outline" className="text-[11px] dark:border-emerald-500/30 dark:text-emerald-400 dark:bg-emerald-500/10 border-emerald-300 text-emerald-700 bg-emerald-50">
-                      Global Broadcast
-                    </Badge>
-                  )}
                 </CardFooter>
               </Card>
             );
-          })}
-          {announcementList.length === 0 && (
-            <div className="dark:text-slate-400 text-slate-500 col-span-full py-16 text-center dark:bg-white/5 bg-white rounded-2xl border border-dashed dark:border-white/10 border-slate-300">
-              <Megaphone className="w-10 h-10 mx-auto dark:text-slate-500 text-slate-400 mb-3" />
-              <p className="text-lg font-medium dark:text-slate-300 text-slate-700">No announcements posted yet.</p>
-              <p className="text-xs dark:text-slate-500 text-slate-400 mt-1">Click "New Announcement" to publish your first update.</p>
-            </div>
-          )}
-        </div>
-      )}
+          })
+        ) : (
+          <div className="col-span-full border border-border bg-card shadow-xs rounded-xl p-12 text-center">
+            <Megaphone className="w-10 h-10 text-muted-foreground opacity-50 mx-auto mb-3" />
+            <h3 className="text-base font-semibold text-foreground">No Announcements Posted</h3>
+            <p className="text-xs text-muted-foreground mt-1 font-normal max-w-sm mx-auto">
+              Broadcast announcements to notify students and faculty about deadlines.
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Create Announcement Modal */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="sm:max-w-[550px]">
+        <DialogContent className="bg-card border-border text-foreground sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold">New Announcement</DialogTitle>
+            <DialogTitle className="text-base font-semibold">Post New Announcement</DialogTitle>
           </DialogHeader>
-
-          <form onSubmit={handleSubmit((d) => createMutation.mutate(d))} className="space-y-4 pt-2">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
             <div className="space-y-1.5">
-              <Label>Announcement Title</Label>
-              <Input
-                {...register('title')}
-                placeholder="e.g. Abstract Submission Deadline Extended"
-              />
-              {errors.title && <p className="text-red-500 text-xs">{errors.title.message}</p>}
+              <Label htmlFor="title" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Title</Label>
+              <Input id="title" placeholder="e.g. Milestone 1 Defense Schedule Published" {...register('title')} />
+              {errors.title && <p className="text-xs text-rose-600 font-medium">{errors.title.message}</p>}
             </div>
 
             <div className="space-y-1.5">
-              <Label>Content</Label>
+              <Label htmlFor="content" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Content / Details</Label>
               <Textarea
-                {...register('content')}
+                id="content"
                 rows={4}
-                placeholder="Write announcement details here..."
+                placeholder="Write announcement content, instructions, and deadlines..."
+                {...register('content')}
+                className="input-field"
               />
-              {errors.content && <p className="text-red-500 text-xs">{errors.content.message}</p>}
+              {errors.content && <p className="text-xs text-rose-600 font-medium">{errors.content.message}</p>}
             </div>
 
-            <div className="space-y-3 pt-3 border-t dark:border-white/10 border-slate-200">
-              <h4 className="text-xs font-semibold dark:text-gray-300 text-slate-700 uppercase tracking-wider">
-                Targeting Options (Leave unselected for Global)
-              </h4>
-
-              <div className="grid grid-cols-3 gap-3">
-                {/* Departments */}
-                <div className="space-y-1">
-                  <Label className="text-[11px]">Departments</Label>
-                  <div className="max-h-32 overflow-y-auto dark:bg-white/5 bg-slate-50 p-2 rounded-lg border dark:border-white/10 border-slate-200 space-y-1.5">
-                    {departmentsList.map((d: any) => (
-                      <label key={d.id} className="flex items-center gap-2 text-xs dark:text-slate-300 text-slate-700 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedDepts.includes(d.id)}
-                          onChange={() => toggleSelection('departmentIds', d.id)}
-                          className="rounded border-slate-300 dark:border-white/20 text-indigo-600 focus:ring-0"
-                        />
-                        <span className="truncate">{d.code || d.name}</span>
-                      </label>
-                    ))}
-                    {departmentsList.length === 0 && <p className="text-[10px] text-slate-400">No departments</p>}
-                  </div>
-                </div>
-
-                {/* Batches */}
-                <div className="space-y-1">
-                  <Label className="text-[11px]">Batches</Label>
-                  <div className="max-h-32 overflow-y-auto dark:bg-white/5 bg-slate-50 p-2 rounded-lg border dark:border-white/10 border-slate-200 space-y-1.5">
-                    {batchesList.map((b: any) => (
-                      <label key={b.id} className="flex items-center gap-2 text-xs dark:text-slate-300 text-slate-700 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedBatches.includes(b.id)}
-                          onChange={() => toggleSelection('batchIds', b.id)}
-                          className="rounded border-slate-300 dark:border-white/20 text-indigo-600 focus:ring-0"
-                        />
-                        <span className="truncate">{b.name}</span>
-                      </label>
-                    ))}
-                    {batchesList.length === 0 && <p className="text-[10px] text-slate-400">No batches</p>}
-                  </div>
-                </div>
-
-                {/* Semesters */}
-                <div className="space-y-1">
-                  <Label className="text-[11px]">Semesters</Label>
-                  <div className="max-h-32 overflow-y-auto dark:bg-white/5 bg-slate-50 p-2 rounded-lg border dark:border-white/10 border-slate-200 space-y-1.5">
-                    {semestersList.map((s: any) => (
-                      <label key={s.id} className="flex items-center gap-2 text-xs dark:text-slate-300 text-slate-700 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedSems.includes(s.id)}
-                          onChange={() => toggleSelection('semesterIds', s.id)}
-                          className="rounded border-slate-300 dark:border-white/20 text-indigo-600 focus:ring-0"
-                        />
-                        <span className="truncate">{s.name || `Sem ${s.number}`}</span>
-                      </label>
-                    ))}
-                    {semestersList.length === 0 && <p className="text-[10px] text-slate-400">No semesters</p>}
-                  </div>
-                </div>
+            {/* Target Filters */}
+            <div className="space-y-3 pt-2 border-t border-border">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Target Department (Optional)</Label>
+              <div className="flex flex-wrap gap-2">
+                {departmentsList.map((d: any) => (
+                  <button
+                    key={d.id}
+                    type="button"
+                    onClick={() => toggleTarget('departmentIds', d.id)}
+                    className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition-all ${
+                      selectedDepts.includes(d.id)
+                        ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30'
+                        : 'bg-secondary text-muted-foreground border-border'
+                    }`}
+                  >
+                    {d.name}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t dark:border-white/10 border-slate-200">
+            <div className="flex justify-end gap-3 pt-4 border-t border-border">
               <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={createMutation.isPending} className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                {createMutation.isPending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Broadcasting...</> : 'Broadcast Announcement'}
+              <Button type="submit" disabled={createMutation.isPending} className="btn-primary">
+                {createMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Broadcast Notice
               </Button>
             </div>
           </form>
@@ -281,11 +219,10 @@ export default function CoordinatorAnnouncementsPage() {
       {/* Delete Confirmation */}
       <ConfirmDialog
         open={!!deleteItem}
-        onOpenChange={(o) => !o && setDeleteItem(null)}
+        onOpenChange={(open) => !open && setDeleteItem(null)}
         title="Delete Announcement"
-        description="Are you sure you want to delete this announcement? This action cannot be undone."
+        description={`Are you sure you want to delete "${deleteItem?.title}"?`}
         onConfirm={() => deleteItem && deleteMutation.mutate(deleteItem.id)}
-        confirmText="Delete"
         variant="danger"
       />
     </div>

@@ -1,96 +1,127 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
-import { MapPin, Users, ExternalLink } from 'lucide-react';
+import { MapPin, Users, ExternalLink, Calendar as CalendarIcon } from 'lucide-react';
 import { getMySchedules } from '@/api/schedules.api';
 import { format, isPast, isFuture } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import PageHeader from '@/components/shared/PageHeader';
+import EmptyState from '@/components/shared/EmptyState';
 
 export default function MySchedulesPage() {
   const navigate = useNavigate();
   const { data: rawSchedules } = useQuery({ queryKey: ['my-schedules'], queryFn: getMySchedules });
-  const schedules: any[] = Array.isArray((rawSchedules as any)?.data?.items) ? (rawSchedules as any).data.items : (Array.isArray((rawSchedules as any)?.data) ? (rawSchedules as any).data : (Array.isArray(rawSchedules) ? rawSchedules : []));
+  const schedules: any[] = Array.isArray((rawSchedules as any)?.data?.items)
+    ? (rawSchedules as any).data.items
+    : (Array.isArray((rawSchedules as any)?.data) ? (rawSchedules as any).data : (Array.isArray(rawSchedules) ? rawSchedules : []));
+
   const [activeTab, setActiveTab] = useState('upcoming');
 
-  const upcoming = schedules.filter((s: any) => isFuture(new Date(s.date)) || s.status === 'PENDING');
-  const past = schedules.filter((s: any) => isPast(new Date(s.date)) && s.status === 'COMPLETED');
+  const upcoming = schedules.filter((s: any) => {
+    const sDate = s.scheduledAt || s.date;
+    return (sDate && isFuture(new Date(sDate))) || !s.isCompleted;
+  });
+
+  const past = schedules.filter((s: any) => {
+    const sDate = s.scheduledAt || s.date;
+    return (sDate && isPast(new Date(sDate))) && s.isCompleted;
+  });
 
   const renderScheduleList = (list: any[]) => (
-    <div className="space-y-4 mt-6">
+    <div className="space-y-4 mt-4">
       {list.length === 0 ? (
-        <div className="text-center py-12 dark:text-slate-500 text-slate-400 font-medium">No schedules found.</div>
+        <EmptyState icon={CalendarIcon} title="No Schedules Found" description="You have no presentation schedules assigned for this category." />
       ) : (
-        list.map((s: any) => (
-          <Card key={s.id} className="overflow-hidden dark:hover:border-white/20 hover:border-slate-300 transition-colors">
-            <CardContent className="p-0 flex flex-col md:flex-row">
-              {/* Left Date Section */}
-              <div className="bg-gradient-to-b dark:from-indigo-500/20 dark:to-violet-600/20 from-indigo-50 to-violet-100 md:w-32 p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r dark:border-white/10 border-slate-200 text-center">
-                <span className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{format(new Date(s.date), 'dd')}</span>
-                <span className="text-sm font-medium uppercase tracking-widest dark:text-slate-300 text-slate-700">{format(new Date(s.date), 'MMM')}</span>
-                <span className="text-xs dark:text-slate-500 text-slate-500 mt-1">{format(new Date(s.date), 'h:mm a')}</span>
-              </div>
-              
-              {/* Content Section */}
-              <div className="p-4 md:p-6 flex-1 flex flex-col justify-center">
-                <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <Badge className="dark:bg-slate-800 dark:text-slate-300 bg-slate-100 text-slate-700">{s.reviewStage?.name || 'Review'}</Badge>
-                  <Badge className={s.mode === 'ONLINE' ? 'dark:bg-indigo-500/20 dark:text-indigo-400 bg-indigo-100 text-indigo-700' : 'dark:bg-slate-700 dark:text-slate-300 bg-slate-100 text-slate-700'}>
-                    {s.mode}
-                  </Badge>
-                  {s.status === 'COMPLETED' ? (
-                    <Badge className="dark:bg-emerald-500/20 dark:text-emerald-400 bg-emerald-100 text-emerald-700 border border-emerald-300 ml-auto">Completed</Badge>
-                  ) : (
-                    <Badge className="dark:bg-yellow-500/20 dark:text-yellow-400 bg-amber-100 text-amber-800 border border-amber-300 ml-auto">Pending</Badge>
-                  )}
-                </div>
-                <h3 className="text-xl font-bold dark:text-white text-slate-900 mb-1">{s.project?.title || 'Project Title'}</h3>
-                <div className="flex flex-wrap items-center gap-4 text-sm dark:text-slate-400 text-slate-500">
-                  <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {s.team?.name || 'Team Name'}</span>
-                  <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {s.venue || 'TBA'}</span>
-                </div>
-              </div>
+        list.map((s: any) => {
+          const sDate = s.scheduledAt || s.date;
+          const dateObj = sDate ? new Date(sDate) : new Date();
 
-              {/* Actions Section */}
-              <div className="p-4 md:p-6 border-t md:border-t-0 md:border-l dark:border-white/10 border-slate-200 flex flex-col md:w-48 justify-center space-y-4 dark:bg-black/20 bg-slate-50">
-                {s.status !== 'COMPLETED' && (
-                  <Button 
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-                    onClick={() => navigate(`/evaluations/${s.id}`)}
-                  >
-                    Enter Evaluation <ExternalLink className="w-4 h-4 ml-2" />
-                  </Button>
-                )}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm dark:text-slate-300 text-slate-700 font-medium">Mark Attendance</span>
-                  <Switch defaultChecked={false} />
+          return (
+            <Card key={s.id} className="overflow-hidden border border-border shadow-xs hover:border-indigo-500/50 transition-colors">
+              <CardContent className="p-0 flex flex-col md:flex-row">
+                {/* Left Date Section */}
+                <div className="bg-secondary/60 md:w-32 p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-border text-center">
+                  <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 tracking-tight">{format(dateObj, 'dd')}</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-foreground">{format(dateObj, 'MMM')}</span>
+                  <span className="text-[11px] text-muted-foreground mt-1 font-medium">{format(dateObj, 'h:mm a')}</span>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))
+                
+                {/* Content Section */}
+                <div className="p-5 flex-1 flex flex-col justify-center space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold">
+                      {s.reviewStage?.name || 'Presentation Slot'}
+                    </span>
+                    <span className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
+                      s.mode === 'ONLINE' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-secondary text-foreground border-border'
+                    }`}>
+                      {s.mode || 'OFFLINE'}
+                    </span>
+                    {s.isCompleted ? (
+                      <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 ml-auto">
+                        Completed
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 ml-auto">
+                        Pending Evaluation
+                      </span>
+                    )}
+                  </div>
+
+                  <h3 className="text-base font-semibold text-foreground tracking-tight">{s.project?.title || 'Student Project Presentation'}</h3>
+
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground font-normal">
+                    <span className="flex items-center gap-1.5 font-medium text-foreground">
+                      <Users className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                      {s.project?.team?.name || s.team?.name || 'Student Team'}
+                    </span>
+                    <span className="flex items-center gap-1.5 font-normal">
+                      <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                      {s.venue || 'Venue TBD'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Actions Section */}
+                <div className="p-5 border-t md:border-t-0 md:border-l border-border flex flex-col md:w-52 justify-center space-y-3 bg-secondary/20">
+                  {!s.isCompleted && (
+                    <Button 
+                      className="btn-primary w-full text-xs font-semibold"
+                      onClick={() => navigate(`/evaluations/${s.id}`)}
+                    >
+                      Evaluate Panel <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
+                    </Button>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground font-semibold">Attendance</span>
+                    <Switch defaultChecked={false} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })
       )}
     </div>
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-600">
-          My Review Schedules
-        </h1>
-      </div>
+    <div className="space-y-6 max-w-7xl mx-auto">
+      <PageHeader
+        title="My Review Schedules"
+        subtitle="View panel presentation slots assigned to you, evaluate student projects, and log attendance."
+      />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="dark:bg-white/5 dark:border-white/10 bg-white border border-slate-200 p-1">
-          <TabsTrigger value="upcoming" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+        <TabsList className="bg-card border border-border p-1 rounded-xl">
+          <TabsTrigger value="upcoming" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-muted-foreground font-semibold text-xs rounded-lg px-4 py-2">
             Upcoming ({upcoming.length})
           </TabsTrigger>
-          <TabsTrigger value="past" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white">
-            Past ({past.length})
+          <TabsTrigger value="past" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-muted-foreground font-semibold text-xs rounded-lg px-4 py-2">
+            Completed ({past.length})
           </TabsTrigger>
         </TabsList>
         <TabsContent value="upcoming">

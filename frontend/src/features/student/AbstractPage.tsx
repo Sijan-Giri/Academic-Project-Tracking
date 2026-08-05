@@ -20,8 +20,8 @@ export default function AbstractPage() {
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto space-y-6 animate-pulse">
-        <div className="h-44 dark:bg-white/5 bg-slate-200/60 rounded-3xl border dark:border-white/10 border-slate-200" />
-        <div className="h-64 dark:bg-white/5 bg-slate-200/60 rounded-3xl border dark:border-white/10 border-slate-200" />
+        <div className="h-44 bg-card border border-border rounded-xl" />
+        <div className="h-64 bg-card border border-border rounded-xl" />
       </div>
     );
   }
@@ -33,20 +33,17 @@ export default function AbstractPage() {
   if (!project) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
-        <PageHeader title="Project Abstract" subtitle="View and track your capstone project abstract proposal." />
-        <div className="flex flex-col items-center justify-center min-h-[50vh] dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200/80 shadow-sm rounded-3xl p-8 text-center">
-          <div className="w-20 h-20 dark:bg-indigo-500/20 bg-indigo-50 border dark:border-indigo-500/30 border-indigo-100 rounded-3xl flex items-center justify-center mb-6">
-            <BookOpen className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
+        <PageHeader title="Project Abstract Proposal" subtitle="View and track your capstone project abstract proposal." />
+        <div className="flex flex-col items-center justify-center min-h-[45vh] bg-card border border-border rounded-xl p-8 text-center shadow-xs">
+          <div className="w-12 h-12 rounded-xl bg-secondary border border-border flex items-center justify-center mb-4">
+            <BookOpen className="w-6 h-6 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-extrabold dark:text-white text-slate-900 mb-2">No Project Found</h2>
-          <p className="dark:text-gray-400 text-slate-500 mb-6 max-w-md text-sm">
+          <h2 className="text-lg font-semibold text-foreground mb-1">No Project Proposal Found</h2>
+          <p className="text-muted-foreground mb-6 max-w-sm text-sm font-normal">
             Create a capstone project first to submit and view your project abstract.
           </p>
-          <Button
-            onClick={() => navigate('/my-project/create')}
-            className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold shadow-md shadow-indigo-500/20 rounded-xl"
-          >
-            Create Project
+          <Button onClick={() => navigate('/my-project/create')} className="btn-primary">
+            Create Project Proposal
           </Button>
         </div>
       </div>
@@ -66,7 +63,7 @@ export default function AbstractPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <PageHeader
         title="Project Abstract Proposal"
@@ -74,18 +71,18 @@ export default function AbstractPage() {
       />
 
       {/* Main Metadata Banner Card */}
-      <div className="relative overflow-hidden rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200/80 p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
           <div>
-            <div className="flex flex-wrap items-center gap-2.5 mb-2">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
               {project.domain && (
-                <span className="px-3 py-1 rounded-full text-xs font-bold dark:bg-indigo-500/20 dark:text-indigo-300 bg-indigo-50 text-indigo-700 border border-indigo-200">
+                <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
                   {project.domain}
                 </span>
               )}
               <StatusBadge status={project.status} type="project" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold dark:text-white text-slate-900 tracking-tight leading-snug">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight leading-snug">
               {project.title}
             </h1>
           </div>
@@ -93,9 +90,9 @@ export default function AbstractPage() {
             variant="outline"
             size="sm"
             onClick={handleCopy}
-            className="dark:border-white/10 border-slate-300 dark:bg-white/5 bg-slate-100 hover:bg-slate-200 dark:hover:bg-white/10 dark:text-white text-slate-900 font-bold shrink-0 rounded-xl"
+            className="btn-outline shrink-0 gap-1.5"
           >
-            {copied ? <Check className="w-4 h-4 mr-1.5 text-emerald-500" /> : <Copy className="w-4 h-4 mr-1.5 text-indigo-600 dark:text-indigo-400" />}
+            {copied ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />}
             {copied ? 'Copied' : 'Copy Abstract'}
           </Button>
         </div>
@@ -104,7 +101,7 @@ export default function AbstractPage() {
         {project.keywords && project.keywords.length > 0 && (
           <div className="flex flex-wrap gap-2 pt-2">
             {project.keywords.map((kw: string) => (
-              <span key={kw} className="px-3 py-1 rounded-lg dark:bg-white/5 dark:text-gray-300 dark:border-white/10 bg-slate-100 text-slate-700 text-xs font-medium border border-slate-200/70">
+              <span key={kw} className="px-2 py-0.5 rounded-md bg-secondary text-foreground text-xs font-medium border border-border">
                 #{kw}
               </span>
             ))}
@@ -114,19 +111,19 @@ export default function AbstractPage() {
 
       {/* Review Status Banners */}
       {isRejectedOrRevision && (
-        <div className="rounded-2xl dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-300 bg-amber-50 border border-amber-200 text-amber-900 p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
-          <div className="flex items-start gap-3.5">
-            <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+        <div className="rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-900 dark:text-amber-300 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-bold text-base">Revision Requested</h4>
-              <p className="text-xs mt-1 opacity-90 leading-relaxed max-w-xl">
+              <h4 className="font-semibold text-sm">Revision Requested</h4>
+              <p className="text-xs mt-0.5 opacity-90 leading-relaxed max-w-xl font-normal">
                 {(project as any).abstractComments || project.rejectionReason || 'Please review coordinator comments and update your project abstract.'}
               </p>
             </div>
           </div>
           <Button
             onClick={() => navigate('/my-project')}
-            className="bg-amber-600 hover:bg-amber-700 text-white font-bold shadow-md shadow-amber-500/20 shrink-0 rounded-xl"
+            className="bg-amber-600 hover:bg-amber-700 text-white font-medium shrink-0 rounded-lg text-xs"
           >
             <RefreshCw className="w-4 h-4 mr-2" /> Revise Proposal
           </Button>
@@ -134,11 +131,11 @@ export default function AbstractPage() {
       )}
 
       {project.status === 'ABSTRACT_SUBMITTED' && (
-        <div className="rounded-2xl dark:bg-indigo-500/10 dark:border-indigo-500/20 dark:text-indigo-300 bg-indigo-50 border border-indigo-200 text-indigo-900 p-5 flex items-center gap-3.5 shadow-xs">
-          <FileText className="w-6 h-6 text-indigo-600 dark:text-indigo-400 shrink-0 animate-pulse" />
+        <div className="rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-900 dark:text-indigo-300 p-4 flex items-center gap-3 shadow-xs">
+          <FileText className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
           <div>
-            <h4 className="font-bold text-base">Under Coordinator Review</h4>
-            <p className="text-xs mt-0.5 opacity-90">
+            <h4 className="font-semibold text-sm">Under Coordinator Review</h4>
+            <p className="text-xs mt-0.5 opacity-90 font-normal">
               Your abstract proposal has been submitted and is currently being evaluated by the academic coordinator.
             </p>
           </div>
@@ -146,11 +143,11 @@ export default function AbstractPage() {
       )}
 
       {(project.status === 'ABSTRACT_APPROVED' || project.status === 'IN_PROGRESS' || project.status === 'COMPLETED') && (
-        <div className="rounded-2xl dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:text-emerald-300 bg-emerald-50 border border-emerald-200 text-emerald-900 p-5 flex items-center gap-3.5 shadow-xs">
-          <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
+        <div className="rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-900 dark:text-emerald-300 p-4 flex items-center gap-3 shadow-xs">
+          <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <div>
-            <h4 className="font-bold text-base">Abstract Approved Officially</h4>
-            <p className="text-xs mt-0.5 opacity-90">
+            <h4 className="font-semibold text-sm">Abstract Approved Officially</h4>
+            <p className="text-xs mt-0.5 opacity-90 font-normal">
               Your abstract proposal was reviewed and approved. You are ready for upcoming review milestones.
             </p>
           </div>
@@ -158,19 +155,19 @@ export default function AbstractPage() {
       )}
 
       {/* Abstract Content Box */}
-      <div className="rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200/80 p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300">
-        <div className="flex items-center justify-between border-b dark:border-white/10 border-slate-200/80 pb-4 mb-6">
-          <h3 className="text-lg font-extrabold dark:text-white text-slate-900 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+      <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
+        <div className="flex items-center justify-between border-b border-border pb-4 mb-4">
+          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+            <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             Abstract Document Body
           </h3>
-          <span className="px-3 py-1 rounded-full text-xs font-semibold dark:bg-white/5 dark:text-gray-300 bg-slate-100 text-slate-600 border border-slate-200">
+          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-secondary text-muted-foreground border border-border">
             {wordCount} words
           </span>
         </div>
 
-        <div className="rounded-2xl dark:bg-black/20 bg-slate-50 p-6 border dark:border-white/5 border-slate-200/70 border-l-4 border-l-indigo-600 dark:border-l-indigo-500">
-          <p className="dark:text-gray-300 text-slate-700 leading-relaxed text-base whitespace-pre-wrap font-normal">
+        <div className="rounded-lg bg-secondary/50 p-5 border border-border border-l-4 border-l-indigo-600 dark:border-l-indigo-500">
+          <p className="text-foreground leading-relaxed text-sm whitespace-pre-wrap font-normal">
             {project.abstract || 'No abstract text provided.'}
           </p>
         </div>

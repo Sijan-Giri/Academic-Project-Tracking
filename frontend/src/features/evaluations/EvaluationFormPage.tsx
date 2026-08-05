@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { ArrowLeft, Lock, Save, AlertTriangle } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { getSchedule, getStageCriteria, getEvaluations, createEvaluation, updateEvaluation, lockEvaluation } from '@/api/evaluations.api';
 import { format } from 'date-fns';
 import { useAuthStore } from '@/store/auth.store';
@@ -68,25 +69,29 @@ export default function EvaluationFormPage() {
   const percentage = maxTotal > 0 ? (totalMarks / maxTotal) * 100 : 0;
 
   let grade = 'F';
-  let gradeColor = 'text-red-500';
-  if (percentage >= 90) { grade = 'A+'; gradeColor = 'text-emerald-500 dark:text-emerald-400'; }
-  else if (percentage >= 80) { grade = 'A'; gradeColor = 'text-emerald-600 dark:text-emerald-500'; }
-  else if (percentage >= 70) { grade = 'B'; gradeColor = 'text-blue-600 dark:text-blue-400'; }
-  else if (percentage >= 60) { grade = 'C'; gradeColor = 'text-amber-600 dark:text-yellow-400'; }
+  let gradeColor = 'text-rose-600 dark:text-rose-400';
+  if (percentage >= 90) { grade = 'A+'; gradeColor = 'text-emerald-600 dark:text-emerald-400'; }
+  else if (percentage >= 80) { grade = 'A'; gradeColor = 'text-emerald-600 dark:text-emerald-400'; }
+  else if (percentage >= 70) { grade = 'B'; gradeColor = 'text-indigo-600 dark:text-indigo-400'; }
+  else if (percentage >= 60) { grade = 'C'; gradeColor = 'text-amber-600 dark:text-amber-400'; }
   else if (percentage >= 50) { grade = 'D'; gradeColor = 'text-orange-600 dark:text-orange-400'; }
 
   const saveMutation = useMutation({
     mutationFn: (data: any) => existingEval ? updateEvaluation(existingEval.id, data) : createEvaluation(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['evaluations'] });
-    }
+      toast.success('Evaluation saved successfully!');
+    },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to save evaluation')
   });
 
   const lockMutation = useMutation({
     mutationFn: () => lockEvaluation(existingEval.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['evaluations'] });
-    }
+      toast.success('Evaluation locked');
+    },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to lock evaluation')
   });
 
   const handleSave = () => {
@@ -104,28 +109,31 @@ export default function EvaluationFormPage() {
     });
   };
 
-  if (!schedule) return <div className="p-8 dark:text-white text-slate-900">Loading...</div>;
+  if (!schedule) return <div className="p-8 text-muted-foreground font-normal">Loading evaluation form...</div>;
+
+  const dateVal = schedule.scheduledAt || schedule.date;
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto pb-12">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-600">
-          Evaluation Form
-        </h1>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">Evaluation Form</h1>
+          <p className="text-xs text-muted-foreground font-normal">Score student performance based on established rubrics.</p>
+        </div>
         {isLocked && (
-          <div className="ml-auto flex items-center gap-2 text-rose-600 dark:text-red-400 bg-rose-100 dark:bg-red-400/10 px-4 py-2 rounded-full border border-rose-300 dark:border-red-400/20 text-sm font-medium">
-            <Lock className="w-4 h-4" /> Locked
+          <div className="ml-auto flex items-center gap-2 text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/15 px-3 py-1 rounded-md border border-rose-200 dark:border-rose-500/30 text-xs font-semibold">
+            <Lock className="w-3.5 h-3.5" /> Locked Record
           </div>
         )}
       </div>
 
       {isLocked && (
-        <div className="dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400 bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-xl flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
-          <p>This evaluation is locked. No further edits are allowed. Contact the coordinator if you need to make changes.</p>
+        <div className="bg-rose-50 dark:bg-rose-500/15 border border-rose-200 dark:border-rose-500/30 text-rose-800 dark:text-rose-300 p-4 rounded-xl flex items-start gap-3 text-xs font-medium">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+          <p>This evaluation form has been finalized and locked. Edits are disabled. Contact your coordinator to modify scores.</p>
         </div>
       )}
 
@@ -133,42 +141,44 @@ export default function EvaluationFormPage() {
       <Card>
         <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium mb-1">{schedule.reviewStage?.name || 'Review Stage'}</p>
-            <h2 className="text-2xl font-bold mb-2 dark:text-white text-slate-900">{schedule.project?.title || 'Project Title'}</h2>
-            <p className="dark:text-slate-400 text-slate-500 text-sm line-clamp-2">{schedule.project?.abstract || 'No abstract available.'}</p>
+            <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold inline-block mb-2">
+              {schedule.reviewStage?.name || 'Review Stage'}
+            </span>
+            <h2 className="text-xl font-bold text-foreground mb-1 tracking-tight">{schedule.project?.title || 'Project Title'}</h2>
+            <p className="text-muted-foreground text-xs font-normal line-clamp-2">{schedule.project?.abstract || 'No abstract available.'}</p>
           </div>
-          <div className="md:text-right space-y-2">
-            <p className="dark:text-slate-300 text-slate-700"><span className="dark:text-slate-500 text-slate-400">Team:</span> {schedule.team?.name}</p>
-            <p className="dark:text-slate-300 text-slate-700"><span className="dark:text-slate-500 text-slate-400">Date:</span> {format(new Date(schedule.date), 'MMM d, yyyy h:mm a')}</p>
-            <p className="dark:text-slate-300 text-slate-700"><span className="dark:text-slate-500 text-slate-400">Venue:</span> {schedule.venue}</p>
+          <div className="md:text-right space-y-1.5 text-xs">
+            <p className="text-muted-foreground font-normal"><span className="text-foreground font-semibold">Team:</span> {schedule.team?.name || schedule.project?.team?.name}</p>
+            <p className="text-muted-foreground font-normal"><span className="text-foreground font-semibold">Date:</span> {dateVal ? format(new Date(dateVal), 'MMM d, yyyy · h:mm a') : 'TBD'}</p>
+            <p className="text-muted-foreground font-normal"><span className="text-foreground font-semibold">Venue:</span> {schedule.venue || 'TBA'}</p>
           </div>
         </CardContent>
       </Card>
 
       {/* Rubric Table */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base font-semibold">Evaluation Rubric</CardTitle>
+        <CardHeader className="border-b border-border pb-3">
+          <CardTitle className="text-base font-semibold">Evaluation Rubric & Scoring</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-secondary/40">
                 <TableRow>
-                  <TableHead className="w-[30%]">Criterion</TableHead>
-                  <TableHead className="w-[10%] text-center">Max Marks</TableHead>
-                  <TableHead className="w-[15%]">Marks Awarded</TableHead>
-                  <TableHead className="w-[45%]">Remarks</TableHead>
+                  <TableHead className="w-[35%] px-5">Criterion</TableHead>
+                  <TableHead className="w-[12%] text-center">Max Marks</TableHead>
+                  <TableHead className="w-[18%]">Marks Awarded</TableHead>
+                  <TableHead className="w-[35%] px-5">Remarks</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {criteria.map((c: any) => (
                   <TableRow key={c.id}>
-                    <TableCell>
-                      <p className="font-medium dark:text-slate-200 text-slate-800">{c.name}</p>
-                      <p className="text-xs dark:text-slate-500 text-slate-400 mt-1">{c.description}</p>
+                    <TableCell className="px-5">
+                      <p className="font-semibold text-foreground text-xs">{c.name}</p>
+                      <p className="text-[11px] text-muted-foreground font-normal mt-0.5">{c.description}</p>
                     </TableCell>
-                    <TableCell className="text-center dark:text-slate-400 text-slate-600 font-medium">{c.maxMarks}</TableCell>
+                    <TableCell className="text-center text-foreground font-semibold text-xs">{c.maxMarks}</TableCell>
                     <TableCell>
                       <Input 
                         type="number" 
@@ -177,14 +187,16 @@ export default function EvaluationFormPage() {
                         value={marks[c.id] === undefined ? '' : marks[c.id]}
                         onChange={(e) => setMarks({...marks, [c.id]: Number(e.target.value)})}
                         disabled={isLocked}
+                        className="input-field text-xs h-9"
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-5">
                       <Input 
-                        placeholder="Optional remarks..."
+                        placeholder="Optional evaluator remarks..."
                         value={remarks[c.id] || ''}
                         onChange={(e) => setRemarks({...remarks, [c.id]: e.target.value})}
                         disabled={isLocked}
+                        className="input-field text-xs h-9"
                       />
                     </TableCell>
                   </TableRow>
@@ -193,60 +205,60 @@ export default function EvaluationFormPage() {
             </Table>
           </div>
 
-          <div className="mt-8 p-6 dark:bg-black/20 bg-slate-50 rounded-xl border dark:border-white/5 border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="m-5 p-5 bg-secondary/50 rounded-xl border border-border flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-              <p className="dark:text-slate-400 text-slate-500 font-medium">Total Score</p>
-              <div className="text-4xl font-bold mt-1">
-                <span className="dark:text-white text-slate-900">{totalMarks}</span>
-                <span className="dark:text-slate-600 text-slate-400 text-2xl"> / {maxTotal}</span>
+              <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Total Evaluation Score</p>
+              <div className="text-3xl font-bold mt-1 tracking-tight">
+                <span className="text-foreground">{totalMarks}</span>
+                <span className="text-muted-foreground text-xl font-normal"> / {maxTotal}</span>
               </div>
             </div>
             <div className="text-right">
-              <p className="dark:text-slate-400 text-slate-500 font-medium">Computed Grade</p>
-              <div className={`text-5xl font-bold mt-1 ${gradeColor}`}>{grade}</div>
+              <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Computed Grade</p>
+              <div className={`text-4xl font-bold mt-1 tracking-tight ${gradeColor}`}>{grade}</div>
             </div>
           </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base font-semibold">Overall Feedback</CardTitle>
+        <CardHeader className="border-b border-border pb-3">
+          <CardTitle className="text-base font-semibold">Overall Qualitative Feedback</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-4">
           <Textarea 
-            placeholder="Provide comprehensive feedback for the team..."
+            placeholder="Provide comprehensive constructive feedback for the team..."
             value={overallFeedback}
             onChange={(e) => setOverallFeedback(e.target.value)}
             disabled={isLocked}
-            className="min-h-[150px]"
+            className="input-field min-h-[140px]"
           />
         </CardContent>
       </Card>
 
-      <div className="flex justify-end gap-4 pb-12">
+      <div className="flex justify-end gap-3 pb-8">
         {existingEval && canLock && !isLocked && (
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" className="border-rose-400 text-rose-600 hover:bg-rose-50">
-                <Lock className="w-4 h-4 mr-2" /> Lock Evaluation
+              <Button variant="outline" className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 text-xs font-semibold">
+                <Lock className="w-3.5 h-3.5 mr-1.5" /> Lock Evaluation
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="bg-card border-border text-foreground">
               <DialogHeader>
-                <DialogTitle>Lock this evaluation?</DialogTitle>
+                <DialogTitle className="text-base font-semibold">Lock Evaluation Record?</DialogTitle>
               </DialogHeader>
-              <p className="dark:text-slate-400 text-slate-600 text-sm">This action cannot be undone. Once locked, no evaluator can modify the marks or remarks for this schedule.</p>
-              <DialogFooter>
+              <p className="text-xs text-muted-foreground font-normal">This action will finalize the marks. Once locked, no evaluators can edit scores for this presentation slot.</p>
+              <DialogFooter className="gap-2">
                 <DialogClose asChild>
                   <Button variant="ghost">Cancel</Button>
                 </DialogClose>
                 <Button 
                   onClick={() => lockMutation.mutate()} 
-                  className="bg-red-600 hover:bg-red-700 text-white"
+                  className="bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs"
                   disabled={lockMutation.isPending}
                 >
-                  Confirm Lock
+                  Confirm & Lock
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -256,7 +268,7 @@ export default function EvaluationFormPage() {
         <Button 
           onClick={handleSave} 
           disabled={isLocked || saveMutation.isPending}
-          className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white px-8"
+          className="btn-primary px-6"
         >
           <Save className="w-4 h-4 mr-2" />
           {saveMutation.isPending ? 'Saving...' : existingEval ? 'Update Evaluation' : 'Submit Evaluation'}

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Calendar, Trash2, Edit2, PlusCircle, Loader2, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Calendar, Trash2, PlusCircle, Loader2, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -12,11 +12,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Switch } from '@/components/ui/switch';
 import PageHeader from '@/components/shared/PageHeader';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import EmptyState from '@/components/shared/EmptyState';
-import { getReviewStages, createReviewStage, updateReviewStage, deleteReviewStage, getTemplates, addCriteria, deleteCriteria } from '@/api/reviews.api';
+import { getReviewStages, createReviewStage, deleteReviewStage, getTemplates, addCriteria, deleteCriteria } from '@/api/reviews.api';
 import { getSemesters } from '@/api/semesters.api';
 import { getDepartments } from '@/api/departments.api';
 import { REVIEW_STAGE_LABELS } from '@/lib/constants';
@@ -42,274 +41,350 @@ const criteriaSchema = z.object({
 type StageForm = z.infer<typeof stageSchema>;
 type CriteriaForm = z.infer<typeof criteriaSchema>;
 
-const STAGE_TYPE_COLORS: Record<string, string> = {
-  ABSTRACT_REVIEW: 'bg-blue-500/20 text-blue-400',
-  REVIEW_1: 'bg-indigo-500/20 text-indigo-400',
-  REVIEW_2: 'bg-purple-500/20 text-purple-400',
-  REVIEW_3: 'bg-violet-500/20 text-violet-400',
-  PRE_SUBMISSION: 'bg-orange-500/20 text-orange-400',
-  FINAL_SUBMISSION: 'bg-green-500/20 text-green-400',
+const STAGE_TYPE_CLASSES: Record<string, string> = {
+  ABSTRACT_REVIEW: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
+  REVIEW_1: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
+  REVIEW_2: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
+  REVIEW_3: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
+  PRE_SUBMISSION: 'bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-500/30',
+  FINAL_SUBMISSION: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30',
 };
 
 export default function ReviewStagesPage() {
   const qc = useQueryClient();
   const [semesterFilter, setSemesterFilter] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
-  const [editStage, setEditStage] = useState<any | null>(null);
   const [deleteStageId, setDeleteStageId] = useState<string | null>(null);
   const [criteriaModal, setCriteriaModal] = useState<string | null>(null); // stageId
-  const [deleteCriteriaId, setDeleteCriteriaId] = useState<{ stageId: string; criteriaId: string } | null>(null);
   const [expandedStage, setExpandedStage] = useState<string | null>(null);
 
   const { data: stagesData, isLoading } = useQuery({
     queryKey: ['review-stages', semesterFilter],
-    queryFn: () => getReviewStages(semesterFilter ? { semesterId: semesterFilter } : {}),
+    queryFn: () => getReviewStages(semesterFilter ? { semesterId: semesterFilter } : undefined),
   });
+
   const { data: templatesData } = useQuery({ queryKey: ['review-templates'], queryFn: getTemplates });
   const { data: semestersData } = useQuery({ queryKey: ['semesters'], queryFn: () => getSemesters() });
   const { data: deptsData } = useQuery({ queryKey: ['departments'], queryFn: getDepartments });
 
-  const stages: any[] = Array.isArray(stagesData) ? stagesData : ((stagesData as any)?.data?.items || (stagesData as any)?.data || []);
-  const templates: any[] = Array.isArray(templatesData) ? templatesData : ((templatesData as any)?.data || []);
-  const semesters: any[] = Array.isArray(semestersData) ? semestersData : ((semestersData as any)?.data?.items || (semestersData as any)?.data || []);
-  const depts: any[] = Array.isArray(deptsData) ? deptsData : ((deptsData as any)?.data || []);
+  const rawStages = stagesData as any;
+  const stages: any[] = Array.isArray(rawStages)
+    ? rawStages
+    : Array.isArray(rawStages?.data?.items)
+    ? rawStages.data.items
+    : Array.isArray(rawStages?.data)
+    ? rawStages.data
+    : [];
 
-  const stageForm = useForm<StageForm>({ resolver: zodResolver(stageSchema), defaultValues: { isActive: true, order: 1 } });
-  const criteriaForm = useForm<CriteriaForm>({ resolver: zodResolver(criteriaSchema), defaultValues: { order: 1 } });
+  const templates: any[] = Array.isArray(templatesData) ? templatesData : (templatesData as any)?.data || [];
+  const semesters: any[] = Array.isArray(semestersData) ? semestersData : (semestersData as any)?.data?.items || (semestersData as any)?.data || [];
+  const departments: any[] = Array.isArray(deptsData) ? deptsData : (deptsData as any)?.data || [];
 
-  const createStageMutation = useMutation({
-    mutationFn: (data: any) => createReviewStage(data),
-    onSuccess: () => { toast.success('Review stage created'); qc.invalidateQueries({ queryKey: ['review-stages'] }); setCreateOpen(false); stageForm.reset(); },
-    onError: () => toast.error('Failed to create stage'),
+  // Stage form
+  const stageForm = useForm<StageForm>({
+    resolver: zodResolver(stageSchema),
+    defaultValues: { order: 1, isActive: true },
   });
 
-  const updateStageMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => updateReviewStage(id, data),
-    onSuccess: () => { toast.success('Stage updated'); qc.invalidateQueries({ queryKey: ['review-stages'] }); setEditStage(null); },
-    onError: () => toast.error('Failed to update'),
+  // Criteria form
+  const criteriaForm = useForm<CriteriaForm>({
+    resolver: zodResolver(criteriaSchema),
+    defaultValues: { order: 1, maxMarks: 20 },
   });
 
-  const deleteStageMutation = useMutation({
+  const createStageMut = useMutation({
+    mutationFn: (data: StageForm) => createReviewStage(data as any),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['review-stages'] });
+      toast.success('Review stage created');
+      setCreateOpen(false);
+      stageForm.reset();
+    },
+    onError: (e: any) => toast.error(e?.response?.data?.message || 'Failed to create stage'),
+  });
+
+  const deleteStageMut = useMutation({
     mutationFn: (id: string) => deleteReviewStage(id),
-    onSuccess: () => { toast.success('Stage deleted'); qc.invalidateQueries({ queryKey: ['review-stages'] }); setDeleteStageId(null); },
-    onError: () => toast.error('Failed to delete'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['review-stages'] });
+      toast.success('Stage deleted');
+      setDeleteStageId(null);
+    },
+    onError: () => toast.error('Failed to delete stage'),
   });
 
-  const addCriteriaMutation = useMutation({
+  const addCriteriaMut = useMutation({
     mutationFn: ({ stageId, data }: { stageId: string; data: CriteriaForm }) => addCriteria(stageId, data),
-    onSuccess: () => { toast.success('Criterion added'); qc.invalidateQueries({ queryKey: ['review-stages'] }); setCriteriaModal(null); criteriaForm.reset(); },
-    onError: () => toast.error('Failed to add criterion'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['review-stages'] });
+      toast.success('Criteria added');
+      setCriteriaModal(null);
+      criteriaForm.reset();
+    },
+    onError: () => toast.error('Failed to add criteria'),
   });
 
-  const deleteCriteriaMutation = useMutation({
+  const deleteCriteriaMut = useMutation({
     mutationFn: ({ stageId, criteriaId }: { stageId: string; criteriaId: string }) => deleteCriteria(stageId, criteriaId),
-    onSuccess: () => { toast.success('Criterion deleted'); qc.invalidateQueries({ queryKey: ['review-stages'] }); setDeleteCriteriaId(null); },
-    onError: () => toast.error('Failed to delete criterion'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['review-stages'] });
+      toast.success('Criteria removed');
+    },
+    onError: () => toast.error('Failed to remove criteria'),
   });
 
-  const handleTemplateChange = (templateId: string) => {
-    const tpl = templates.find((t: any) => t.id === templateId);
-    if (tpl) { stageForm.setValue('name', tpl.name); stageForm.setValue('type', tpl.type); stageForm.setValue('order', tpl.order); }
+  const openCreate = () => {
+    stageForm.reset({
+      order: stages.length + 1,
+      isActive: true,
+      departmentId: departments[0]?.id || '',
+      semesterId: semesters[0]?.id || '',
+    });
+    setCreateOpen(true);
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       <PageHeader
-        title="Review Stages"
-        subtitle="Configure review stages and evaluation criteria for semesters"
-        actions={<Button onClick={() => setCreateOpen(true)} id="create-stage-btn"><Plus className="h-4 w-4 mr-2" /> Create Stage</Button>}
+        title="Review Stages & Evaluation Criteria"
+        subtitle="Define evaluation milestones, criteria breakdown, and scoring weightage for semesters."
+        actions={
+          <Button onClick={openCreate} id="create-stage-btn" className="btn-primary">
+            <Plus className="h-4 w-4 mr-2" /> Add Review Stage
+          </Button>
+        }
       />
 
-      {/* Semester Filter */}
-      <div className="flex items-center gap-3">
-        <Label className="text-gray-400 whitespace-nowrap">Filter by Semester:</Label>
-        <Select value={semesterFilter} onValueChange={setSemesterFilter}>
-          <SelectTrigger className="bg-white/5 border-white/10 text-white w-60" id="sem-filter">
-            <SelectValue placeholder="All semesters" />
+      {/* Filter Toolbar */}
+      <div className="flex items-center gap-4 bg-card border border-border p-4 rounded-xl shadow-xs max-w-xs">
+        <Select value={semesterFilter} onValueChange={v => setSemesterFilter(v === 'ALL' ? '' : v)}>
+          <SelectTrigger className="input-field" id="semester-filter-select">
+            <SelectValue placeholder="All Semesters" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1a1a2e] border-white/10">
-            <SelectItem value="" className="text-gray-300">All semesters</SelectItem>
-            {semesters.map((s: any) => <SelectItem key={s.id} value={s.id} className="text-gray-300">{s.name}</SelectItem>)}
+          <SelectContent className="bg-card border-border text-foreground">
+            <SelectItem value="ALL">All Semesters</SelectItem>
+            {semesters.map((s: any) => (
+              <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
 
+      {/* Stages List */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[1, 2, 3].map(i => <div key={i} className="h-48 bg-white/5 animate-pulse rounded-xl" />)}
-        </div>
-      ) : !Array.isArray(stages) || stages.length === 0 ? (
-        <EmptyState icon={BookOpen} title="No review stages" description="Create review stages to manage project evaluation schedules" actionLabel="Create Stage" onAction={() => setCreateOpen(true)} />
+        <div className="p-8 text-center text-muted-foreground font-normal">Loading review stages…</div>
+      ) : stages.length === 0 ? (
+        <EmptyState icon={BookOpen} title="No review stages found" description="Create a review stage to configure evaluation rubrics." />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {stages.map((stage: any) => (
-            <div key={stage.id} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-indigo-500/30 transition-colors">
-              <div className="p-4 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono text-gray-500">#{stage.order}</span>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STAGE_TYPE_COLORS[stage.type] || 'bg-gray-500/20 text-gray-400'}`}>
-                        {REVIEW_STAGE_LABELS[stage.type] || stage.type}
-                      </span>
-                      {!stage.isActive && <span className="px-2 py-0.5 rounded-full text-xs bg-gray-500/20 text-gray-400">Inactive</span>}
+        <div className="space-y-4">
+          {stages.map((stg: any) => {
+            const isExpanded = expandedStage === stg.id;
+            const criteriaList: any[] = stg.criteria || [];
+            const totalMarks = criteriaList.reduce((acc: number, c: any) => acc + (c.maxMarks || 0), 0);
+
+            return (
+              <div key={stg.id} className="bg-card border border-border rounded-xl shadow-xs overflow-hidden">
+                <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
+                      #{stg.order}
                     </div>
-                    <h3 className="font-semibold text-white">{stage.name}</h3>
-                    {stage.deadline && (
-                      <div className="flex items-center gap-1 text-xs text-gray-400">
-                        <Calendar className="h-3 w-3" />
-                        Deadline: {format(new Date(stage.deadline), 'MMM d, yyyy')}
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-foreground font-semibold text-base">{stg.name}</h3>
+                        <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${STAGE_TYPE_CLASSES[stg.type] || ''}`}>
+                          {REVIEW_STAGE_LABELS[stg.type] || stg.type}
+                        </span>
+                        {!stg.isActive && (
+                          <span className="px-2 py-0.5 rounded-md text-xs bg-secondary border border-border text-muted-foreground font-semibold">
+                            Inactive
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1 font-medium">
+                        {stg.deadline && (
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                            Deadline: {format(new Date(stg.deadline), 'MMM d, yyyy')}
+                          </span>
+                        )}
+                        <span>Criteria Total: <strong className="text-foreground">{totalMarks} Marks</strong> ({criteriaList.length} items)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setExpandedStage(isExpanded ? null : stg.id)}
+                      className="text-xs font-semibold"
+                    >
+                      {isExpanded ? <ChevronUp className="h-4 w-4 mr-1" /> : <ChevronDown className="h-4 w-4 mr-1" />}
+                      {isExpanded ? 'Hide Criteria' : 'View Criteria'}
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setCriteriaModal(stg.id)} id={`add-criteria-btn-${stg.id}`} className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+                      <PlusCircle className="h-3.5 w-3.5 mr-1" /> Add Criteria
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setDeleteStageId(stg.id)} id={`delete-stage-btn-${stg.id}`}>
+                      <Trash2 className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Expanded Criteria Table */}
+                {isExpanded && (
+                  <div className="border-t border-border bg-secondary/30 p-5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Evaluation Criteria Rubric</h4>
+                      <span className="text-xs text-muted-foreground font-normal">Max Total: <strong className="text-foreground font-semibold">{totalMarks} Marks</strong></span>
+                    </div>
+
+                    {criteriaList.length === 0 ? (
+                      <p className="text-xs text-muted-foreground italic font-normal">No evaluation criteria added to this stage yet.</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {criteriaList.map((c: any) => (
+                          <div key={c.id} className="flex items-center justify-between p-3 bg-card rounded-lg border border-border">
+                            <div>
+                              <p className="text-sm font-semibold text-foreground">{c.name}</p>
+                              {c.description && <p className="text-xs text-muted-foreground font-normal">{c.description}</p>}
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold">
+                                {c.maxMarks} Marks
+                              </span>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => deleteCriteriaMut.mutate({ stageId: stg.id, criteriaId: c.id })}
+                                className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-600"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
-                  <div className="flex gap-1.5 shrink-0">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-gray-400 hover:text-white" onClick={() => { setEditStage(stage); stageForm.reset({ name: stage.name, type: stage.type, order: stage.order, isActive: stage.isActive, deadline: stage.deadline?.substring(0, 16) }); }} id={`edit-stage-${stage.id}`}>
-                      <Edit2 className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-300" onClick={() => setDeleteStageId(stage.id)} id={`delete-stage-${stage.id}`}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Criteria Section */}
-                <div>
-                  <button className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors w-full" onClick={() => setExpandedStage(expandedStage === stage.id ? null : stage.id)}>
-                    {expandedStage === stage.id ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-                    {(stage.criteria?.length || 0)} Criteria
-                  </button>
-                  {expandedStage === stage.id && (
-                    <div className="mt-2 space-y-1.5">
-                      {(stage.criteria || []).map((c: any) => (
-                        <div key={c.id} className="flex items-center justify-between px-3 py-2 bg-white/5 rounded-lg group">
-                          <div>
-                            <span className="text-sm text-white">{c.name}</span>
-                            <span className="ml-2 text-xs text-gray-400">/ {c.maxMarks} marks</span>
-                          </div>
-                          <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDeleteCriteriaId({ stageId: stage.id, criteriaId: c.id })} id={`del-criteria-${c.id}`}>
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-                      <Button variant="ghost" size="sm" className="w-full text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 mt-1" onClick={() => { setCriteriaModal(stage.id); criteriaForm.reset({ order: (stage.criteria?.length || 0) + 1 }); }} id={`add-criteria-${stage.id}`}>
-                        <PlusCircle className="h-3.5 w-3.5 mr-1.5" /> Add Criterion
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
-      {/* Create Stage Dialog */}
+      {/* Modal 1: Create Review Stage */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="bg-[#1a1a2e] border-white/10 text-white max-w-lg">
-          <DialogHeader><DialogTitle>Create Review Stage</DialogTitle></DialogHeader>
-          <form onSubmit={stageForm.handleSubmit(d => createStageMutation.mutate(d))} className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1 col-span-2">
-                <Label>Template</Label>
-                <Select onValueChange={v => { stageForm.setValue('templateId', v); handleTemplateChange(v); }}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white" id="stage-template"><SelectValue placeholder="Select template" /></SelectTrigger>
-                  <SelectContent className="bg-[#1a1a2e] border-white/10">
-                    {templates.map((t: any) => <SelectItem key={t.id} value={t.id} className="text-gray-300">{t.name}</SelectItem>)}
+        <DialogContent className="bg-card border-border text-foreground">
+          <DialogHeader><DialogTitle className="text-base font-semibold">Create Review Stage</DialogTitle></DialogHeader>
+          <form onSubmit={stageForm.handleSubmit(d => createStageMut.mutate(d))} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Template</Label>
+              <Select value={stageForm.watch('templateId')} onValueChange={v => stageForm.setValue('templateId', v)}>
+                <SelectTrigger className="input-field" id="template-select"><SelectValue placeholder="Select Template" /></SelectTrigger>
+                <SelectContent className="bg-card border-border text-foreground">
+                  {templates.map((t: any) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Semester</Label>
+              <Select value={stageForm.watch('semesterId')} onValueChange={v => stageForm.setValue('semesterId', v)}>
+                <SelectTrigger className="input-field" id="semester-select"><SelectValue placeholder="Select Semester" /></SelectTrigger>
+                <SelectContent className="bg-card border-border text-foreground">
+                  {semesters.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Department</Label>
+              <Select value={stageForm.watch('departmentId')} onValueChange={v => stageForm.setValue('departmentId', v)}>
+                <SelectTrigger className="input-field" id="dept-select"><SelectValue placeholder="Select Department" /></SelectTrigger>
+                <SelectContent className="bg-card border-border text-foreground">
+                  {departments.map((d: any) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Stage Name</Label>
+              <Input {...stageForm.register('name')} placeholder="e.g. Review 1 Evaluation" id="stage-name-input" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Stage Type</Label>
+                <Select value={stageForm.watch('type')} onValueChange={v => stageForm.setValue('type', v)}>
+                  <SelectTrigger className="input-field" id="stage-type-select"><SelectValue placeholder="Type" /></SelectTrigger>
+                  <SelectContent className="bg-card border-border text-foreground">
+                    {Object.entries(REVIEW_STAGE_LABELS).map(([k, label]) => (
+                      <SelectItem key={k} value={k}>{label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1">
-                <Label>Semester</Label>
-                <Select onValueChange={v => stageForm.setValue('semesterId', v)}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white" id="stage-semester"><SelectValue placeholder="Select semester" /></SelectTrigger>
-                  <SelectContent className="bg-[#1a1a2e] border-white/10">
-                    {semesters.map((s: any) => <SelectItem key={s.id} value={s.id} className="text-gray-300">{s.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1">
-                <Label>Department</Label>
-                <Select onValueChange={v => stageForm.setValue('departmentId', v)}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white" id="stage-dept"><SelectValue placeholder="Select dept" /></SelectTrigger>
-                  <SelectContent className="bg-[#1a1a2e] border-white/10">
-                    {depts.map((d: any) => <SelectItem key={d.id} value={d.id} className="text-gray-300">{d.code}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1 col-span-2">
-                <Label>Name</Label>
-                <Input {...stageForm.register('name')} placeholder="Stage name" id="stage-name" />
-              </div>
-              <div className="space-y-1">
-                <Label>Order</Label>
-                <Input {...stageForm.register('order')} type="number" min={1} id="stage-order" />
-              </div>
-              <div className="space-y-1">
-                <Label>Deadline (optional)</Label>
-                <Input {...stageForm.register('deadline')} type="datetime-local" id="stage-deadline" />
-              </div>
-              <div className="flex items-center gap-2 col-span-2">
-                <Switch checked={stageForm.watch('isActive')} onCheckedChange={v => stageForm.setValue('isActive', v)} id="stage-active" />
-                <Label>Active</Label>
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Stage Order</Label>
+                <Input type="number" {...stageForm.register('order')} id="stage-order-input" />
               </div>
             </div>
-            <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={createStageMutation.isPending} id="create-stage-submit">
-                {createStageMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />} Create Stage
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Deadline (Optional)</Label>
+              <Input type="date" {...stageForm.register('deadline')} id="stage-deadline-input" />
+            </div>
+            <DialogFooter className="gap-2 pt-2">
+              <Button variant="ghost" onClick={() => setCreateOpen(false)}>Cancel</Button>
+              <Button type="submit" disabled={createStageMut.isPending} id="submit-stage-btn" className="btn-primary">
+                {createStageMut.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Create Stage
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Edit Stage Dialog */}
-      <Dialog open={!!editStage} onOpenChange={o => !o && setEditStage(null)}>
-        <DialogContent className="bg-[#1a1a2e] border-white/10 text-white max-w-md">
-          <DialogHeader><DialogTitle>Edit Stage</DialogTitle></DialogHeader>
-          <form onSubmit={stageForm.handleSubmit(d => editStage && updateStageMutation.mutate({ id: editStage.id, data: d }))} className="space-y-3">
-            <div className="space-y-1"><Label>Name</Label><Input {...stageForm.register('name')} id="edit-stage-name" /></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1"><Label>Order</Label><Input {...stageForm.register('order')} type="number" id="edit-stage-order" /></div>
-              <div className="space-y-1"><Label>Deadline</Label><Input {...stageForm.register('deadline')} type="datetime-local" id="edit-stage-deadline" /></div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch checked={stageForm.watch('isActive')} onCheckedChange={v => stageForm.setValue('isActive', v)} id="edit-stage-active" />
-              <Label>Active</Label>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => setEditStage(null)}>Cancel</Button>
-              <Button type="submit" disabled={updateStageMutation.isPending} id="edit-stage-submit">
-                {updateStageMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />} Save Changes
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Criterion Dialog */}
+      {/* Modal 2: Add Evaluation Criteria */}
       <Dialog open={!!criteriaModal} onOpenChange={o => !o && setCriteriaModal(null)}>
-        <DialogContent className="bg-[#1a1a2e] border-white/10 text-white max-w-md">
-          <DialogHeader><DialogTitle>Add Evaluation Criterion</DialogTitle></DialogHeader>
-          <form onSubmit={criteriaForm.handleSubmit(d => criteriaModal && addCriteriaMutation.mutate({ stageId: criteriaModal, data: d }))} className="space-y-3">
-            <div className="space-y-1"><Label>Criterion Name</Label><Input {...criteriaForm.register('name')} placeholder="e.g. Innovation & Creativity" id="criteria-name" />{criteriaForm.formState.errors.name && <p className="text-red-400 text-xs">{criteriaForm.formState.errors.name.message}</p>}</div>
-            <div className="space-y-1"><Label>Description</Label><Textarea {...criteriaForm.register('description')} placeholder="Describe what is evaluated…" rows={2} id="criteria-desc" /></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1"><Label>Max Marks</Label><Input {...criteriaForm.register('maxMarks')} type="number" min={1} id="criteria-marks" />{criteriaForm.formState.errors.maxMarks && <p className="text-red-400 text-xs">{criteriaForm.formState.errors.maxMarks.message}</p>}</div>
-              <div className="space-y-1"><Label>Order</Label><Input {...criteriaForm.register('order')} type="number" min={1} id="criteria-order" /></div>
+        <DialogContent className="bg-card border-border text-foreground">
+          <DialogHeader><DialogTitle className="text-base font-semibold">Add Evaluation Criteria</DialogTitle></DialogHeader>
+          <form onSubmit={criteriaForm.handleSubmit(d => criteriaModal && addCriteriaMut.mutate({ stageId: criteriaModal, data: d }))} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Criteria Name</Label>
+              <Input {...criteriaForm.register('name')} placeholder="e.g. Methodology & Implementation Quality" id="criteria-name-input" />
             </div>
-            <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => setCriteriaModal(null)}>Cancel</Button>
-              <Button type="submit" disabled={addCriteriaMutation.isPending} id="add-criteria-submit">
-                {addCriteriaMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />} Add Criterion
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Description (Optional)</Label>
+              <Textarea {...criteriaForm.register('description')} placeholder="Rubric details for evaluators..." rows={2} id="criteria-desc-input" className="input-field" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Max Marks</Label>
+                <Input type="number" {...criteriaForm.register('maxMarks')} id="criteria-marks-input" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Display Order</Label>
+                <Input type="number" {...criteriaForm.register('order')} id="criteria-order-input" />
+              </div>
+            </div>
+            <DialogFooter className="gap-2 pt-2">
+              <Button variant="ghost" onClick={() => setCriteriaModal(null)}>Cancel</Button>
+              <Button type="submit" disabled={addCriteriaMut.isPending} id="submit-criteria-btn" className="btn-primary">
+                {addCriteriaMut.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Add Criteria
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      <ConfirmDialog open={!!deleteStageId} onOpenChange={o => !o && setDeleteStageId(null)} onConfirm={() => deleteStageId && deleteStageMutation.mutate(deleteStageId)} title="Delete Stage" description="This will permanently delete this review stage and all its criteria." confirmLabel="Delete" variant="danger" />
-      <ConfirmDialog open={!!deleteCriteriaId} onOpenChange={o => !o && setDeleteCriteriaId(null)} onConfirm={() => deleteCriteriaId && deleteCriteriaMutation.mutate(deleteCriteriaId)} title="Delete Criterion" description="Remove this evaluation criterion from the stage?" confirmLabel="Delete" variant="danger" />
+      {/* Delete Stage Confirm */}
+      <ConfirmDialog
+        open={!!deleteStageId}
+        onOpenChange={o => !o && setDeleteStageId(null)}
+        title="Delete Review Stage"
+        description="Are you sure? This will remove this review stage and all associated criteria."
+        onConfirm={() => deleteStageId && deleteStageMut.mutate(deleteStageId)}
+        variant="danger"
+      />
     </div>
   );
 }

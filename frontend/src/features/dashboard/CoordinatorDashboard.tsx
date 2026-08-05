@@ -3,22 +3,25 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, PieChart, Pie, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend } from 'recharts';
-import { Users, Book, Percent, CheckCircle, Megaphone, AlertTriangle } from 'lucide-react';
+import { Users, Book, Percent, CheckCircle, Megaphone, AlertTriangle, ArrowRight } from 'lucide-react';
 import { getProjects } from '@/api/projects.api';
 import { getTeams } from '@/api/teams.api';
 import { getAnnouncements } from '@/api/announcements.api';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { useThemeStore } from '@/store/theme.store';
+import PageHeader from '@/components/shared/PageHeader';
+import StatusBadge from '@/components/shared/StatusBadge';
+import { Button } from '@/components/ui/button';
 
 const COLORS: Record<string, string> = {
-  DRAFT: '#6b7280',
+  DRAFT: '#64748b',
   ABSTRACT_SUBMITTED: '#3b82f6',
-  ABSTRACT_APPROVED: '#22c55e',
+  ABSTRACT_APPROVED: '#10b981',
   IN_PROGRESS: '#6366f1',
-  UNDER_REVIEW: '#eab308',
-  COMPLETED: '#10b981',
-  REJECTED: '#ef4444'
+  UNDER_REVIEW: '#f59e0b',
+  COMPLETED: '#059669',
+  REJECTED: '#e11d48'
 };
 
 const PIE_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#06b6d4'];
@@ -26,6 +29,7 @@ const PIE_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#06b
 export default function CoordinatorDashboard() {
   const { theme } = useThemeStore();
   const isDark = theme === 'dark';
+  const navigate = useNavigate();
 
   const { data: projectsRes, isLoading: loadingProjects } = useQuery({
     queryKey: ['coordinator-projects'],
@@ -83,13 +87,6 @@ export default function CoordinatorDashboard() {
   });
 
   const domainData = Object.entries(domainCounts).map(([name, value]) => ({ name, value }));
-  if (domainData.length === 0) {
-    domainData.push(
-      { name: 'AI/ML', value: 4 },
-      { name: 'Web Dev', value: 3 },
-      { name: 'Cybersecurity', value: 2 }
-    );
-  }
 
   // Submission trend activity data
   const activityData = [
@@ -99,41 +96,40 @@ export default function CoordinatorDashboard() {
     { name: 'Week 4', count: Math.max(totalProjects, 10) },
   ];
 
-  const navigation = useNavigate();
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-600">
-            Coordinator Dashboard
-          </h1>
-          <p className="dark:text-slate-400 text-slate-500 mt-1 text-sm">Monitor department projects, teams, review schedules, and milestones.</p>
-        </div>
-      </div>
+    <div className="space-y-6 max-w-7xl mx-auto">
+      <PageHeader
+        title="Coordinator Dashboard"
+        subtitle="Monitor department projects, teams, review schedules, and milestone progress."
+        actions={
+          <Button onClick={() => navigate('/coordinator/projects')} className="btn-primary">
+            View All Projects <ArrowRight className="w-4 h-4 ml-1.5" />
+          </Button>
+        }
+      />
 
       {/* Row 1: Key Performance Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard title="Total Projects" value={totalProjects} icon={<Book className="text-indigo-500 dark:text-indigo-400 h-5 w-5" />} />
-        <div onClick={() => navigation('/coordinator/teams')} className="block cursor-pointer hover:opacity-90 transition-opacity">
-          <StatsCard title="Pending Team Approvals" value={pendingTeams} icon={<Users className="text-amber-500 dark:text-yellow-400 h-5 w-5" />} subtitle={`${teamsList.length} total teams · Click to review`} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard title="Total Projects" value={totalProjects} icon={<Book className="text-indigo-600 dark:text-indigo-400 h-4 w-4" />} />
+        <div onClick={() => navigate('/coordinator/teams')} className="block cursor-pointer">
+          <StatsCard title="Pending Team Approvals" value={pendingTeams} icon={<Users className="text-amber-600 dark:text-amber-400 h-4 w-4" />} subtitle={`${teamsList.length} total teams · Review →`} />
         </div>
-        <StatsCard title="Guide Assigned Rate" value={`${guideAssignedPercent}%`} icon={<Percent className="text-blue-500 dark:text-blue-400 h-5 w-5" />} subtitle={`${guidedProjects} assigned`} />
-        <StatsCard title="Completed Projects" value={completedProjects} icon={<CheckCircle className="text-emerald-500 dark:text-emerald-400 h-5 w-5" />} />
+        <StatsCard title="Guide Assigned Rate" value={`${guideAssignedPercent}%`} icon={<Percent className="text-indigo-600 dark:text-indigo-400 h-4 w-4" />} subtitle={`${guidedProjects} assigned`} />
+        <StatsCard title="Completed Projects" value={completedProjects} icon={<CheckCircle className="text-emerald-600 dark:text-emerald-400 h-4 w-4" />} />
       </div>
 
       {/* Row 2: Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card>
-          <CardHeader><CardTitle className="text-base font-semibold">Projects by Status</CardTitle></CardHeader>
-          <CardContent className="h-64">
+          <CardHeader className="border-b border-border pb-3"><CardTitle className="text-base font-semibold">Projects by Status</CardTitle></CardHeader>
+          <CardContent className="h-64 pt-4">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={statusData.length > 0 ? statusData : [{ name: 'No Data', count: 0, fill: '#6366f1' }]}>
                 <XAxis dataKey="name" stroke={isDark ? '#94a3b8' : '#64748b'} fontSize={11} />
                 <YAxis stroke={isDark ? '#94a3b8' : '#64748b'} fontSize={11} allowDecimals={false} />
                 <Tooltip 
                   cursor={{ fill: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }} 
-                  contentStyle={{ backgroundColor: isDark ? '#1e1e2e' : '#ffffff', border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #cbd5e1', color: isDark ? '#fff' : '#0f172a', borderRadius: '8px' }} 
+                  contentStyle={{ backgroundColor: isDark ? '#11131c' : '#ffffff', border: isDark ? '1px solid #1e2333' : '1px solid #e2e8f0', color: isDark ? '#fff' : '#0f172a', borderRadius: '8px' }} 
                 />
                 <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                   {statusData.map((entry, index) => (
@@ -146,83 +142,79 @@ export default function CoordinatorDashboard() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base font-semibold">Projects by Domain</CardTitle></CardHeader>
-          <CardContent className="h-64">
+          <CardHeader className="border-b border-border pb-3"><CardTitle className="text-base font-semibold">Projects by Domain</CardTitle></CardHeader>
+          <CardContent className="h-64 pt-4">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={domainData} cx="50%" cy="50%" innerRadius={55} outerRadius={75} paddingAngle={4} dataKey="value">
+                <Pie data={domainData.length > 0 ? domainData : [{ name: 'General', value: 1 }]} cx="50%" cy="50%" innerRadius={50} outerRadius={70} paddingAngle={4} dataKey="value">
                   {domainData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: isDark ? '#1e1e2e' : '#ffffff', border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #cbd5e1', color: isDark ? '#fff' : '#0f172a', borderRadius: '8px' }} />
-                <Legend formatter={(value) => <span className="text-xs dark:text-slate-300 text-slate-700 font-medium">{value}</span>} />
+                <Tooltip contentStyle={{ backgroundColor: isDark ? '#11131c' : '#ffffff', border: isDark ? '1px solid #1e2333' : '1px solid #e2e8f0', color: isDark ? '#fff' : '#0f172a', borderRadius: '8px' }} />
+                <Legend formatter={(value) => <span className="text-xs text-muted-foreground font-medium">{value}</span>} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base font-semibold">Submission Activity Trend</CardTitle></CardHeader>
-          <CardContent className="h-64">
+          <CardHeader className="border-b border-border pb-3"><CardTitle className="text-base font-semibold">Submission Trend</CardTitle></CardHeader>
+          <CardContent className="h-64 pt-4">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={activityData}>
                 <XAxis dataKey="name" stroke={isDark ? '#94a3b8' : '#64748b'} fontSize={11} />
                 <YAxis stroke={isDark ? '#94a3b8' : '#64748b'} fontSize={11} />
-                <Tooltip contentStyle={{ backgroundColor: isDark ? '#1e1e2e' : '#ffffff', border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #cbd5e1', color: isDark ? '#fff' : '#0f172a', borderRadius: '8px' }} />
-                <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={3} dot={{ fill: '#6366f1', r: 4 }} />
+                <Tooltip contentStyle={{ backgroundColor: isDark ? '#11131c' : '#ffffff', border: isDark ? '1px solid #1e2333' : '1px solid #e2e8f0', color: isDark ? '#fff' : '#0f172a', borderRadius: '8px' }} />
+                <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={2} dot={{ fill: '#6366f1', r: 4 }} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
 
-      {/* Row 3: Tables and Notices */}
+      {/* Row 3: Recent Projects and Announcements */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-3">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-500 dark:text-amber-400" /> Recent Projects Status
+              <AlertTriangle className="h-4 w-4 text-amber-500" /> Recent Projects
             </CardTitle>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/coordinator/projects')} className="text-indigo-600 dark:text-indigo-400 font-medium text-xs">
+              Manage All
+            </Button>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-secondary/40">
                 <TableRow>
-                  <TableHead>Project Title</TableHead>
+                  <TableHead className="px-5">Project Title</TableHead>
                   <TableHead>Domain</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Team / Leader</TableHead>
+                  <TableHead className="text-right px-5">Team / Leader</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loadingProjects ? (
                   Array.from({ length: 4 }).map((_, i) => (
                     <TableRow key={i}>
-                      <TableCell colSpan={4} className="h-10 dark:bg-white/5 bg-slate-200 animate-pulse rounded" />
+                      <TableCell colSpan={4} className="h-10 bg-secondary/50 animate-pulse rounded" />
                     </TableRow>
                   ))
                 ) : projectsList.length > 0 ? (
                   projectsList.slice(0, 5).map((p: any) => (
-                    <TableRow key={p.id}>
-                      <TableCell className="font-medium text-indigo-600 dark:text-indigo-300 max-w-[200px] truncate">{p.title}</TableCell>
-                      <TableCell className="dark:text-slate-300 text-slate-700 text-xs">{p.domain || 'N/A'}</TableCell>
+                    <TableRow key={p.id} onClick={() => navigate(`/coordinator/projects/${p.id}`)} className="cursor-pointer hover:bg-secondary/50">
+                      <TableCell className="font-semibold text-foreground max-w-[200px] truncate px-5">{p.title}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs">{p.domain || 'N/A'}</TableCell>
                       <TableCell>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${
-                          p.status === 'COMPLETED' ? 'dark:bg-emerald-500/20 dark:text-emerald-400 bg-emerald-100 text-emerald-700 border border-emerald-300' :
-                          p.status === 'IN_PROGRESS' ? 'dark:bg-indigo-500/20 dark:text-indigo-400 bg-indigo-100 text-indigo-700 border border-indigo-300' :
-                          p.status === 'ABSTRACT_APPROVED' ? 'dark:bg-green-500/20 dark:text-green-400 bg-green-100 text-green-700 border border-green-300' :
-                          'dark:bg-gray-500/20 dark:text-gray-300 bg-slate-100 text-slate-700 border border-slate-300'
-                        }`}>
-                          {p.status || 'DRAFT'}
-                        </span>
+                        <StatusBadge status={p.status || 'DRAFT'} type="project" />
                       </TableCell>
-                      <TableCell className="text-right dark:text-slate-300 text-slate-700 text-xs">{p.team?.name || 'Unassigned'}</TableCell>
+                      <TableCell className="text-right text-muted-foreground text-xs px-5 font-medium">{p.team?.name || 'Unassigned'}</TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-6 dark:text-slate-400 text-slate-500">No projects found.</TableCell>
+                    <TableCell colSpan={4} className="text-center py-6 text-muted-foreground">No projects found.</TableCell>
                   </TableRow>
                 )}
               </TableBody>
@@ -232,26 +224,29 @@ export default function CoordinatorDashboard() {
 
         {/* Announcements List */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-3">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Megaphone className="h-4 w-4 text-indigo-500 dark:text-indigo-400" /> Recent Announcements
+              <Megaphone className="h-4 w-4 text-indigo-600 dark:text-indigo-400" /> Announcements
             </CardTitle>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/coordinator/announcements')} className="text-indigo-600 dark:text-indigo-400 font-medium text-xs">
+              Post Announcement
+            </Button>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="pt-4 space-y-3">
             {announcementList.length > 0 ? (
               announcementList.slice(0, 4).map((a: any) => {
                 const dateVal = a.createdAt || a.date || Date.now();
                 const dateStr = format(new Date(dateVal), 'MMM d, yyyy');
                 return (
-                  <div key={a.id} className="border-b dark:border-white/10 border-slate-200 pb-3 last:border-0 last:pb-0">
-                    <p className="font-medium text-indigo-600 dark:text-indigo-300 line-clamp-1 text-sm">{a.title}</p>
-                    <p className="text-xs dark:text-slate-400 text-slate-600 mt-1 line-clamp-2">{a.content}</p>
-                    <p className="text-[10px] dark:text-slate-500 text-slate-400 mt-1">{dateStr}</p>
+                  <div key={a.id} className="border-b border-border pb-3 last:border-0 last:pb-0 space-y-1">
+                    <p className="font-semibold text-indigo-600 dark:text-indigo-400 line-clamp-1 text-xs">{a.title}</p>
+                    <p className="text-xs text-foreground line-clamp-2 font-normal">{a.content}</p>
+                    <p className="text-[10px] text-muted-foreground">{dateStr}</p>
                   </div>
                 );
               })
             ) : (
-              <p className="text-xs dark:text-slate-400 text-slate-500 text-center py-8">No announcements posted yet.</p>
+              <p className="text-xs text-muted-foreground text-center py-8">No announcements posted yet.</p>
             )}
           </CardContent>
         </Card>
@@ -262,15 +257,15 @@ export default function CoordinatorDashboard() {
 
 function StatsCard({ title, value, icon, subtitle }: { title: string; value: React.ReactNode; icon: React.ReactNode; subtitle?: string }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-xs font-medium dark:text-slate-400 text-slate-500">{title}</CardTitle>
-        {icon}
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold dark:text-white text-slate-900">{value}</div>
-        {subtitle && <p className="text-[11px] dark:text-slate-400 text-slate-500 mt-1">{subtitle}</p>}
-      </CardContent>
+    <Card className="p-4">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{title}</span>
+        <div className="w-7 h-7 rounded-md bg-secondary border border-border flex items-center justify-center">
+          {icon}
+        </div>
+      </div>
+      <div className="text-xl font-bold text-foreground tracking-tight leading-snug">{value}</div>
+      {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
     </Card>
   );
 }

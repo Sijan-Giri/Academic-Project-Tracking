@@ -40,9 +40,9 @@ export default function ProjectsPage() {
       header: 'Project Title',
       cell: ({ row }: any) => (
         <div>
-          <span className="font-semibold text-white block">{row.original.title}</span>
+          <span className="font-semibold text-foreground block">{row.original.title}</span>
           {row.original.abstract && (
-            <span className="text-xs text-gray-400 line-clamp-1 max-w-md">{row.original.abstract}</span>
+            <span className="text-xs text-muted-foreground line-clamp-1 max-w-md font-normal">{row.original.abstract}</span>
           )}
         </div>
       ),
@@ -51,7 +51,7 @@ export default function ProjectsPage() {
       accessorKey: 'domain',
       header: 'Domain',
       cell: ({ row }: any) => (
-        <span className="px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-xs font-medium">
+        <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold">
           {row.original.domain || 'General'}
         </span>
       ),
@@ -60,8 +60,8 @@ export default function ProjectsPage() {
       accessorKey: 'team',
       header: 'Team',
       cell: ({ row }: any) => (
-        <div className="flex items-center gap-1.5 text-slate-300">
-          <Users className="w-3.5 h-3.5 text-gray-400" />
+        <div className="flex items-center gap-1.5 text-foreground text-xs font-medium">
+          <Users className="w-3.5 h-3.5 text-muted-foreground" />
           <span>{row.original.team?.name || 'Unassigned'}</span>
         </div>
       ),
@@ -72,12 +72,12 @@ export default function ProjectsPage() {
       cell: ({ row }: any) => {
         const guideUser = row.original.guideAssignment?.facultyProfile?.user;
         return guideUser ? (
-          <div className="flex items-center gap-1.5 text-emerald-400 font-medium text-xs">
-            <GraduationCap className="w-4 h-4" />
+          <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-semibold text-xs">
+            <GraduationCap className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>{guideUser.name}</span>
           </div>
         ) : (
-          <span className="text-gray-500 italic text-xs">Unassigned</span>
+          <span className="text-muted-foreground italic text-xs">Unassigned</span>
         );
       },
     },
@@ -94,7 +94,7 @@ export default function ProjectsPage() {
           variant="ghost"
           size="sm"
           onClick={() => navigate(`/coordinator/projects/${row.original.id}`)}
-          className="text-indigo-400 hover:text-indigo-300 hover:bg-white/5"
+          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 hover:bg-indigo-50 font-semibold text-xs"
         >
           <Eye className="w-4 h-4 mr-1.5" /> View Details
         </Button>
@@ -106,18 +106,18 @@ export default function ProjectsPage() {
     <div className="space-y-6 max-w-7xl mx-auto">
       <PageHeader
         title="Projects Overview"
-        subtitle="Manage and track all student projects across your department."
+        subtitle="Manage and track all student projects across your academic department."
       />
 
       {/* Filter / Search Bar */}
-      <div className="flex flex-col md:flex-row gap-4 items-center bg-white/5 p-4 rounded-2xl border border-white/10">
+      <div className="flex flex-col md:flex-row gap-4 items-center bg-card p-4 rounded-xl border border-border shadow-xs">
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search by project title or domain..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-gray-500 w-full"
+            className="pl-9 bg-card border-input text-foreground placeholder:text-muted-foreground w-full"
           />
         </div>
 
@@ -126,10 +126,10 @@ export default function ProjectsPage() {
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 statusFilter === st
-                  ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
               }`}
             >
               {st === 'ALL' ? 'All Statuses' : st.replace('_', ' ')}
@@ -138,7 +138,7 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 p-6">
+      <div className="bg-card rounded-xl border border-border p-6 shadow-xs">
         <DataTable columns={columns} data={projectsList} isLoading={isLoading} />
       </div>
     </div>

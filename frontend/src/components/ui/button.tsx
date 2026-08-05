@@ -4,17 +4,17 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.99]',
   {
     variants: {
       variant: {
-        default: 'bg-gradient-to-r from-indigo-500 to-violet-600 text-white hover:from-indigo-600 hover:to-violet-700 shadow-md shadow-indigo-500/20 active:scale-[0.98]',
-        destructive: 'dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30 dark:hover:bg-red-500/30 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100',
-        outline: 'dark:border-white/20 dark:bg-transparent dark:text-white dark:hover:bg-white/10 border-slate-300 bg-white text-slate-800 hover:bg-slate-100 shadow-xs',
-        secondary: 'dark:bg-white/10 dark:text-white dark:hover:bg-white/20 bg-slate-100 text-slate-900 hover:bg-slate-200',
-        ghost: 'dark:hover:bg-white/10 dark:text-gray-400 dark:hover:text-white text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+        default: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs',
+        destructive: 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/20',
+        outline: 'border border-border bg-card text-foreground hover:bg-secondary shadow-xs',
+        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        ghost: 'text-muted-foreground hover:text-foreground hover:bg-secondary',
         link: 'text-indigo-600 dark:text-indigo-400 underline-offset-4 hover:underline',
-        success: 'dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30 dark:hover:bg-emerald-500/30 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100',
+        success: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/20',
       },
       size: {
         default: 'h-10 px-4 py-2',

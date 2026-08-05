@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -55,43 +55,23 @@ export default function NotificationsPage() {
     return true;
   });
 
-  const getTypeBadge = (type: string) => {
+  const getTypeIcon = (type: string) => {
     switch (type) {
       case 'DEADLINE_REMINDER':
-        return (
-          <div className="w-10 h-10 rounded-2xl dark:bg-rose-500/20 dark:text-rose-400 dark:border-rose-500/30 bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center shrink-0">
-            <AlertTriangle className="w-5 h-5" />
-          </div>
-        );
+        return <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />;
       case 'STATUS_CHANGE':
-        return (
-          <div className="w-10 h-10 rounded-2xl dark:bg-indigo-500/20 dark:text-indigo-400 dark:border-indigo-500/30 bg-indigo-50 text-indigo-600 border border-indigo-200 flex items-center justify-center shrink-0">
-            <ShieldCheck className="w-5 h-5" />
-          </div>
-        );
+        return <ShieldCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />;
       case 'FEEDBACK':
-        return (
-          <div className="w-10 h-10 rounded-2xl dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30 bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shrink-0">
-            <MessageSquare className="w-5 h-5" />
-          </div>
-        );
+        return <MessageSquare className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />;
       case 'ANNOUNCEMENT':
-        return (
-          <div className="w-10 h-10 rounded-2xl dark:bg-violet-500/20 dark:text-violet-400 dark:border-violet-500/30 bg-violet-50 text-violet-600 border border-violet-200 flex items-center justify-center shrink-0">
-            <Megaphone className="w-5 h-5" />
-          </div>
-        );
+        return <Megaphone className="w-4 h-4 text-violet-600 dark:text-violet-400" />;
       default:
-        return (
-          <div className="w-10 h-10 rounded-2xl dark:bg-slate-500/20 dark:text-slate-300 dark:border-slate-500/30 bg-slate-100 text-slate-600 border border-slate-200 flex items-center justify-center shrink-0">
-            <Bell className="w-5 h-5" />
-          </div>
-        );
+        return <Bell className="w-4 h-4 text-slate-600 dark:text-zinc-400" />;
     }
   };
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto">
       {/* Page Header */}
       <PageHeader
         title="Notifications & Activity Log"
@@ -101,7 +81,7 @@ export default function NotificationsPage() {
             variant="outline"
             onClick={() => markAllMutation.mutate()}
             disabled={markAllMutation.isPending}
-            className="dark:border-white/10 border-slate-300 dark:bg-white/5 bg-white hover:bg-slate-100 dark:hover:bg-white/10 dark:text-white text-slate-800 font-bold shrink-0 rounded-xl"
+            className="btn-outline"
           >
             <Check className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" /> Mark All as Read
           </Button>
@@ -109,10 +89,10 @@ export default function NotificationsPage() {
       />
 
       {/* Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200/80 shadow-sm">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-border bg-card shadow-xs">
         <div className="flex items-center gap-4 w-full sm:w-auto">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[200px] h-10 rounded-xl font-semibold">
+            <SelectTrigger className="w-[180px] h-9 rounded-lg font-medium text-xs">
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
             <SelectContent>
@@ -125,48 +105,44 @@ export default function NotificationsPage() {
             </SelectContent>
           </Select>
 
-          <div className="flex items-center space-x-2.5">
+          <div className="flex items-center space-x-2">
             <Checkbox
               id="unread"
               checked={unreadOnly}
               onCheckedChange={(c) => setUnreadOnly(c as boolean)}
-              className="dark:border-white/20 border-slate-300 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
             />
-            <label htmlFor="unread" className="text-sm font-bold dark:text-slate-300 text-slate-700 cursor-pointer select-none">
+            <label htmlFor="unread" className="text-xs font-semibold text-foreground cursor-pointer select-none">
               Unread only
             </label>
           </div>
         </div>
 
-        <span className="text-xs font-bold dark:text-gray-400 text-slate-500 uppercase tracking-wider">
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
           Showing {filtered.length} of {notifications.length}
         </span>
       </div>
 
       {/* Notifications Cards Container */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {isLoading ? (
-          <div className="space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="p-6 rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200/80 shadow-sm flex gap-4 animate-pulse">
-                <div className="w-10 h-10 rounded-2xl dark:bg-white/10 bg-slate-200 shrink-0" />
-                <div className="flex-1 space-y-3 py-0.5">
-                  <div className="flex justify-between items-center">
-                    <div className="h-4 dark:bg-white/10 bg-slate-200 rounded w-1/3" />
-                    <div className="h-3 dark:bg-white/5 bg-slate-100 rounded w-16" />
-                  </div>
-                  <div className="h-3.5 dark:bg-white/5 bg-slate-100 rounded w-full" />
+          <div className="space-y-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="p-4 rounded-xl border border-border bg-card shadow-xs flex gap-3 animate-pulse">
+                <div className="w-8 h-8 rounded-lg bg-secondary shrink-0" />
+                <div className="flex-1 space-y-2 py-0.5">
+                  <div className="h-4 bg-secondary rounded w-1/3" />
+                  <div className="h-3 bg-secondary rounded w-full" />
                 </div>
               </div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[40vh] dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200/80 shadow-sm rounded-3xl p-8 text-center">
-            <div className="w-20 h-20 dark:bg-indigo-500/20 bg-indigo-50 border dark:border-indigo-500/30 border-indigo-100 rounded-3xl flex items-center justify-center mb-6">
-              <Inbox className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
+          <div className="flex flex-col items-center justify-center min-h-[35vh] border border-border bg-card shadow-xs rounded-xl p-8 text-center">
+            <div className="w-12 h-12 rounded-xl bg-secondary border border-border flex items-center justify-center mb-3">
+              <Inbox className="w-6 h-6 text-muted-foreground" />
             </div>
-            <h3 className="text-2xl font-extrabold dark:text-white text-slate-900 mb-2">No Notifications Found</h3>
-            <p className="dark:text-gray-400 text-slate-500 max-w-md text-sm font-medium">
+            <h3 className="text-base font-semibold text-foreground mb-1">No Notifications Found</h3>
+            <p className="text-muted-foreground max-w-sm text-xs font-normal">
               You are all caught up! When updates or review announcements arrive, they will appear here.
             </p>
           </div>
@@ -176,37 +152,37 @@ export default function NotificationsPage() {
               key={n.id}
               onClick={() => handleNotificationClick(n)}
               className={cn(
-                'rounded-3xl border p-5 md:p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer flex gap-4 items-start group',
+                'rounded-xl border p-4 shadow-xs hover:shadow-md transition-all cursor-pointer flex gap-3.5 items-start group',
                 !n.isRead
-                  ? 'dark:bg-indigo-500/10 dark:border-indigo-500/30 bg-indigo-50/50 border-indigo-200 border-l-4 border-l-indigo-600 dark:border-l-indigo-500'
-                  : 'dark:bg-white/5 dark:border-white/10 bg-white border-slate-200/80 dark:hover:bg-white/[0.08] hover:bg-slate-50'
+                  ? 'bg-indigo-50/50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/30 border-l-4 border-l-indigo-600 dark:border-l-indigo-500'
+                  : 'bg-card border-border hover:bg-secondary/50'
               )}
             >
-              {getTypeBadge(n.type)}
+              <div className="w-8 h-8 rounded-lg bg-secondary border border-border flex items-center justify-center shrink-0">
+                {getTypeIcon(n.type)}
+              </div>
 
               <div className="flex-1 min-w-0">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
                   <h4 className={cn(
-                    'text-base tracking-tight truncate pr-2',
-                    !n.isRead
-                      ? 'font-extrabold dark:text-white text-slate-900'
-                      : 'font-bold dark:text-gray-300 text-slate-700'
+                    'text-sm tracking-tight truncate pr-2',
+                    !n.isRead ? 'font-semibold text-foreground' : 'font-medium text-foreground'
                   )}>
                     {n.title}
                   </h4>
-                  <span className="text-xs font-semibold text-slate-400 shrink-0 flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
+                  <span className="text-[11px] font-normal text-muted-foreground shrink-0 flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
                     {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true })}
                   </span>
                 </div>
 
-                <p className="dark:text-gray-300 text-slate-600 text-sm font-medium leading-relaxed">
+                <p className="text-muted-foreground text-xs font-normal leading-relaxed">
                   {n.message}
                 </p>
               </div>
 
               {!n.isRead && (
-                <div className="w-3 h-3 rounded-full bg-indigo-600 dark:bg-indigo-500 shrink-0 self-center shadow-xs" />
+                <div className="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-500 shrink-0 self-center" />
               )}
             </div>
           ))
