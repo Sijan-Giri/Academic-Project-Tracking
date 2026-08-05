@@ -1,4 +1,4 @@
-import { Menu, Sun, Moon } from 'lucide-react';
+import { Menu, Sun, Moon, User as UserIcon, Settings as SettingsIcon, LogOut as LogOutIcon } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import NotificationDropdown from '@/components/shared/NotificationDropdown';
 import { useAuthStore } from '@/store/auth.store';
@@ -40,10 +40,10 @@ export default function Header({ className }: HeaderProps) {
   return (
     <header className={cn('flex h-16 items-center justify-between px-4 lg:px-8', className)}>
       <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="icon" onClick={toggle} className="lg:hidden text-gray-400 hover:text-white dark:text-gray-400 dark:hover:text-white text-slate-600 hover:text-slate-900">
+        <Button variant="ghost" size="icon" onClick={toggle} className="lg:hidden text-slate-600 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white">
           <Menu className="h-5 w-5" />
         </Button>
-        <h2 className="text-lg font-semibold dark:text-white text-slate-900 hidden sm:block">{getPageTitle()}</h2>
+        <h2 className="text-lg font-extrabold dark:text-white text-slate-900 hidden sm:block tracking-tight">{getPageTitle()}</h2>
       </div>
 
       <div className="flex items-center space-x-3">
@@ -52,7 +52,7 @@ export default function Header({ className }: HeaderProps) {
           variant="ghost"
           size="icon"
           onClick={toggleTheme}
-          className="rounded-full text-gray-400 hover:text-white dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 transition-colors"
+          className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 transition-colors"
           title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         >
           {theme === 'dark' ? (
@@ -64,40 +64,52 @@ export default function Header({ className }: HeaderProps) {
 
         <NotificationDropdown />
 
+        {/* User Profile Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8 ring-2 ring-indigo-500/20">
-                <AvatarFallback className="bg-indigo-600 text-white font-bold">{user?.name?.charAt(0) || 'U'}</AvatarFallback>
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 border border-slate-200 dark:border-white/10">
+              <Avatar className="h-9 w-9">
+                <AvatarFallback className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-extrabold text-xs">
+                  {user?.name?.charAt(0).toUpperCase() || 'U'}
+                </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56 dark:bg-[#14161f] dark:border-white/10 dark:text-white bg-white border-slate-200 text-slate-900 shadow-xl" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
+
+          <DropdownMenuContent className="w-56 p-1.5 rounded-2xl dark:bg-[#14161f] dark:border-white/10 dark:text-white bg-white border-slate-200 text-slate-900 shadow-2xl" align="end" forceMount>
+            <DropdownMenuLabel className="font-normal px-3 py-2.5">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none dark:text-white text-slate-900">{user?.name}</p>
-                <p className="text-xs leading-none dark:text-gray-400 text-slate-500">{user?.email}</p>
+                <p className="text-sm font-extrabold leading-none dark:text-white text-slate-900">{user?.name}</p>
+                <p className="text-xs font-medium leading-none dark:text-gray-400 text-slate-500 truncate">{user?.email}</p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="dark:bg-white/10 bg-slate-200" />
-            <DropdownMenuItem onClick={() => navigate('/profile')} className="dark:hover:bg-white/5 hover:bg-slate-100 cursor-pointer">
-              Profile
+            
+            <DropdownMenuSeparator className="dark:bg-white/10 bg-slate-100" />
+            
+            <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer font-bold">
+              <UserIcon className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
+              View Profile
             </DropdownMenuItem>
+
             {user?.role === 'ADMIN' && (
-              <DropdownMenuItem onClick={() => navigate('/admin/settings')} className="dark:hover:bg-white/5 hover:bg-slate-100 cursor-pointer">
-                Settings
+              <DropdownMenuItem onClick={() => navigate('/admin/settings')} className="cursor-pointer font-bold">
+                <SettingsIcon className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
+                System Settings
               </DropdownMenuItem>
             )}
-            <DropdownMenuSeparator className="dark:bg-white/10 bg-slate-200" />
+
+            <DropdownMenuSeparator className="dark:bg-white/10 bg-slate-100" />
+
             <DropdownMenuItem
               onClick={async () => {
                 try { await logoutApi(); } catch (_) {}
                 clearAuth();
                 navigate('/login');
               }}
-              className="text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer"
+              className="text-rose-600 dark:text-rose-400 focus:bg-rose-50 dark:focus:bg-rose-500/10 focus:text-rose-700 dark:focus:text-rose-300 font-bold cursor-pointer"
             >
-              Log out
+              <LogOutIcon className="w-4 h-4 mr-2 text-rose-600 dark:text-rose-400" />
+              Log Out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,0 +1,1 @@
+import{K as f,au as n,av as c}from"./index-NEKJ8Eme.js";function o(s){const t=f(s);return t.setHours(0,0,0,0),t}function d(s,t){const a=o(s),e=o(t),r=+a-n(a),i=+e-n(e);return Math.round((r-i)/c)}export{d};
