@@ -5,7 +5,8 @@ import { requireRoles } from '../../middleware/rbac.middleware';
 
 const router = Router();
 
-router.get('/my', authenticate, requireRoles('PANEL', 'FACULTY'), scheduleController.getMySchedules);
+router.get('/my-schedules', authenticate, scheduleController.getMySchedules);
+router.get('/my', authenticate, scheduleController.getMySchedules);
 router.get('/', authenticate, scheduleController.getSchedules);
 router.post('/', authenticate, requireRoles('COORDINATOR', 'ADMIN'), scheduleController.createSchedule);
 router.get('/:id', authenticate, scheduleController.getScheduleById);

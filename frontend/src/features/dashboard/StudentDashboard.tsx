@@ -17,6 +17,8 @@ import { ROUTES } from '@/constants/routes';
 import { LIFECYCLE_STAGES, PROJECT_LIFECYCLE_STAGE_MAP } from '@/constants/status';
 import { getDaysUntil } from '@/utils/formatUtils';
 
+import { useReviewStages } from '@/hooks/useReviewStages';
+
 export default function StudentDashboard() {
   const navigate = useNavigate();
   const authUser = useAuthStore((s) => s.user);
@@ -24,6 +26,7 @@ export default function StudentDashboard() {
   const { currentProject, isLoading: loadingProjects } = useMyProjects();
   const { team, isLoading: loadingTeam } = useMyTeam();
   const { announcements } = useAnnouncements();
+  const { reviewStages } = useReviewStages();
 
   if (loadingProjects || loadingTeam) {
     return <DashboardSkeleton />;
@@ -32,7 +35,23 @@ export default function StudentDashboard() {
   const milestones = currentProject?.milestones || [];
   const inProgressMilestone = milestones.find((m: any) => m.status === 'IN_PROGRESS' || m.status === 'NOT_STARTED');
 
-  const upcomingDeadlines = milestones
+  // Combine project milestone deadlines and semester review stage deadlines
+  const combinedDeadlines = [
+    ...milestones.map((m: any) => ({ id: m.id, name: m.name, deadline: m.deadline, status: m.status })),
+    ...reviewStages
+      .filter((rs: any) => rs.deadline)
+      .map((rs: any) => ({ id: rs.id, name: rs.name, deadline: rs.deadline, status: 'NOT_STARTED' })),
+  ];
+
+  // Remove duplicates by name and sort by deadline date
+  const uniqueDeadlineMap = new Map();
+  combinedDeadlines.forEach((item: any) => {
+    if (!uniqueDeadlineMap.has(item.name) && item.deadline) {
+      uniqueDeadlineMap.set(item.name, item);
+    }
+  });
+
+  const upcomingDeadlines = Array.from(uniqueDeadlineMap.values())
     .filter((m: any) => m.status !== 'APPROVED' && m.status !== 'COMPLETED' && m.deadline)
     .sort((a: any, b: any) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
 

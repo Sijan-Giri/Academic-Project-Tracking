@@ -26,14 +26,40 @@ export const scheduleService = {
           await sendNotification(
             assignment.facultyProfile.user.id,
             'New Review Scheduled',
-            `You have been assigned to a review panel for project ${schedule.projectId}`,
-            'GENERAL'
+            `You have been assigned to a review panel for project presentation on ${new Date(schedule.scheduledAt).toLocaleString()}`,
+            'DEADLINE_REMINDER'
           );
         }
       }
     }
 
-    // Project team notification (assuming logic exists in notification service or just skipping explicit team iteration if complex)
+    // Send notifications to student team members
+    try {
+      const teamMembers = await prisma.teamMember.findMany({
+        where: { team: { project: { id: schedule.projectId } } },
+        include: { studentProfile: { include: { user: true } } },
+      });
+
+      const scheduledDate = new Date(schedule.scheduledAt).toLocaleString('en-US', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      });
+
+      for (const member of teamMembers) {
+        if (member.studentProfile?.user?.id) {
+          await sendNotification(
+            member.studentProfile.user.id,
+            'Presentation Schedule Published',
+            `Your project presentation has been scheduled for ${scheduledDate} at ${schedule.venue || 'TBD'} (${schedule.mode}).`,
+            'DEADLINE_REMINDER',
+            schedule.projectId
+          );
+        }
+      }
+    } catch (err) {
+      console.error('Failed to notify team members of schedule:', err);
+    }
+
     return schedule;
   },
 
@@ -124,13 +150,90 @@ export const scheduleService = {
   },
 
   async getMySchedules(userId: string) {
-    const profile = await prisma.facultyProfile.findUnique({ where: { userId } });
-    if (!profile) throw new NotFoundError('Faculty profile not found');
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { studentProfile: true, facultyProfile: true },
+    });
 
+    if (!user) throw new NotFoundError('User not found');
+
+    const scheduleInclude = {
+      project: {
+        include: {
+          team: {
+            include: {
+              members: {
+                include: {
+                  studentProfile: {
+                    include: { user: true },
+                  },
+                },
+              },
+            },
+          },
+          guideAssignment: {
+            include: {
+              facultyProfile: {
+                include: { user: true },
+              },
+            },
+          },
+        },
+      },
+      reviewStage: true,
+      panelAssignments: {
+        include: {
+          facultyProfile: {
+            include: { user: true },
+          },
+        },
+      },
+    };
+
+    // 1. Coordinators & Admins view all schedules
+    if (user.role === 'ADMIN' || user.role === 'COORDINATOR') {
+      return prisma.reviewSchedule.findMany({
+        include: scheduleInclude,
+        orderBy: { scheduledAt: 'desc' },
+      });
+    }
+
+    // 2. Students view schedules for their team's project
+    if (user.role === 'STUDENT' && user.studentProfile) {
+      return prisma.reviewSchedule.findMany({
+        where: {
+          project: {
+            team: {
+              members: {
+                some: { studentProfileId: user.studentProfile.id },
+              },
+            },
+          },
+        },
+        include: scheduleInclude,
+        orderBy: { scheduledAt: 'desc' },
+      });
+    }
+
+    // 3. Faculty members view schedules where they are on the panel OR the project guide
+    if (user.facultyProfile) {
+      return prisma.reviewSchedule.findMany({
+        where: {
+          OR: [
+            { panelAssignments: { some: { facultyProfileId: user.facultyProfile.id } } },
+            { project: { guideAssignment: { facultyProfileId: user.facultyProfile.id } } },
+          ],
+        },
+        include: scheduleInclude,
+        orderBy: { scheduledAt: 'desc' },
+      });
+    }
+
+    // 4. Default fallback
     return prisma.reviewSchedule.findMany({
-      where: { panelAssignments: { some: { facultyProfileId: profile.id } } },
-      include: { project: true, reviewStage: true },
-      orderBy: { scheduledAt: 'desc' }
+      include: scheduleInclude,
+      orderBy: { scheduledAt: 'desc' },
+      take: 50,
     });
   }
 };

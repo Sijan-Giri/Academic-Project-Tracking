@@ -17,7 +17,6 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [checkingSession, setCheckingSession] = useState(true);
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
 
@@ -54,10 +53,6 @@ export default function LoginPage() {
         }
       } catch (_) {
         // No valid token found, user must log in
-      } finally {
-        if (isMounted) {
-          setCheckingSession(false);
-        }
       }
     }
 
@@ -73,14 +68,6 @@ export default function LoginPage() {
   });
 
   const { login: mutate, isPending } = useLogin();
-
-  if (checkingSession) {
-    return (
-      <div className="flex flex-col items-center justify-center p-8 text-center min-h-[200px]">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
-      </div>
-    );
-  }
 
   return (
     <div className="w-full">

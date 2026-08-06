@@ -108,6 +108,8 @@ export function useSchedules(params?: Record<string, unknown>) {
     stages,
     facultyList,
     isLoading: loadingSchedules,
+    isCreating: createMut.isPending,
+    isDeleting: deleteMut.isPending,
     createSchedule: createMut.mutateAsync,
     updateSchedule: updateMut.mutateAsync,
     deleteSchedule: deleteMut.mutateAsync,

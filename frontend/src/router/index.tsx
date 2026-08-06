@@ -5,9 +5,10 @@ import AuthLayout from '@/layouts/AuthLayout';
 import RoleGuard from '@/layouts/RoleGuard';
 import { PageSkeleton } from '@/components/shared/Skeletons';
 
+import LoginPage from '@/features/auth/LoginPage';
+import RegisterPage from '@/features/auth/RegisterPage';
+
 // Lazy load ALL pages
-const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
-const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'));
 const DashboardIndex = lazy(() => import('@/features/dashboard/DashboardIndex'));
 
 // Admin pages
@@ -56,15 +57,15 @@ const wrap = (component: React.ReactNode) => (
 export const router = createBrowserRouter([
   {
     path: '/login',
-    element: <AuthLayout>{wrap(<LoginPage />)}</AuthLayout>,
+    element: <AuthLayout><LoginPage /></AuthLayout>,
   },
   {
     path: '/register',
-    element: <AuthLayout>{wrap(<RegisterPage />)}</AuthLayout>,
+    element: <AuthLayout><RegisterPage /></AuthLayout>,
   },
   {
     path: '/signup',
-    element: <AuthLayout>{wrap(<RegisterPage />)}</AuthLayout>,
+    element: <AuthLayout><RegisterPage /></AuthLayout>,
   },
   {
     element: <RoleGuard />,
@@ -101,8 +102,8 @@ export const router = createBrowserRouter([
         { element: <RoleGuard allowedRoles={['FACULTY', 'ADMIN']} />, children: [
           { path: '/faculty/projects', element: wrap(<GuidedProjectsPage />) },
         ]},
-        // Panel + Faculty schedules
-        { element: <RoleGuard allowedRoles={['PANEL', 'FACULTY', 'ADMIN']} />, children: [
+        // Panel + Faculty + Student + Coordinator schedules
+        { element: <RoleGuard allowedRoles={['PANEL', 'FACULTY', 'ADMIN', 'STUDENT', 'COORDINATOR']} />, children: [
           { path: '/my-schedules', element: wrap(<MySchedulesPage />) },
           { path: '/evaluations/:scheduleId', element: wrap(<EvaluationFormPage />) },
         ]},

@@ -141,7 +141,7 @@ export default function ProfilePage() {
 
                 <div className="space-y-1.5">
                   <Label htmlFor="phone" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Phone Number</Label>
-                  <Input id="phone" placeholder="+1 (555) 000-0000" {...regProfile('phone')} />
+                  <Input id="phone" placeholder="+977 9857364826" {...regProfile('phone')} />
                 </div>
               </div>
 

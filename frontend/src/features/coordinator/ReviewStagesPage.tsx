@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Calendar, Trash2, PlusCircle, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Calendar, Trash2, PlusCircle, BookOpen, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,16 +17,17 @@ import { REVIEW_STAGE_LABELS } from '@/lib/constants';
 import { useReviewStages } from '@/hooks/useReviewStages';
 import { useSemesters } from '@/hooks/useSemesters';
 import { useDepartments } from '@/hooks/useDepartments';
+import toast from 'react-hot-toast';
 import { useReviewTemplates } from '@/hooks/useReviewTemplates';
 
 const stageSchema = z.object({
-  templateId: z.string().min(1, 'Template required'),
+  templateId: z.string().optional().or(z.literal('')),
   semesterId: z.string().min(1, 'Semester required'),
   departmentId: z.string().min(1, 'Department required'),
-  name: z.string().min(3),
-  type: z.string().min(1),
+  name: z.string().min(2, 'Stage name is required'),
+  type: z.string().min(1, 'Stage type is required'),
   order: z.coerce.number().int().min(1),
-  deadline: z.string().optional(),
+  deadline: z.string().optional().or(z.literal('')),
   isActive: z.boolean().default(true),
 });
 
@@ -45,20 +46,22 @@ const STAGE_TYPE_CLASSES: Record<string, string> = {
   REVIEW_1: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
   REVIEW_2: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
   REVIEW_3: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
-  PRE_SUBMISSION: 'bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-500/30',
-  FINAL_SUBMISSION: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30',
+  PRE_SUBMISSION: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
+  FINAL_SUBMISSION: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
 };
 
 export default function ReviewStagesPage() {
-  const [semesterFilter, setSemesterFilter] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
+  const [criteriaModal, setCriteriaModal] = useState<string | null>(null);
   const [deleteStageId, setDeleteStageId] = useState<string | null>(null);
-  const [criteriaModal, setCriteriaModal] = useState<string | null>(null); // stageId
   const [expandedStage, setExpandedStage] = useState<string | null>(null);
+  const [semesterFilter, setSemesterFilter] = useState('');
 
   const {
     reviewStages: stages,
     isLoading,
+    isCreatingStage,
+    isAddingCriteria,
     createReviewStage,
     deleteReviewStage,
     addCriteria,
@@ -82,11 +85,23 @@ export default function ReviewStagesPage() {
   });
 
   const handleCreateStage = async (data: StageForm) => {
+    const targetSemesterId = data.semesterId || semesters[0]?.id;
+    const targetDepartmentId = data.departmentId || departments[0]?.id;
+
     try {
-      await createReviewStage(data as any);
+      const payload = {
+        ...data,
+        semesterId: targetSemesterId || undefined,
+        departmentId: targetDepartmentId || undefined,
+        templateId: data.templateId || undefined,
+        deadline: data.deadline ? new Date(data.deadline).toISOString() : undefined,
+      };
+      await createReviewStage(payload as any);
       setCreateOpen(false);
       stageForm.reset();
-    } catch (_) {}
+    } catch (err: any) {
+      console.error(err);
+    }
   };
 
   const handleDeleteStage = async () => {
@@ -114,10 +129,14 @@ export default function ReviewStagesPage() {
 
   const openCreate = () => {
     stageForm.reset({
-      order: stages.length + 1,
-      isActive: true,
-      departmentId: departments[0]?.id || '',
+      templateId: templates[0]?.id || '',
       semesterId: semesters[0]?.id || '',
+      departmentId: departments[0]?.id || '',
+      name: 'Review 1 Evaluation',
+      type: 'REVIEW_1',
+      order: (stages.length || 0) + 1,
+      isActive: true,
+      deadline: '',
     });
     setCreateOpen(true);
   };
@@ -259,7 +278,10 @@ export default function ReviewStagesPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader><DialogTitle className="text-base font-semibold">Create Review Stage</DialogTitle></DialogHeader>
-          <form onSubmit={stageForm.handleSubmit(handleCreateStage)} className="space-y-4">
+          <form onSubmit={stageForm.handleSubmit(handleCreateStage, (errs) => {
+            const firstErr = Object.values(errs)[0]?.message;
+            toast.error(firstErr ? String(firstErr) : 'Please fill in all required fields');
+          })} className="space-y-4">
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Template</Label>
               <Select value={stageForm.watch('templateId')} onValueChange={v => stageForm.setValue('templateId', v)}>
@@ -287,6 +309,7 @@ export default function ReviewStagesPage() {
                 </SelectContent>
               </Select>
             </div>
+
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Stage Name</Label>
               <Input {...stageForm.register('name')} placeholder="e.g. Review 1 Evaluation" id="stage-name-input" />
@@ -314,8 +337,15 @@ export default function ReviewStagesPage() {
             </div>
             <DialogFooter className="gap-2 pt-2">
               <Button variant="ghost" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button type="submit" id="submit-stage-btn" className="btn-primary">
-                Create Stage
+              <Button type="submit" disabled={isCreatingStage} id="submit-stage-btn" className="btn-primary">
+                {isCreatingStage ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating Stage...
+                  </>
+                ) : (
+                  'Create Stage'
+                )}
               </Button>
             </DialogFooter>
           </form>
@@ -347,8 +377,15 @@ export default function ReviewStagesPage() {
             </div>
             <DialogFooter className="gap-2 pt-2">
               <Button variant="ghost" onClick={() => setCriteriaModal(null)}>Cancel</Button>
-              <Button type="submit" id="submit-criteria-btn" className="btn-primary">
-                Add Criteria
+              <Button type="submit" disabled={isAddingCriteria} id="submit-criteria-btn" className="btn-primary">
+                {isAddingCriteria ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Adding Criteria...
+                  </>
+                ) : (
+                  'Add Criteria'
+                )}
               </Button>
             </DialogFooter>
           </form>

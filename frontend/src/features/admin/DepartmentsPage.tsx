@@ -2,7 +2,7 @@ import { useDepartments } from '@/hooks/useDepartments';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 
 import PageHeader from '@/components/shared/PageHeader';
 import DataTable from '@/components/shared/DataTable';
@@ -35,6 +35,7 @@ export default function DepartmentsPage() {
   const {
     departments,
     isLoading,
+    isSubmitting,
     createDepartment,
     updateDepartment,
     deleteDepartment,
@@ -188,8 +189,15 @@ export default function DepartmentsPage() {
                 <Button type="button" variant="outline" onClick={() => { setCreateOpen(false); setEditItem(null); }}>
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                  {editItem ? 'Update' : 'Create'}
+                <Button type="submit" disabled={isSubmitting} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {editItem ? 'Updating...' : 'Creating...'}
+                    </>
+                  ) : (
+                    editItem ? 'Update' : 'Create'
+                  )}
                 </Button>
               </div>
             </form>

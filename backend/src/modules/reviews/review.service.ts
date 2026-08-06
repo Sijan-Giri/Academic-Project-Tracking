@@ -2,6 +2,74 @@ import prisma from '../../config/database';
 import { NotFoundError } from '../../shared/errors';
 import { createAuditLog } from '../audit/audit.service';
 import { ReviewStageType } from '@prisma/client';
+import { sendNotification } from '../notifications/notification.service';
+
+const notifyStageDeadline = async (stage: any, isUpdate = false) => {
+  try {
+    const formattedDeadline = stage.deadline
+      ? new Date(stage.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      : 'TBD';
+
+    const title = isUpdate ? `Deadline Updated: ${stage.name}` : `New Stage Deadline: ${stage.name}`;
+    const message = `Deadline for "${stage.name}" is set for ${formattedDeadline}. Please check your project portal for milestone requirements and submission guidelines.`;
+
+    const users = await prisma.user.findMany({
+      where: {
+        OR: [
+          { studentProfile: { batch: { departmentId: stage.departmentId } } },
+          { facultyProfile: { departmentId: stage.departmentId } },
+        ],
+      },
+      select: { id: true },
+    });
+
+    for (const u of users) {
+      await sendNotification(u.id, title, message, 'DEADLINE_REMINDER');
+    }
+  } catch (err) {
+    console.error('Failed to dispatch stage deadline notifications:', err);
+  }
+};
+
+const syncMilestonesForStage = async (stage: any) => {
+  try {
+    const projects = await prisma.project.findMany({
+      where: { semesterId: stage.semesterId },
+    });
+
+    for (const project of projects) {
+      const existingMilestone = await prisma.milestone.findFirst({
+        where: { projectId: project.id, reviewStageId: stage.id },
+      });
+
+      if (existingMilestone) {
+        await prisma.milestone.update({
+          where: { id: existingMilestone.id },
+          data: {
+            name: stage.name,
+            deadline: stage.deadline ? new Date(stage.deadline) : undefined,
+            order: stage.order,
+          } as any,
+        });
+      } else {
+        await prisma.milestone.create({
+          data: {
+            projectId: project.id,
+            reviewStageId: stage.id,
+            name: stage.name,
+            description: `Review stage milestone: ${stage.name}`,
+            deadline: stage.deadline ? new Date(stage.deadline) : undefined,
+            order: stage.order,
+            status: 'NOT_STARTED',
+            requiredDocuments: ['Project Report (PDF)', 'Slide Deck (PPTX/PDF)'],
+          } as any,
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Failed to sync milestones for review stage:', err);
+  }
+};
 
 export const reviewService = {
   async getTemplates() {
@@ -50,11 +118,61 @@ export const reviewService = {
   },
 
   async createReviewStage(data: any) {
-    return prisma.reviewStage.create({ data });
+    const cleanData = {
+      ...data,
+      templateId: data.templateId || undefined,
+      semesterId: data.semesterId || undefined,
+      departmentId: data.departmentId || undefined,
+      deadline: data.deadline ? new Date(data.deadline) : undefined,
+    };
+
+    if (!cleanData.semesterId) {
+      const activeSemester = (await prisma.semester.findFirst({ where: { isCurrent: true } })) || (await prisma.semester.findFirst());
+      if (activeSemester) {
+        cleanData.semesterId = activeSemester.id;
+      }
+    }
+
+    if (!cleanData.departmentId) {
+      const activeDept = (await prisma.department.findFirst({ where: { isActive: true } })) || (await prisma.department.findFirst());
+      if (activeDept) {
+        cleanData.departmentId = activeDept.id;
+      }
+    }
+
+    if (!cleanData.templateId) {
+      let defaultTemplate = await prisma.reviewStageTemplate.findFirst({
+        where: { type: cleanData.type },
+      });
+      if (!defaultTemplate) {
+        defaultTemplate = await prisma.reviewStageTemplate.create({
+          data: {
+            name: cleanData.name || 'Default Stage Template',
+            type: cleanData.type,
+            order: cleanData.order || 1,
+            isDefault: true,
+          },
+        });
+      }
+      cleanData.templateId = defaultTemplate.id;
+    }
+
+    const stage = await prisma.reviewStage.create({ data: cleanData });
+
+    // Sync project milestones for all projects in this semester
+    await syncMilestonesForStage(stage);
+
+    // Broadcast deadline notifications to students and faculty in department/semester
+    notifyStageDeadline(stage, false).catch(err => console.error('Deadline notification error:', err));
+
+    return stage;
   },
 
   async updateReviewStage(id: string, data: any) {
-    return prisma.reviewStage.update({ where: { id }, data });
+    const stage = await prisma.reviewStage.update({ where: { id }, data });
+    await syncMilestonesForStage(stage);
+    notifyStageDeadline(stage, true).catch(err => console.error('Deadline update notification error:', err));
+    return stage;
   },
 
   async deleteReviewStage(id: string) {

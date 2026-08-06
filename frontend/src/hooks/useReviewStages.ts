@@ -95,6 +95,8 @@ export function useReviewStages(params?: Record<string, unknown>) {
   return {
     reviewStages,
     isLoading,
+    isCreatingStage: createStageMut.isPending,
+    isAddingCriteria: addCriteriaMut.isPending,
     createReviewStage: createStageMut.mutateAsync,
     updateReviewStage: updateStageMut.mutateAsync,
     deleteReviewStage: deleteStageMut.mutateAsync,

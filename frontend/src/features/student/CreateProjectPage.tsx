@@ -265,8 +265,17 @@ export default function CreateProjectPage() {
                     <ChevronLeft className="w-4 h-4 mr-1" /> Back
                   </Button>
                   <Button type="submit" disabled={isPending} className="btn-primary">
-                    {isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-                    Submit Proposal
+                    {isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Submitting Proposal...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Submit Proposal
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>

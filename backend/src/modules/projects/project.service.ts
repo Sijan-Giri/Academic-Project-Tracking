@@ -5,6 +5,37 @@ import * as notificationService from '../notifications/notification.service';
 import { ProjectStatus, AuditAction, TeamStatus } from '@prisma/client';
 import { broadcastEvent } from '../../config/socket';
 
+const populateProjectMilestones = async (projectId: string, semesterId: string) => {
+  try {
+    const reviewStages = await prisma.reviewStage.findMany({
+      where: { semesterId },
+      orderBy: { order: 'asc' },
+    });
+
+    for (const stage of reviewStages) {
+      const existing = await prisma.milestone.findFirst({
+        where: { projectId, reviewStageId: stage.id },
+      });
+      if (!existing) {
+        await prisma.milestone.create({
+          data: {
+            projectId,
+            reviewStageId: stage.id,
+            name: stage.name,
+            description: `Review stage milestone: ${stage.name}`,
+            deadline: stage.deadline ? new Date(stage.deadline) : undefined,
+            order: stage.order,
+            status: 'NOT_STARTED',
+            requiredDocuments: ['Project Report (PDF)', 'Slide Deck (PPTX/PDF)'],
+          } as any,
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Failed to populate milestones for new project:', err);
+  }
+};
+
 export const createProject = async (data: any, userId: string) => {
   const { guidePreferences, ...projectFields } = data;
 
@@ -43,6 +74,8 @@ export const createProject = async (data: any, userId: string) => {
       },
     });
 
+    await populateProjectMilestones(updatedProject.id, updatedProject.semesterId);
+
     await auditService.createAuditLog({
       action: AuditAction.UPDATE,
       entityType: 'PROJECT',
@@ -77,6 +110,8 @@ export const createProject = async (data: any, userId: string) => {
       guidePreferences: true,
     },
   });
+
+  await populateProjectMilestones(project.id, project.semesterId);
 
   await auditService.createAuditLog({
     action: AuditAction.CREATE,

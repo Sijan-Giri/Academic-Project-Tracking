@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { ArrowLeft, Lock, Save, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Lock, Save, AlertTriangle, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuthStore } from '@/store/auth.store';
 import { useEvaluationForm } from '@/hooks/useEvaluationForm';
@@ -18,7 +18,7 @@ export default function EvaluationFormPage() {
   const navigate = useNavigate();
   const user = useAuthStore((state: any) => state.user);
   
-  const { schedule, criteriaList: criteria, submitEvaluation } = useEvaluationForm(scheduleId || '');
+  const { schedule, criteriaList: criteria, submitEvaluation, isSubmitting } = useEvaluationForm(scheduleId || '');
   const existingEval: any = null;
 
   const [marks, setMarks] = useState<Record<string, number>>({});
@@ -227,11 +227,20 @@ export default function EvaluationFormPage() {
         
         <Button 
           onClick={handleSave} 
-          disabled={isLocked}
+          disabled={isLocked || isSubmitting}
           className="btn-primary px-6"
         >
-          <Save className="w-4 h-4 mr-2" />
-          Submit Evaluation
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Submitting Evaluation...
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4 mr-2" />
+              Submit Evaluation
+            </>
+          )}
         </Button>
       </div>
     </div>

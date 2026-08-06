@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Calendar, Trash2, CheckCircle, Wifi, WifiOff, MapPin, Users } from 'lucide-react';
+import { Plus, Calendar, Trash2, CheckCircle, Wifi, WifiOff, MapPin, Users, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +38,7 @@ export default function SchedulesPage() {
     stages,
     facultyList: guides,
     isLoading,
+    isCreating,
     createSchedule,
     deleteSchedule,
   } = useSchedules(stageFilter ? { reviewStageId: stageFilter } : undefined);
@@ -51,7 +52,11 @@ export default function SchedulesPage() {
 
   const handleCreate = async (data: ScheduleForm) => {
     try {
-      await createSchedule(data);
+      const formattedDate = data.scheduledAt ? new Date(data.scheduledAt).toISOString() : new Date().toISOString();
+      await createSchedule({
+        ...data,
+        scheduledAt: formattedDate,
+      });
       setCreateOpen(false);
       reset();
     } catch (_) {}
@@ -212,8 +217,14 @@ export default function SchedulesPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Venue / Room / Link</Label>
-              <Input {...register('venue')} placeholder="e.g. Lab 402 or Google Meet URL" id="sch-venue-input" />
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+                {watch('mode') === 'ONLINE' ? 'Meeting URL / Online Link' : 'Venue / Room Location'}
+              </Label>
+              <Input
+                {...register('venue')}
+                placeholder={watch('mode') === 'ONLINE' ? 'https://meet.google.com/abc-defg-hij' : 'Lab 402, Computer Dept'}
+                id="sch-venue-input"
+              />
             </div>
 
             {/* Panel Evaluators Selection */}
@@ -237,8 +248,15 @@ export default function SchedulesPage() {
 
             <DialogFooter className="gap-2 pt-2">
               <Button variant="ghost" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button type="submit" id="submit-sch-btn" className="btn-primary">
-                Schedule Review
+              <Button type="submit" disabled={isCreating} id="submit-sch-btn" className="btn-primary">
+                {isCreating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Scheduling...
+                  </>
+                ) : (
+                  'Schedule Review'
+                )}
               </Button>
             </DialogFooter>
           </form>

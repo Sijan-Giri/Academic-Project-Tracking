@@ -38,8 +38,13 @@ interface StatsCardProps {
   className?: string;
 }
 
-function isLucideIcon(icon: unknown): icon is LucideIcon {
-  return typeof icon === 'function';
+function renderIcon(iconItem: unknown) {
+  if (!iconItem) return null;
+  if (React.isValidElement(iconItem)) {
+    return iconItem;
+  }
+  const IconComp = iconItem as React.ComponentType<{ className?: string }>;
+  return <IconComp className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />;
 }
 
 export default function StatsCard({
@@ -56,9 +61,7 @@ export default function StatsCard({
 
   const iconContent = icon ? (
     <div className="w-7 h-7 rounded-md bg-secondary border border-border flex items-center justify-center shrink-0">
-      {isLucideIcon(icon)
-        ? React.createElement(icon as LucideIcon, { className: 'h-4 w-4 text-indigo-600 dark:text-indigo-400' })
-        : icon}
+      {renderIcon(icon)}
     </div>
   ) : null;
 

@@ -28,7 +28,7 @@ export default function Sidebar({ className }: SidebarProps) {
 
     { label: 'Guided Projects', icon: BookOpen, path: '/faculty/projects', roles: ['FACULTY'] },
 
-    { label: 'My Schedules', icon: Clock, path: '/my-schedules', roles: ['FACULTY', 'PANEL'] },
+    { label: 'My Schedules & Links', icon: Clock, path: '/my-schedules', roles: ['FACULTY', 'PANEL', 'STUDENT'] },
     
     { label: 'My Project', icon: BookOpen, path: '/my-project', roles: ['STUDENT'] },
     { label: 'My Team', icon: Users, path: '/my-team', roles: ['STUDENT'] },

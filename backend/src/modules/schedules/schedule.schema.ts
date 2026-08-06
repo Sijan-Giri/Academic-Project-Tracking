@@ -4,7 +4,7 @@ import { ScheduleMode } from '@prisma/client';
 export const createScheduleSchema = z.object({
   reviewStageId: z.string().uuid(),
   projectId: z.string().uuid(),
-  scheduledAt: z.string().datetime(),
+  scheduledAt: z.string().min(1, 'Scheduled date is required'),
   venue: z.string().optional(),
   mode: z.nativeEnum(ScheduleMode),
   notes: z.string().optional(),

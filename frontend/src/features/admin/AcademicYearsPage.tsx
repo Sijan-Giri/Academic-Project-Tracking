@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 
 import { useAcademicYears } from '@/hooks/useAcademicYears';
 import PageHeader from '@/components/shared/PageHeader';
@@ -14,13 +14,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { AcademicYear } from '@/types/system.types';
 
 const academicYearSchema = z.object({
-  startYear: z.coerce.number().min(2000, 'Invalid year').max(2100, 'Invalid year'),
-  endYear: z.coerce.number().min(2000).max(2100),
+  startYear: z.coerce.number().int().min(2000).max(2100),
+  endYear: z.coerce.number().int().min(2000).max(2100),
   isActive: z.boolean().default(true),
 }).refine(data => data.endYear > data.startYear, {
-  message: "End year must be greater than start year",
+  message: "End year must be after start year",
   path: ["endYear"],
 });
 
@@ -28,12 +29,13 @@ type AcademicYearFormValues = z.infer<typeof academicYearSchema>;
 
 export default function AcademicYearsPage() {
   const [createOpen, setCreateOpen] = useState(false);
-  const [editItem, setEditItem] = useState<any>(null);
-  const [deleteItem, setDeleteItem] = useState<any>(null);
+  const [editItem, setEditItem] = useState<AcademicYear | null>(null);
+  const [deleteItem, setDeleteItem] = useState<AcademicYear | null>(null);
 
   const {
-    academicYears,
+    academicYears: yearList,
     isLoading,
+    isSubmitting,
     createAcademicYear,
     updateAcademicYear,
     deleteAcademicYear,
@@ -114,8 +116,6 @@ export default function AcademicYearsPage() {
     },
   ];
 
-  const yearList = Array.isArray(academicYears) ? academicYears : [];
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -154,7 +154,16 @@ export default function AcademicYearsPage() {
               )} />
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={() => { setCreateOpen(false); setEditItem(null); }}>Cancel</Button>
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white">{editItem ? 'Update' : 'Create'}</Button>
+                <Button type="submit" disabled={isSubmitting} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {editItem ? 'Updating...' : 'Creating...'}
+                    </>
+                  ) : (
+                    editItem ? 'Update' : 'Create'
+                  )}
+                </Button>
               </div>
             </form>
           </Form>
