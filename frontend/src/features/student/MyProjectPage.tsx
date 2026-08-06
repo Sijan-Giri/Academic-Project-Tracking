@@ -12,7 +12,9 @@ import {
   FolderGit2,
   Crown,
   FileCode2,
-  Github
+  Github,
+  AlertTriangle,
+  FolderPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
@@ -89,6 +91,27 @@ export default function MyProjectPage() {
         title={project.title || "Project Details"}
         subtitle={`Domain: ${project.domain || 'General'} • Team: ${project.team?.name || 'Assigned Roster'}`}
       />
+
+      {/* Cancelled / Rejected Banner */}
+      {(project.status === 'CANCELLED' || project.status === 'ABSTRACT_REJECTED') && (
+        <div className="rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-900 dark:text-rose-300 p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 mt-0.5 shrink-0" />
+            <div>
+              <h4 className="font-bold text-sm">Project Proposal {project.status === 'CANCELLED' ? 'Cancelled' : 'Rejected'}</h4>
+              <p className="text-xs mt-1 opacity-90 leading-relaxed max-w-xl font-normal">
+                This project proposal has been {project.status === 'CANCELLED' ? 'cancelled' : 'rejected'} by the coordinator. Your team can submit a new project proposal to replace this project.
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={() => navigate('/my-project/create')}
+            className="bg-rose-600 hover:bg-rose-700 text-white font-semibold shrink-0 rounded-lg text-xs px-4 h-9"
+          >
+            <FolderPlus className="w-4 h-4 mr-2" /> Propose New Project
+          </Button>
+        </div>
+      )}
 
       {/* Top Overview Card */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-xs transition-colors duration-200">

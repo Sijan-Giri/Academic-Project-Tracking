@@ -13,7 +13,46 @@ export const createProject = async (data: any, userId: string) => {
   if (team.status !== TeamStatus.APPROVED) throw new ValidationError('Team must be approved to create a project');
 
   const existingProject = await prisma.project.findUnique({ where: { teamId: projectFields.teamId } });
-  if (existingProject) throw new ValidationError('Team already has a project');
+  if (existingProject) {
+    if (existingProject.status !== ProjectStatus.CANCELLED && existingProject.status !== ProjectStatus.ABSTRACT_REJECTED) {
+      throw new ValidationError('Team already has an active project');
+    }
+
+    // Overwrite existing cancelled/rejected project with new proposal
+    await prisma.guidePreference.deleteMany({ where: { projectId: existingProject.id } });
+
+    const targetSemesterId = projectFields.semesterId || team.semesterId;
+    const updatedProject = await prisma.project.update({
+      where: { id: existingProject.id },
+      data: {
+        ...projectFields,
+        semesterId: targetSemesterId,
+        status: ProjectStatus.DRAFT,
+        guidePreferences: guidePreferences && guidePreferences.length > 0 ? {
+          createMany: {
+            data: guidePreferences.map((gp: any) => ({
+              facultyProfileId: gp.facultyProfileId,
+              rank: gp.rank,
+            })),
+          },
+        } : undefined,
+      },
+      include: {
+        team: true,
+        guidePreferences: true,
+      },
+    });
+
+    await auditService.createAuditLog({
+      action: AuditAction.UPDATE,
+      entityType: 'PROJECT',
+      entityId: updatedProject.id,
+      userId,
+      newValue: { title: updatedProject.title, status: updatedProject.status },
+    });
+
+    return updatedProject;
+  }
 
   // Auto-resolve semesterId from team if omitted or empty
   const targetSemesterId = projectFields.semesterId || team.semesterId;

@@ -91,7 +91,7 @@ export default function Header({ className }: HeaderProps) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 border border-slate-200 dark:border-white/10">
               <Avatar className="h-9 w-9">
-                <AvatarFallback className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-extrabold text-xs">
+                <AvatarFallback className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-bold text-xs">
                   {user?.name?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
@@ -101,7 +101,7 @@ export default function Header({ className }: HeaderProps) {
           <DropdownMenuContent className="w-56 p-1.5 rounded-2xl dark:bg-[#14161f] dark:border-white/10 dark:text-white bg-white border-slate-200 text-slate-900 shadow-2xl" align="end" forceMount>
             <DropdownMenuLabel className="font-normal px-3 py-2.5">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-extrabold leading-none dark:text-white text-slate-900">{user?.name}</p>
+                <p className="text-sm font-bold leading-none dark:text-white text-slate-900">{user?.name}</p>
                 <p className="text-xs font-medium leading-none dark:text-gray-400 text-slate-500 truncate">{user?.email}</p>
               </div>
             </DropdownMenuLabel>

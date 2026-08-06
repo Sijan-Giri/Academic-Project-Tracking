@@ -1,0 +1,1 @@
+import{d as r,e as t}from"./index-Be6RPKR1.js";import{g as u}from"./announcements.api-pdT8O1bd.js";const a=["announcements"];function i(n){const{data:e,isLoading:s,isError:o}=r({queryKey:a,queryFn:()=>u(n)});return{announcements:t(e),isLoading:s,isError:o}}export{i as u};

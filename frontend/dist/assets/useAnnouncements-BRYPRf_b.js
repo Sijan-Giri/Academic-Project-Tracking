@@ -1,1 +1,0 @@
-import{d as r,e as t}from"./index-BfIdqsKx.js";import{g as u}from"./announcements.api-ClV087Fd.js";const a=["announcements"];function i(n){const{data:e,isLoading:s,isError:o}=r({queryKey:a,queryFn:()=>u(n)});return{announcements:t(e),isLoading:s,isError:o}}export{i as u};

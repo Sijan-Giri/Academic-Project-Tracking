@@ -29,11 +29,18 @@ export default function ProjectDetailPage() {
   const user = useAuthStore(s => s.user);
   const [activeTab, setActiveTab] = useState('overview');
 
-  const { project, isLoading, reviewAbstract } = useProjectDetail(id || '');
+  const { project, isLoading, reviewAbstract, updateProjectStatus } = useProjectDetail(id || '');
+
+  const ABSTRACT_REVIEW_STATUSES = ['ABSTRACT_APPROVED', 'ABSTRACT_REJECTED', 'REVISION_NEEDED'];
 
   const handleStatusChange = async (newStatus: string) => {
     try {
-      await reviewAbstract({ status: newStatus as any });
+      if (ABSTRACT_REVIEW_STATUSES.includes(newStatus)) {
+        const defaultComments = `Abstract ${newStatus.toLowerCase().replace(/_/g, ' ')} by coordinator`;
+        await reviewAbstract({ status: newStatus, comments: defaultComments });
+      } else {
+        await updateProjectStatus(newStatus);
+      }
     } catch (_) {}
   };
 

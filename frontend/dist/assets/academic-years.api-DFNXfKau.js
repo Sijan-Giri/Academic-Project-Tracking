@@ -1,1 +1,0 @@
-import{n as e}from"./index-BfIdqsKx.js";const s=async()=>(await e.get("/academic-years")).data,d=async a=>(await e.post("/academic-years",a)).data,i=async(a,c)=>(await e.put(`/academic-years/${a}`,c)).data,r=async a=>(await e.delete(`/academic-years/${a}`)).data;export{d as c,r as d,s as g,i as u};
