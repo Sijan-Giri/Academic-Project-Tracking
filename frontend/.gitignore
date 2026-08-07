@@ -1,1 +1,20 @@
+# Dependencies
 node_modules
+
+# Build output — never commit compiled assets
+dist
+dist-ssr
+
+# Vite / TypeScript cache
+*.local
+.vite
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Editor & OS
+.DS_Store
+Thumbs.db
+*.log
