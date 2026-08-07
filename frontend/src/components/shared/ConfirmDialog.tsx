@@ -1,14 +1,7 @@
 import React from 'react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { AlertTriangle, Trash2, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -18,34 +11,102 @@ interface ConfirmDialogProps {
   description: string;
   confirmLabel?: string;
   confirmText?: string;
+  loadingLabel?: string;
+  isLoading?: boolean;
   variant?: 'default' | 'danger';
   children?: React.ReactNode;
 }
 
-export default function ConfirmDialog({ open, onOpenChange, onConfirm, title, description, confirmLabel, confirmText, variant = 'default', children }: ConfirmDialogProps) {
+export default function ConfirmDialog({
+  open,
+  onOpenChange,
+  onConfirm,
+  title,
+  description,
+  confirmLabel,
+  confirmText,
+  loadingLabel,
+  isLoading = false,
+  variant = 'default',
+  children,
+}: ConfirmDialogProps) {
   const label = confirmLabel || confirmText || 'Confirm';
+  const isDanger = variant === 'danger';
+
+  const activeLabel = loadingLabel || (() => {
+    const firstWord = label.split(' ')[0];
+    const rest = label.split(' ').slice(1).join(' ');
+    return `${firstWord}ing${rest ? ' ' + rest : ''}...`;
+  })();
+
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
-        </AlertDialogHeader>
-        {children}
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={(e) => {
-              e.preventDefault();
-              onConfirm();
-              onOpenChange(false);
-            }}
-            className={variant === 'danger' ? 'bg-red-600 hover:bg-red-700 text-white' : ''}
-          >
-            {label}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <Dialog open={open} onOpenChange={isLoading ? undefined : onOpenChange}>
+      <DialogContent className="p-0 gap-0 max-w-md w-full overflow-hidden border-0 shadow-2xl rounded-2xl bg-card">
+
+        <div className="px-7 pt-6 pb-7 space-y-6">
+          <div className="flex items-start gap-4">
+            <div className={cn(
+              'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
+              isDanger
+                ? 'bg-rose-50 dark:bg-rose-500/15 border border-rose-200 dark:border-rose-500/30'
+                : 'bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-200 dark:border-indigo-500/30'
+            )}>
+              <AlertTriangle className={cn(
+                'w-6 h-6',
+                isDanger
+                  ? 'text-yellow-600 dark:text-rose-400'
+                  : 'text-indigo-600 dark:text-indigo-400'
+              )} />
+            </div>
+
+            <div className="space-y-1.5 pt-0.5 flex-1">
+              <h2 className="text-base font-bold text-foreground tracking-tight">{title}</h2>
+              <p className="text-sm text-muted-foreground font-normal leading-relaxed">{description}</p>
+            </div>
+          </div>
+
+          {children && (
+            <div className="rounded-xl bg-secondary/50 border border-border p-3 text-xs text-muted-foreground">
+              {children}
+            </div>
+          )}
+
+          <div className="h-px bg-border" />
+
+          <div className="flex items-center justify-end gap-3">
+            <button
+              onClick={() => onOpenChange(false)}
+              disabled={isLoading}
+              className="px-4 py-2 rounded-lg text-sm font-semibold text-foreground bg-secondary hover:bg-secondary/80 border border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancel
+            </button>
+
+            <button
+              onClick={onConfirm}
+              disabled={isLoading}
+              className={cn(
+                'min-w-[120px] px-5 py-2 rounded-lg text-sm font-bold text-white flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 disabled:cursor-not-allowed',
+                isDanger
+                  ? 'bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700'
+                  : 'bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700'
+              )}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  {activeLabel}
+                </>
+              ) : (
+                <>
+                  {isDanger && <Trash2 className="w-3.5 h-3.5" />}
+                  {label}
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

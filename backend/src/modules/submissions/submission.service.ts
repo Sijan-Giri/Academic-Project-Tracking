@@ -92,14 +92,21 @@ export const getFileStream = async (fileId: string) => {
   return file;
 };
 
-export const deleteFile = async (fileId: string) => {
+export const deleteFile = async (fileId: string, requestingUserId: string, requestingRole: string) => {
   const file = await prisma.file.findUnique({ where: { id: fileId } });
   if (!file) throw new NotFoundError('File not found');
-  
+
+  // Allow: ADMIN, COORDINATOR, or the user who uploaded the file
+  const isOwner = file.uploadedById === requestingUserId;
+  const isPrivileged = ['ADMIN', 'COORDINATOR'].includes(requestingRole);
+  if (!isOwner && !isPrivileged) {
+    throw new Error('You do not have permission to delete this file');
+  }
+
   if (fs.existsSync(file.storagePath)) {
     fs.unlinkSync(file.storagePath);
   }
 
   await prisma.file.delete({ where: { id: fileId } });
-  return { message: 'File deleted' };
+  return { message: 'File deleted successfully' };
 };

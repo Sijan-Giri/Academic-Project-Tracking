@@ -23,10 +23,11 @@ export const getSubmissionHandler = async (req: AuthRequest, res: Response) => {
 
 export const downloadFileHandler = async (req: AuthRequest, res: Response) => {
   const file = await submissionService.getFileStream(req.params.id);
-  res.download(file.storagePath, file.originalName);
+  const absPath = require('path').resolve(file.storagePath);
+  res.download(absPath, file.originalName);
 };
 
 export const deleteFileHandler = async (req: AuthRequest, res: Response) => {
-  const result = await submissionService.deleteFile(req.params.id);
-  res.json(result);
+  const result = await submissionService.deleteFile(req.params.id, req.user!.userId, req.user!.role);
+  res.json({ success: true, data: result });
 };

@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import PageHeader from '@/components/shared/PageHeader';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import EmptyState from '@/components/shared/EmptyState';
+import { ReviewStagesSkeleton } from '@/components/shared/Skeletons';
 import { REVIEW_STAGE_LABELS } from '@/lib/constants';
 import { useReviewStages } from '@/hooks/useReviewStages';
 import { useSemesters } from '@/hooks/useSemesters';
@@ -170,7 +171,7 @@ export default function ReviewStagesPage() {
 
       {/* Stages List */}
       {isLoading ? (
-        <div className="p-8 text-center text-muted-foreground font-normal">Loading review stages…</div>
+        <ReviewStagesSkeleton />
       ) : stages.length === 0 ? (
         <EmptyState icon={BookOpen} title="No review stages found" description="Create a review stage to configure evaluation rubrics." />
       ) : (

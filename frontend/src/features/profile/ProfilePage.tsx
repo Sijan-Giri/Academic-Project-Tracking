@@ -120,9 +120,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Columns: Forms */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Form 1: Personal Information */}
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="border-b border-border pb-3">
               <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
@@ -167,7 +165,6 @@ export default function ProfilePage() {
             </form>
           </div>
 
-          {/* Form 2: Password Security */}
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="border-b border-border pb-3">
               <h3 className="text-base font-semibold text-foreground flex items-center gap-2">

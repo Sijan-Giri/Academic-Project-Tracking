@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/shared/PageHeader';
 import EmptyState from '@/components/shared/EmptyState';
+import { SchedulesSkeleton } from '@/components/shared/Skeletons';
 import { useMySchedules } from '@/hooks/useMySchedules';
 import { useAuthStore } from '@/store/auth.store';
 
@@ -235,7 +236,7 @@ export default function MySchedulesPage() {
       />
 
       {isLoading ? (
-        <div className="p-12 text-center text-muted-foreground font-medium">Loading presentation schedules…</div>
+        <SchedulesSkeleton />
       ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="bg-card border border-border p-1 rounded-xl">

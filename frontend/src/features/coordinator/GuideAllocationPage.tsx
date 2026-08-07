@@ -9,6 +9,7 @@ import { CheckCircle, XCircle, UserPlus, Loader2, User } from 'lucide-react';
 import { format } from 'date-fns';
 import PageHeader from '@/components/shared/PageHeader';
 import EmptyState from '@/components/shared/EmptyState';
+import { CardsGridSkeleton } from '@/components/shared/Skeletons';
 import { useGuideAllocation } from '@/hooks/useGuideAllocation';
 
 export default function GuideAllocationPage() {
@@ -67,7 +68,7 @@ export default function GuideAllocationPage() {
         <TabsContent value="preferences">
           <div className="bg-card border border-border rounded-xl shadow-xs overflow-hidden">
             {prefsLoading ? (
-              <div className="p-8 text-center text-muted-foreground font-normal">Loading preferences…</div>
+              <div className="p-6"><CardsGridSkeleton /></div>
             ) : preferences.length === 0 ? (
               <EmptyState icon={User} title="No preferences submitted" description="Students haven't submitted guide preferences yet." />
             ) : (

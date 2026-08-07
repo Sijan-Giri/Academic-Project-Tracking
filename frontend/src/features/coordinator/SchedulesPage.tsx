@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import PageHeader from '@/components/shared/PageHeader';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import EmptyState from '@/components/shared/EmptyState';
+import { SchedulesSkeleton } from '@/components/shared/Skeletons';
 import { useSchedules } from '@/hooks/useSchedules';
 
 const scheduleSchema = z.object({
@@ -107,7 +108,7 @@ export default function SchedulesPage() {
 
       {/* Schedules List */}
       {isLoading ? (
-        <div className="p-8 text-center text-muted-foreground font-normal">Loading review schedules…</div>
+        <SchedulesSkeleton />
       ) : schedules.length === 0 ? (
         <EmptyState icon={Calendar} title="No review schedules found" description="Schedule presentation slots for project evaluation panels." />
       ) : (

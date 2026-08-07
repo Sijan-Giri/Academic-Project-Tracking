@@ -20,4 +20,4 @@ submissionsRouter.get('/:id', controller.getSubmissionHandler);
 
 // Files
 filesRouter.get('/:id/download', controller.downloadFileHandler);
-filesRouter.delete('/:id', requireRoles('ADMIN'), controller.deleteFileHandler);
+filesRouter.delete('/:id', controller.deleteFileHandler);

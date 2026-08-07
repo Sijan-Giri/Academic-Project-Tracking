@@ -15,4 +15,7 @@ export { AbstractSkeleton } from './AbstractSkeleton';
 export { MilestonesSkeleton } from './MilestonesSkeleton';
 export { SubmissionsSkeleton } from './SubmissionsSkeleton';
 export { PageSkeleton } from './PageSkeleton';
+export { SchedulesSkeleton } from './SchedulesSkeleton';
+export { ReviewStagesSkeleton } from './ReviewStagesSkeleton';
+export { SettingsSkeleton } from './SettingsSkeleton';
 

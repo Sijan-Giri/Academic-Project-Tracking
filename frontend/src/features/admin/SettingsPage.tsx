@@ -7,6 +7,7 @@ import { Save } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import PageHeader from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
+import { SettingsSkeleton } from '@/components/shared/Skeletons';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
@@ -47,7 +48,7 @@ export default function SettingsPage() {
     } catch (_) {}
   };
 
-  if (isLoading) return <div className="dark:text-white text-slate-900">Loading settings...</div>;
+  if (isLoading) return <SettingsSkeleton />;
 
   return (
     <div className="space-y-6 max-w-4xl">
