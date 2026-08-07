@@ -1,1 +1,0 @@
-import{w as r}from"./index-qrTHnwnU.js";const i=async s=>(await r.post("/guides/assign",s)).data,t=async s=>(await r.delete(`/guides/assign/${s}`)).data,n=async()=>{const a=(await r.get("/guides/available")).data;return Array.isArray(a)?a:Array.isArray(a==null?void 0:a.data)?a.data:Array.isArray(a==null?void 0:a.items)?a.items:[]};export{i as a,n as g,t as r};

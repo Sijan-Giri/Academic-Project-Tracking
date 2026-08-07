@@ -33,12 +33,13 @@ export default function EvaluationFormPage() {
       const initialMarks: Record<string, number> = {};
       const initialRemarks: Record<string, string> = {};
       existingEval.scores?.forEach((score: any) => {
-        initialMarks[score.criterionId] = score.mark;
-        initialRemarks[score.criterionId] = score.remark;
+        const cId = score.criteriaId || score.criterionId;
+        initialMarks[cId] = score.marks ?? score.mark ?? 0;
+        initialRemarks[cId] = score.remarks || score.remark || '';
       });
       setMarks(initialMarks);
       setRemarks(initialRemarks);
-      setOverallFeedback(existingEval.overallFeedback || '');
+      setOverallFeedback(existingEval.feedback || existingEval.overallFeedback || '');
     }
   }, [existingEval]);
 
@@ -56,9 +57,9 @@ export default function EvaluationFormPage() {
 
   const handleSave = async () => {
     const scores = criteria.map((c: any) => ({
-      criterionId: c.id,
-      mark: marks[c.id] || 0,
-      remark: remarks[c.id] || ''
+      criteriaId: c.id,
+      marks: Number(marks[c.id]) || 0,
+      remarks: remarks[c.id] || '',
     }));
     try {
       await submitEvaluation({
@@ -66,7 +67,7 @@ export default function EvaluationFormPage() {
         projectId: schedule?.projectId,
         reviewStageId: schedule?.reviewStageId,
         scores,
-        overallFeedback
+        feedback: overallFeedback,
       });
     } catch (_) {}
   };

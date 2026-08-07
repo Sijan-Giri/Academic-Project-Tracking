@@ -1,0 +1,1 @@
+import{h as r,i as t}from"./index-BhwjYSdo.js";import{g as u}from"./announcements.api-BwZpFT0f.js";const a=["announcements"];function c(n){const{data:e,isLoading:s,isError:o}=r({queryKey:a,queryFn:()=>u(n)});return{announcements:t(e),isLoading:s,isError:o}}export{c as u};

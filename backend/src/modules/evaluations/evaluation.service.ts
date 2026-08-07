@@ -19,9 +19,8 @@ export const evaluationService = {
     if (!profile) throw new NotFoundError('Faculty profile not found');
 
     const existing = await prisma.evaluation.findFirst({
-      where: { projectId: data.projectId, reviewStageId: data.reviewStageId, evaluatorId: userId }
+      where: { projectId: data.projectId, reviewStageId: data.reviewStageId, evaluatorId: profile.id }
     });
-    if (existing) throw new ConflictError('Evaluation already submitted by this evaluator');
 
     const criteria = await prisma.evaluationCriteria.findMany({ where: { reviewStageId: data.reviewStageId } });
     let totalMarks = 0;
@@ -38,18 +37,99 @@ export const evaluationService = {
     const percentage = maxTotalMarks > 0 ? (totalMarks / maxTotalMarks) * 100 : 0;
     const grade = getGrade(percentage);
 
+    // Helper notification & completion trigger
+    const notifyEvaluationResults = async () => {
+      try {
+        const stage = await prisma.reviewStage.findUnique({ where: { id: data.reviewStageId } });
+        const project = await prisma.project.findUnique({ where: { id: data.projectId } });
+        const stageName = stage?.name || 'Review Stage';
+
+        if (data.scheduleId) {
+          await prisma.reviewSchedule.update({
+            where: { id: data.scheduleId },
+            data: { isCompleted: true }
+          }).catch(() => {});
+        } else {
+          await prisma.reviewSchedule.updateMany({
+            where: { projectId: data.projectId, reviewStageId: data.reviewStageId },
+            data: { isCompleted: true }
+          }).catch(() => {});
+        }
+
+        const teamMembers = await prisma.teamMember.findMany({
+          where: { team: { project: { id: data.projectId } } },
+          include: { studentProfile: { include: { user: true } } }
+        });
+
+        for (const tm of teamMembers) {
+          if (tm.studentProfile?.user?.id) {
+            await sendNotification(
+              tm.studentProfile.user.id,
+              'Evaluation Results Published',
+              `Your presentation for ${stageName} has been evaluated! Final Score: ${totalMarks} / ${maxTotalMarks} (${grade}).`,
+              'FEEDBACK',
+              data.projectId
+            );
+          }
+        }
+
+        const guideAssignment = await prisma.guideAssignment.findFirst({
+          where: { projectId: data.projectId, isActive: true },
+          include: { facultyProfile: { include: { user: true } } }
+        });
+
+        if (guideAssignment?.facultyProfile?.user?.id) {
+          await sendNotification(
+            guideAssignment.facultyProfile.user.id,
+            'Project Evaluation Recorded',
+            `Evaluation score of ${totalMarks} / ${maxTotalMarks} (${grade}) recorded for project "${project?.title || 'Project'}".`,
+            'FEEDBACK',
+            data.projectId
+          );
+        }
+      } catch (err) {
+        console.error('Failed to send evaluation notifications:', err);
+      }
+    };
+
+    if (existing) {
+      if (existing.isLocked) {
+        throw new ForbiddenError('Evaluation is locked and cannot be modified');
+      }
+      await prisma.evaluationScore.deleteMany({ where: { evaluationId: existing.id } });
+      const updated = await prisma.evaluation.update({
+        where: { id: existing.id },
+        data: {
+          totalMarks,
+          grade,
+          feedback: data.feedback,
+          scores: {
+            create: data.scores.map((s: any) => ({
+              criteriaId: s.criteriaId,
+              marks: Number(s.marks),
+              remarks: s.remarks,
+            })),
+          },
+        },
+        include: { scores: true },
+      });
+      await createAuditLog({ action: 'MARKS_ENTRY' as any, entityType: 'Evaluation', entityId: updated.id, userId, newValue: JSON.stringify({ totalMarks, grade }) });
+      await notifyEvaluationResults();
+      return updated;
+    }
+
     const evaluation = await prisma.evaluation.create({
       data: {
         projectId: data.projectId,
         reviewStageId: data.reviewStageId,
-        evaluatorId: userId,
+        evaluatorId: profile.id,
         totalMarks,
         grade,
         feedback: data.feedback,
         scores: {
           create: data.scores.map((s: any) => ({
             criteriaId: s.criteriaId,
-            marks: s.marks,
+            marks: Number(s.marks),
             remarks: s.remarks,
           }))
         }
@@ -58,29 +138,33 @@ export const evaluationService = {
     });
 
     await createAuditLog({ action: 'MARKS_ENTRY' as any, entityType: 'Evaluation', entityId: evaluation.id, userId, newValue: JSON.stringify({ totalMarks, grade }) });
+    await notifyEvaluationResults();
     return evaluation;
   },
 
   async getEvaluations(filters: { projectId?: string; reviewStageId?: string; evaluatorId?: string }) {
     return prisma.evaluation.findMany({
       where: filters,
-      include: { evaluator: true, scores: { include: { criteria: true } } }
+      include: { evaluator: { include: { user: true } }, scores: { include: { criteria: true } } }
     });
   },
 
   async getEvaluationById(id: string) {
     const evaluation = await prisma.evaluation.findUnique({
       where: { id },
-      include: { scores: { include: { criteria: true } }, evaluator: true, project: true }
+      include: { scores: { include: { criteria: true } }, evaluator: { include: { user: true } }, project: true }
     });
     if (!evaluation) throw new NotFoundError('Evaluation not found');
     return evaluation;
   },
 
   async updateEvaluation(id: string, data: any, userId: string) {
+    const profile = await prisma.facultyProfile.findUnique({ where: { userId } });
     const evaluation = await prisma.evaluation.findUnique({ where: { id }, include: { scores: true } });
     if (!evaluation) throw new NotFoundError('Evaluation not found');
-    if (evaluation.evaluatorId !== userId) throw new ForbiddenError('Not authorized to update this evaluation');
+    if (profile && evaluation.evaluatorId !== profile.id && evaluation.evaluatorId !== userId) {
+      throw new ForbiddenError('Not authorized to update this evaluation');
+    }
     if (evaluation.isLocked) throw new ConflictError('Evaluation is locked and cannot be updated');
 
     const criteria = await prisma.evaluationCriteria.findMany({ where: { reviewStageId: evaluation.reviewStageId } });
