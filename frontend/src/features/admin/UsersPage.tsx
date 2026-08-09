@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ROLE_OPTIONS } from '@/constants/options';
 
 const userSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -129,11 +130,9 @@ export default function UsersPage() {
             <SelectValue placeholder="Filter by Role" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">All Roles</SelectItem>
-            <SelectItem value="STUDENT">Student</SelectItem>
-            <SelectItem value="FACULTY">Faculty</SelectItem>
-            <SelectItem value="COORDINATOR">Coordinator</SelectItem>
-            <SelectItem value="ADMIN">Admin</SelectItem>
+            {ROLE_OPTIONS.map(role => (
+              <SelectItem key={role.value} value={role.value}>{role.label}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

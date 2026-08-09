@@ -22,4 +22,5 @@ export { PageSkeleton } from './skeletons/PageSkeleton';
 export { SchedulesSkeleton } from './skeletons/SchedulesSkeleton';
 export { ReviewStagesSkeleton } from './skeletons/ReviewStagesSkeleton';
 export { SettingsSkeleton } from './skeletons/SettingsSkeleton';
+export { NotificationDropdownSkeleton } from './skeletons/NotificationDropdownSkeleton';
 

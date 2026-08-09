@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Bell, Clock, MessageSquare, Megaphone, Check, AlertTriangle, ShieldCheck, Inbox } from 'lucide-react';
+import { Clock, Check, Inbox } from 'lucide-react';
 import PageHeader from '@/components/shared/PageHeader';
 import { Skeleton, SkeletonCircle } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useNotifications } from '@/hooks/useNotifications';
+import { getNotificationIconSmall } from '@/utils/iconUtils';
+import { NOTIFICATION_TYPE_FILTERS } from '@/constants/options';
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
@@ -40,21 +42,6 @@ export default function NotificationsPage() {
     return true;
   });
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'DEADLINE_REMINDER':
-        return <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />;
-      case 'STATUS_CHANGE':
-        return <ShieldCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />;
-      case 'FEEDBACK':
-        return <MessageSquare className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />;
-      case 'ANNOUNCEMENT':
-        return <Megaphone className="w-4 h-4 text-violet-600 dark:text-violet-400" />;
-      default:
-        return <Bell className="w-4 h-4 text-slate-600 dark:text-zinc-400" />;
-    }
-  };
-
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Page Header */}
@@ -80,12 +67,9 @@ export default function NotificationsPage() {
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">All Activity Types</SelectItem>
-              <SelectItem value="DEADLINE_REMINDER">Deadlines & Milestones</SelectItem>
-              <SelectItem value="STATUS_CHANGE">Status Updates</SelectItem>
-              <SelectItem value="FEEDBACK">Reviews & Feedback</SelectItem>
-              <SelectItem value="ANNOUNCEMENT">Announcements</SelectItem>
-              <SelectItem value="GENERAL">General Notifications</SelectItem>
+              {NOTIFICATION_TYPE_FILTERS.map(opt => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -146,7 +130,7 @@ export default function NotificationsPage() {
               )}
             >
               <div className="w-8 h-8 rounded-lg bg-secondary border border-border flex items-center justify-center shrink-0">
-                {getTypeIcon(n.type)}
+                {getNotificationIconSmall(n.type)}
               </div>
 
               <div className="flex-1 min-w-0">

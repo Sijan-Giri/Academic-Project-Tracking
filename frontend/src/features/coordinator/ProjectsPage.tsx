@@ -8,6 +8,7 @@ import StatusBadge from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useProjects } from '@/hooks/useProjects';
+import { PROJECT_STATUS_TABS } from '@/constants/options';
 
 export default function ProjectsPage() {
   const navigate = useNavigate();
@@ -107,19 +108,19 @@ export default function ProjectsPage() {
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-          {['ALL', 'DRAFT', 'ABSTRACT_SUBMITTED', 'ABSTRACT_APPROVED', 'IN_PROGRESS', 'COMPLETED'].map((st) => (
+          {PROJECT_STATUS_TABS.map((tab) => (
             <Button
-              key={st}
+              key={tab.value}
               variant="ghost"
               size="sm"
-              onClick={() => setStatusFilter(st)}
+              onClick={() => setStatusFilter(tab.value)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                statusFilter === st
+                statusFilter === tab.value
                   ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
               }`}
             >
-              {st === 'ALL' ? 'All Statuses' : st.replace('_', ' ')}
+              {tab.label}
             </Button>
           ))}
         </div>

@@ -9,16 +9,13 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs",
-        destructive:
-          "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/20",
-        outline:
-          "border border-border bg-card text-foreground hover:bg-secondary shadow-xs",
+        default: "btn-primary",
+        destructive: "badge-danger hover:opacity-90",
+        outline: "border border-border bg-card text-foreground hover:bg-secondary shadow-xs",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "text-muted-foreground hover:text-foreground hover:bg-secondary",
-        link: "text-indigo-600 dark:text-indigo-400 underline-offset-4 hover:underline",
-        success:
-          "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/20",
+        link: "text-accent-brand underline-offset-4 hover:underline",
+        success: "badge-success hover:opacity-90",
       },
       size: {
         default: "h-10 px-4 py-2",

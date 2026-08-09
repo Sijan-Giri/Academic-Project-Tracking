@@ -17,15 +17,7 @@ export default function StatusBadge({ status, type, className }: StatusBadgeProp
   if (!config) return <Badge variant="outline" className={className}>{status}</Badge>;
 
   return (
-    <span
-      className={cn(
-        'inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold border transition-all',
-        (config as any).bg || 'bg-secondary',
-        (config as any).border || 'border-border',
-        config.color || 'text-foreground',
-        className
-      )}
-    >
+    <span className={cn('badge-pill', (config as any).className || 'badge-muted', className)}>
       {config.label}
     </span>
   );

@@ -1,47 +1,16 @@
 import { NavLink } from 'react-router-dom';
-import { GraduationCap, LayoutDashboard, Building2, Calendar, Users, Settings, FileText, ClipboardList, BookOpen, Clock, Bell, UserCircle2, LogOut, Megaphone } from 'lucide-react';
+import { GraduationCap, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import { logout as logoutApi } from '@/api/auth.api';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { NAV_ITEMS } from '@/constants/navigation';
 import type { Role } from '@/types/user.types';
 
 interface SidebarProps { className?: string; }
 
 export default function Sidebar({ className }: SidebarProps) {
   const { user, clearAuth } = useAuthStore();
-
-  const NAV_ITEMS = [
-    { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', roles: ['ADMIN', 'COORDINATOR', 'FACULTY', 'PANEL', 'STUDENT'] },
-    { label: 'Departments', icon: Building2, path: '/admin/departments', roles: ['ADMIN'] },
-    { label: 'Academic Years', icon: Calendar, path: '/admin/academic-years', roles: ['ADMIN'] },
-    { label: 'Batches', icon: Users, path: '/admin/batches', roles: ['ADMIN'] },
-    { label: 'Semesters', icon: BookOpen, path: '/admin/semesters', roles: ['ADMIN'] },
-    { label: 'Users', icon: UserCircle2, path: '/admin/users', roles: ['ADMIN'] },
-    { label: 'Review Templates', icon: FileText, path: '/admin/review-templates', roles: ['ADMIN'] },
-    
-    { label: 'Projects', icon: BookOpen, path: '/coordinator/projects', roles: ['COORDINATOR', 'ADMIN'] },
-    { label: 'Teams', icon: Users, path: '/coordinator/teams', roles: ['COORDINATOR', 'ADMIN'] },
-    { label: 'Guide Allocation', icon: UserCircle2, path: '/coordinator/guides', roles: ['COORDINATOR', 'ADMIN'] },
-    { label: 'Review Stages', icon: ClipboardList, path: '/coordinator/review-stages', roles: ['COORDINATOR', 'ADMIN'] },
-    { label: 'Schedules', icon: Clock, path: '/coordinator/schedules', roles: ['COORDINATOR', 'ADMIN'] },
-    { label: 'Announcements', icon: Megaphone, path: '/coordinator/announcements', roles: ['COORDINATOR', 'ADMIN'] },
-
-    { label: 'Guided Projects', icon: BookOpen, path: '/faculty/projects', roles: ['FACULTY'] },
-
-    { label: 'My Schedules & Links', icon: Clock, path: '/my-schedules', roles: ['FACULTY', 'PANEL', 'STUDENT'] },
-    
-    { label: 'My Project', icon: BookOpen, path: '/my-project', roles: ['STUDENT'] },
-    { label: 'My Team', icon: Users, path: '/my-team', roles: ['STUDENT'] },
-    { label: 'Abstract', icon: FileText, path: '/my-project/abstract', roles: ['STUDENT'] },
-    { label: 'Milestones', icon: ClipboardList, path: '/my-project/milestones', roles: ['STUDENT'] },
-    { label: 'Submissions', icon: ClipboardList, path: '/my-project/submissions', roles: ['STUDENT'] },
-
-    { label: 'Notifications', icon: Bell, path: '/notifications', roles: ['FACULTY', 'PANEL', 'STUDENT'] },
-    { label: 'Reports', icon: FileText, path: '/reports', roles: ['ADMIN', 'COORDINATOR'] },
-    { label: 'Settings', icon: Settings, path: '/admin/settings', roles: ['ADMIN'] },
-    { label: 'Audit Log', icon: ClipboardList, path: '/admin/audit', roles: ['ADMIN'] },
-  ];
 
   const allowedItems = NAV_ITEMS.filter(item => user && item.roles.includes(user.role as Role));
 
@@ -70,7 +39,7 @@ export default function Sidebar({ className }: SidebarProps) {
                 )
               }
             >
-              <item.icon className="h-4 h-4 shrink-0" />
+              <item.icon className="h-4 shrink-0" />
               <span className="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap">{item.label}</span>
             </NavLink>
           ))}

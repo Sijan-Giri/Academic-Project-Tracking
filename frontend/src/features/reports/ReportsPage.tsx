@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Download, FileText, FileSpreadsheet, ShieldAlert } from 'lucide-react';
+import { Download, FileSpreadsheet, ShieldAlert } from 'lucide-react';
 import { downloadReport } from '@/api/reports.api';
+import { FormatSelector } from './FormatSelector';
 
 export default function ReportsPage() {
   const [format, setFormat] = useState('pdf');
@@ -183,20 +183,5 @@ export default function ReportsPage() {
         </Card>
       </div>
     </div>
-  );
-}
-
-function FormatSelector({ format, setFormat }: { format: string, setFormat: (v: string) => void }) {
-  return (
-    <RadioGroup value={format} onValueChange={setFormat} className="flex gap-4">
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="pdf" id="pdf" className="border-indigo-500 text-indigo-600" />
-        <Label htmlFor="pdf" className="flex items-center gap-1 cursor-pointer"><FileText className="w-4 h-4 text-red-500" /> PDF</Label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="excel" id="excel" className="border-indigo-500 text-indigo-600" />
-        <Label htmlFor="excel" className="flex items-center gap-1 cursor-pointer"><FileSpreadsheet className="w-4 h-4 text-emerald-600" /> Excel</Label>
-      </div>
-    </RadioGroup>
   );
 }

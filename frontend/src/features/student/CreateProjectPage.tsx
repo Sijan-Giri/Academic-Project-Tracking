@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import PageHeader from '@/components/shared/PageHeader';
 import { useCreateProject } from '@/hooks/useCreateProject';
+import { DOMAINS } from '@/constants/options';
 
 const projectInfoSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
@@ -18,8 +19,6 @@ const projectInfoSchema = z.object({
   abstract: z.string().min(50, 'Abstract must be at least 50 characters'),
   githubUrl: z.string().url('Invalid URL').optional().or(z.literal('')),
 });
-
-const domains = ['Web Development', 'Mobile App', 'Machine Learning', 'IoT', 'Cybersecurity', 'Data Science', 'Embedded Systems', 'Cloud Computing', 'Blockchain', 'Other'];
 
 export default function CreateProjectPage() {
   const [keywords, setKeywords] = useState<string[]>([]);
@@ -132,7 +131,7 @@ export default function CreateProjectPage() {
                 className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <option value="">Select a domain</option>
-                {domains.map(d => <option key={d} value={d}>{d}</option>)}
+                {DOMAINS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
               {errors.domain && <p className="text-xs text-rose-600 font-medium">{String(errors.domain.message)}</p>}
             </div>

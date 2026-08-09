@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/constants/routes';
+import { getPageTitle } from '@/utils/navigationUtils';
 
 interface HeaderProps { className?: string; }
 
@@ -30,32 +31,10 @@ export default function Header({ className }: HeaderProps) {
   const navigate = useNavigate();
 
   const isStudent = user?.role === 'STUDENT';
-
   const { currentProject } = useMyProjects(isStudent);
   const { team: currentTeam } = useMyTeam(isStudent);
 
-  const getPageTitle = () => {
-    const path = location.pathname;
-    if (path === '/dashboard') {
-      return user?.name ? `${user.name}'s Dashboard` : 'Dashboard';
-    }
-    if (path === '/my-project' || path.startsWith('/my-project/')) {
-      if (path === ROUTES.MY_PROJECT_ABSTRACT) return 'Project Abstract Proposal';
-      if (path === ROUTES.MY_PROJECT_MILESTONES) return 'Milestone Deliverables';
-      if (path === ROUTES.MY_PROJECT_SUBMISSIONS) return 'Submission History';
-      if (path === ROUTES.MY_PROJECT_CREATE) return 'Create Project Proposal';
-      return currentProject?.title ? currentProject.title : 'My Capstone Project';
-    }
-    if (path === ROUTES.MY_TEAM) {
-      return currentTeam?.name ? `Team ${currentTeam.name}` : 'Team Roster';
-    }
-    if (path.includes(ROUTES.COORDINATOR_PROJECTS)) return 'Academic Projects';
-
-    const segments = path.split('/').filter(Boolean);
-    const last = segments[segments.length - 1];
-    if (!last) return 'Dashboard';
-    return last.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-  };
+  const pageTitle = getPageTitle(location.pathname, user, currentProject?.title, currentTeam?.name);
 
   return (
     <header className={cn('flex h-16 items-center justify-between px-4 lg:px-8', className)}>
@@ -63,8 +42,8 @@ export default function Header({ className }: HeaderProps) {
         <Button variant="ghost" size="icon" onClick={toggle} className="lg:hidden text-slate-600 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white shrink-0">
           <Menu className="h-5 w-5" />
         </Button>
-        <h2 className="text-lg font-semibold dark:text-white text-slate-900 hidden sm:block tracking-tight truncate max-w-md" title={getPageTitle()}>
-          {getPageTitle()}
+        <h2 className="text-lg font-semibold dark:text-white text-slate-900 hidden sm:block tracking-tight truncate max-w-md" title={pageTitle}>
+          {pageTitle}
         </h2>
       </div>
 

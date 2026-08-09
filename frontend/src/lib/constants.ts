@@ -1,30 +1,30 @@
 export const API_BASE_URL = 'http://localhost:4000/api';
 
-export const PROJECT_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border?: string }> = {
-  DRAFT: { label: 'Draft', color: 'dark:text-slate-300 text-slate-700', bg: 'dark:bg-slate-500/20 bg-slate-100', border: 'dark:border-slate-500/30 border-slate-200' },
-  ABSTRACT_SUBMITTED: { label: 'Pending Review (Submitted)', color: 'dark:text-blue-400 text-blue-700', bg: 'dark:bg-blue-500/20 bg-blue-50', border: 'dark:border-blue-500/30 border-blue-200' },
-  ABSTRACT_APPROVED: { label: 'Abstract Approved', color: 'dark:text-emerald-400 text-emerald-700', bg: 'dark:bg-emerald-500/20 bg-emerald-50', border: 'dark:border-emerald-500/30 border-emerald-200' },
-  ABSTRACT_REJECTED: { label: 'Abstract Rejected', color: 'dark:text-rose-400 text-rose-700', bg: 'dark:bg-rose-500/20 bg-rose-50', border: 'dark:border-rose-500/30 border-rose-200' },
-  IN_PROGRESS: { label: 'In Progress', color: 'dark:text-indigo-400 text-indigo-700', bg: 'dark:bg-indigo-50/20 bg-indigo-50', border: 'dark:border-indigo-500/30 border-indigo-200' },
-  UNDER_REVIEW: { label: 'Pending Evaluation (In Review)', color: 'dark:text-amber-400 text-amber-700', bg: 'dark:bg-amber-500/20 bg-amber-50', border: 'dark:border-amber-500/30 border-amber-200' },
-  COMPLETED: { label: 'Completed', color: 'dark:text-emerald-400 text-emerald-700', bg: 'dark:bg-emerald-500/20 bg-emerald-50', border: 'dark:border-emerald-500/30 border-emerald-200' },
-  CANCELLED: { label: 'Cancelled', color: 'dark:text-rose-400 text-rose-700', bg: 'dark:bg-rose-500/20 bg-rose-50', border: 'dark:border-rose-500/30 border-rose-200' },
+export const PROJECT_STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+  DRAFT: { label: 'Draft', className: 'badge-muted' },
+  ABSTRACT_SUBMITTED: { label: 'Pending Review (Submitted)', className: 'badge-info' },
+  ABSTRACT_APPROVED: { label: 'Abstract Approved', className: 'badge-success' },
+  ABSTRACT_REJECTED: { label: 'Abstract Rejected', className: 'badge-danger' },
+  IN_PROGRESS: { label: 'In Progress', className: 'badge-brand' },
+  UNDER_REVIEW: { label: 'Pending Evaluation (In Review)', className: 'badge-warning' },
+  COMPLETED: { label: 'Completed', className: 'badge-success' },
+  CANCELLED: { label: 'Cancelled', className: 'badge-danger' },
 };
 
-export const MILESTONE_STATUS_CONFIG: Record<string, { label: string; color: string; bg?: string; border?: string }> = {
-  NOT_STARTED: { label: 'Not Started', color: 'dark:text-slate-400 text-slate-600', bg: 'dark:bg-slate-500/20 bg-slate-100', border: 'dark:border-slate-500/30 border-slate-200' },
-  IN_PROGRESS: { label: 'In Progress', color: 'dark:text-blue-400 text-blue-700', bg: 'dark:bg-blue-500/20 bg-blue-50', border: 'dark:border-blue-500/30 border-blue-200' },
-  SUBMITTED: { label: 'Submitted', color: 'dark:text-indigo-400 text-indigo-700', bg: 'dark:bg-indigo-500/20 bg-indigo-50', border: 'dark:border-indigo-500/30 border-indigo-200' },
-  UNDER_REVIEW: { label: 'Under Review', color: 'dark:text-amber-400 text-amber-700', bg: 'dark:bg-amber-500/20 bg-amber-50', border: 'dark:border-amber-500/30 border-amber-200' },
-  APPROVED: { label: 'Approved', color: 'dark:text-emerald-400 text-emerald-700', bg: 'dark:bg-emerald-500/20 bg-emerald-50', border: 'dark:border-emerald-500/30 border-emerald-200' },
-  REJECTED: { label: 'Rejected', color: 'dark:text-rose-400 text-rose-700', bg: 'dark:bg-rose-500/20 bg-rose-50', border: 'dark:border-rose-500/30 border-rose-200' },
-  REVISION_NEEDED: { label: 'Revision Needed', color: 'dark:text-orange-400 text-orange-700', bg: 'dark:bg-orange-500/20 bg-orange-50', border: 'dark:border-orange-500/30 border-orange-200' },
+export const MILESTONE_STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+  NOT_STARTED: { label: 'Not Started', className: 'badge-muted' },
+  IN_PROGRESS: { label: 'In Progress', className: 'badge-info' },
+  SUBMITTED: { label: 'Submitted', className: 'badge-brand' },
+  UNDER_REVIEW: { label: 'Under Review', className: 'badge-warning' },
+  APPROVED: { label: 'Approved', className: 'badge-success' },
+  REJECTED: { label: 'Rejected', className: 'badge-danger' },
+  REVISION_NEEDED: { label: 'Revision Needed', className: 'badge-warning' },
 };
 
-export const TEAM_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border?: string }> = {
-  PENDING: { label: 'Pending Approval', color: 'dark:text-amber-400 text-amber-700', bg: 'dark:bg-amber-500/20 bg-amber-50', border: 'dark:border-amber-500/30 border-amber-200' },
-  APPROVED: { label: 'Approved', color: 'dark:text-emerald-400 text-emerald-700', bg: 'dark:bg-emerald-500/20 bg-emerald-50', border: 'dark:border-emerald-500/30 border-emerald-200' },
-  REJECTED: { label: 'Rejected', color: 'dark:text-rose-400 text-rose-700', bg: 'dark:bg-rose-500/20 bg-rose-50', border: 'dark:border-rose-500/30 border-rose-200' },
+export const TEAM_STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+  PENDING: { label: 'Pending Approval', className: 'badge-warning' },
+  APPROVED: { label: 'Approved', className: 'badge-success' },
+  REJECTED: { label: 'Rejected', className: 'badge-danger' },
 };
 
 export const ROLE_LABELS: Record<string, string> = {
@@ -53,3 +53,14 @@ export const LIFECYCLE_STAGES = [
   'Pre-Submission',
   'Final Submission',
 ];
+
+export const PROJECT_LIFECYCLE_STAGE_MAP: Record<string, number> = {
+  DRAFT: 0,
+  ABSTRACT_SUBMITTED: 1,
+  ABSTRACT_APPROVED: 2,
+  ABSTRACT_REJECTED: 1,
+  IN_PROGRESS: 3,
+  UNDER_REVIEW: 4,
+  COMPLETED: 5,
+  CANCELLED: 0,
+};

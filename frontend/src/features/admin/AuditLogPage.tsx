@@ -9,20 +9,8 @@ import PageHeader from '@/components/shared/PageHeader';
 import EmptyState from '@/components/shared/EmptyState';
 import { downloadAuditLog } from '@/api/reports.api';
 import { useAuditLogs } from '@/hooks/useAuditLogs';
-
-const AUDIT_ACTIONS = ['CREATE','UPDATE','DELETE','STATUS_CHANGE','LOGIN','LOGOUT','FILE_UPLOAD','MARKS_LOCK','MARKS_ENTRY'];
-
-const ACTION_COLORS: Record<string, string> = {
-  CREATE: 'dark:bg-green-500/20 dark:text-green-400 bg-emerald-100 text-emerald-800 border border-emerald-300',
-  UPDATE: 'dark:bg-blue-500/20 dark:text-blue-400 bg-blue-100 text-blue-800 border border-blue-300',
-  DELETE: 'dark:bg-red-500/20 dark:text-red-400 bg-rose-100 text-rose-800 border border-rose-300',
-  STATUS_CHANGE: 'dark:bg-yellow-500/20 dark:text-yellow-400 bg-amber-100 text-amber-800 border border-amber-300',
-  LOGIN: 'dark:bg-indigo-500/20 dark:text-indigo-400 bg-indigo-100 text-indigo-800 border border-indigo-300',
-  LOGOUT: 'dark:bg-gray-500/20 dark:text-gray-400 bg-slate-100 text-slate-700 border border-slate-300',
-  FILE_UPLOAD: 'dark:bg-purple-500/20 dark:text-purple-400 bg-purple-100 text-purple-800 border border-purple-300',
-  MARKS_LOCK: 'dark:bg-orange-500/20 dark:text-orange-400 bg-orange-100 text-orange-800 border border-orange-300',
-  MARKS_ENTRY: 'dark:bg-teal-500/20 dark:text-teal-400 bg-teal-100 text-teal-800 border border-teal-300',
-};
+import { AUDIT_ACTIONS } from '@/constants/options';
+import { getAuditActionClass } from '@/utils/iconUtils';
 
 export default function AuditLogPage() {
   const [filters, setFilters] = useState({ action: '', entityType: '', startDate: '', endDate: '', page: 1, limit: 20 });
@@ -145,7 +133,7 @@ export default function AuditLogPage() {
                         {log.user?.email && <div className="text-xs text-slate-400">{log.user.email}</div>}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${ACTION_COLORS[log.action] || 'bg-slate-100 text-slate-700'}`}>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getAuditActionClass(log.action)}`}>
                           {log.action}
                         </span>
                       </td>

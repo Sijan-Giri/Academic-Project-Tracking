@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle, XCircle, Eye, Users, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, Users } from 'lucide-react';
 
 import PageHeader from '@/components/shared/PageHeader';
 import DataTable from '@/components/shared/DataTable';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useTeamApprovals } from '@/hooks/useTeamApprovals';
+import { TEAM_STATUS_TABS } from '@/constants/options';
 
 export default function TeamApprovalsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -141,13 +142,7 @@ export default function TeamApprovalsPage() {
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-2 border-b border-border pb-4">
-        {[
-          { label: 'All Teams', value: 'ALL', icon: Users },
-          { label: 'Pending Approval', value: 'PENDING', icon: Clock },
-          { label: 'Approved', value: 'APPROVED', icon: CheckCircle2 },
-          { label: 'Rejected', value: 'REJECTED', icon: AlertCircle },
-        ].map((tab) => {
-          const Icon = tab.icon;
+        {TEAM_STATUS_TABS.map((tab) => {
           const isActive = statusFilter === tab.value;
           return (
             <Button
@@ -161,7 +156,6 @@ export default function TeamApprovalsPage() {
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
               }`}
             >
-              <Icon className="w-4 h-4" />
               {tab.label}
             </Button>
           );

@@ -17,8 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-const REVIEW_STAGE_TYPES = ['ABSTRACT_REVIEW', 'REVIEW_1', 'REVIEW_2', 'REVIEW_3', 'PRE_SUBMISSION', 'FINAL_SUBMISSION'];
+import { REVIEW_STAGE_TYPES } from '@/constants/options';
 
 const templateSchema = z.object({
   name: z.string().min(2, 'Name is required'),
