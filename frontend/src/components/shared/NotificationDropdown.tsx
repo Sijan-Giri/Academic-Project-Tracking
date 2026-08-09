@@ -44,7 +44,7 @@ export default function NotificationDropdown() {
     isLoading,
     markRead: markReadMut,
     markAllRead: markAllReadMut,
-  } = useNotifications();
+  } = useNotifications({ enabled: open });
 
   const filteredNotifications = filter === 'UNREAD'
     ? notifications.filter(n => !n.isRead)

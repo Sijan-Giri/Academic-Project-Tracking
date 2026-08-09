@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth.store';
 import type { Role } from '@/types/user.types';
-import { Loader2 } from 'lucide-react';
 import { refreshToken, getMe } from '@/api/auth.api';
+import { handleSessionExpired } from '@/api/client';
 
 interface RoleGuardProps {
   allowedRoles?: Role[];
@@ -29,7 +29,9 @@ export default function RoleGuard({ allowedRoles }: RoleGuardProps) {
 
         // Step 2: Check if there is accessToken
         if (!newAccessToken) {
-          if (isMounted) clearAuth();
+          if (isMounted) {
+            clearAuth();
+          }
           return;
         }
 
@@ -44,12 +46,14 @@ export default function RoleGuard({ allowedRoles }: RoleGuardProps) {
           if (userObj && userObj.id) {
             setAuth(userObj, newAccessToken);
           } else {
-            clearAuth();
+            handleSessionExpired();
           }
         }
       } catch (error) {
-        // If refresh fails or 401, clear auth state and redirect to login
-        if (isMounted) clearAuth();
+        // If refresh fails or 401, clear auth state and trigger session expired redirect
+        if (isMounted) {
+          handleSessionExpired();
+        }
       }
     }
 

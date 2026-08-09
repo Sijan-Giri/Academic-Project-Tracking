@@ -37,7 +37,7 @@ const populateProjectMilestones = async (projectId: string, semesterId: string) 
 };
 
 export const createProject = async (data: any, userId: string) => {
-  const { guidePreferences, ...projectFields } = data;
+  const projectFields = data;
 
   const team = await prisma.team.findUnique({ where: { id: projectFields.teamId } });
   if (!team) throw new NotFoundError('Team not found');
@@ -49,9 +49,6 @@ export const createProject = async (data: any, userId: string) => {
       throw new ValidationError('Team already has an active project');
     }
 
-    // Overwrite existing cancelled/rejected project with new proposal
-    await prisma.guidePreference.deleteMany({ where: { projectId: existingProject.id } });
-
     const targetSemesterId = projectFields.semesterId || team.semesterId;
     const updatedProject = await prisma.project.update({
       where: { id: existingProject.id },
@@ -59,18 +56,9 @@ export const createProject = async (data: any, userId: string) => {
         ...projectFields,
         semesterId: targetSemesterId,
         status: ProjectStatus.DRAFT,
-        guidePreferences: guidePreferences && guidePreferences.length > 0 ? {
-          createMany: {
-            data: guidePreferences.map((gp: any) => ({
-              facultyProfileId: gp.facultyProfileId,
-              rank: gp.rank,
-            })),
-          },
-        } : undefined,
       },
       include: {
         team: true,
-        guidePreferences: true,
       },
     });
 
@@ -96,18 +84,9 @@ export const createProject = async (data: any, userId: string) => {
       ...projectFields,
       semesterId: targetSemesterId,
       status: ProjectStatus.DRAFT,
-      guidePreferences: guidePreferences && guidePreferences.length > 0 ? {
-        createMany: {
-          data: guidePreferences.map((gp: any) => ({
-            facultyProfileId: gp.facultyProfileId,
-            rank: gp.rank,
-          })),
-        },
-      } : undefined,
     },
     include: {
       team: true,
-      guidePreferences: true,
     },
   });
 

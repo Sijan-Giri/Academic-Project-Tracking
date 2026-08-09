@@ -30,6 +30,22 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
     return res.status(400).json({ success: false, message: 'Invalid JSON', code: 'BAD_REQUEST' });
   }
 
+  if (err?.name === 'TokenExpiredError' || err?.message === 'jwt expired') {
+    return res.status(401).json({
+      success: false,
+      message: 'Session has expired',
+      code: 'TOKEN_EXPIRED',
+    });
+  }
+
+  if (err?.name === 'JsonWebTokenError') {
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid access token',
+      code: 'INVALID_TOKEN',
+    });
+  }
+
   if (err instanceof Prisma.PrismaClientInitializationError) {
     return res.status(500).json({ success: false, message: 'Database connection failed. Please ensure PostgreSQL is running.', code: 'DATABASE_CONNECTION_ERROR' });
   }

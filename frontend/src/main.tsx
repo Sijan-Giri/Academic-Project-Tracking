@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import { queryClient } from '@/lib/queryClient';
 import { router } from '@/router';
 import SocketProvider from '@/components/shared/SocketProvider';
+// @ts-ignore
 import '@/index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

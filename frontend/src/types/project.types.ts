@@ -70,15 +70,7 @@ export interface GuideAssignment {
   facultyProfile?: FacultyProfile & { user: User };
 }
 
-export interface GuidePreference {
-  id: string;
-  projectId: string;
-  facultyProfileId: string;
-  rank: number;
-  status: string;
-  note?: string;
-  facultyProfile?: FacultyProfile & { user: User };
-}
+
 
 // ── Team / Project ────────────────────────────
 

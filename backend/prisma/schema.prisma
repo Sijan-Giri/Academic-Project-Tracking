@@ -65,11 +65,7 @@ enum NotificationType {
   GENERAL
 }
 
-enum GuidePreferenceStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
+
 
 enum AuditAction {
   CREATE
@@ -190,7 +186,6 @@ model FacultyProfile {
   guideAssignments GuideAssignment[]
   panelAssignments PanelAssignment[]
   evaluations      Evaluation[]
-  guidePreferences GuidePreference[]
 }
 
 model Team {
@@ -266,7 +261,6 @@ model Project {
   evaluations     Evaluation[]
   files           File[]
   schedules       ReviewSchedule[]
-  guidePreferences GuidePreference[]
 }
 
 model GuideAssignment {
@@ -280,22 +274,6 @@ model GuideAssignment {
   project        Project        @relation(fields: [projectId], references: [id])
   facultyProfile FacultyProfile @relation(fields: [facultyProfileId], references: [id])
   assignedBy     User           @relation(fields: [assignedById], references: [id])
-}
-
-model GuidePreference {
-  id               String                @id @default(uuid())
-  projectId        String
-  facultyProfileId String
-  rank             Int
-  status           GuidePreferenceStatus @default(PENDING)
-  reviewedById     String?
-  reviewedAt       DateTime?
-  note             String?
-
-  project        Project        @relation(fields: [projectId], references: [id])
-  facultyProfile FacultyProfile @relation(fields: [facultyProfileId], references: [id])
-
-  @@unique([projectId, facultyProfileId])
 }
 
 model ReviewStageTemplate {

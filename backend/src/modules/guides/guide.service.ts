@@ -2,57 +2,7 @@ import prisma from '../../config/database';
 import { ValidationError, NotFoundError, ForbiddenError } from '../../shared/errors';
 import * as auditService from '../audit/audit.service';
 import * as notificationService from '../notifications/notification.service';
-import { AuditAction, Role, GuidePreferenceStatus } from '@prisma/client';
-
-export const submitPreferences = async (data: { projectId: string; preferences: { facultyProfileId: string; rank: number }[] }, userId: string) => {
-  const profile = await prisma.studentProfile.findUnique({ where: { userId } });
-  if (!profile) throw new ValidationError('User does not have a student profile');
-
-  const project = await prisma.project.findUnique({
-    where: { id: data.projectId },
-    include: { team: { include: { members: true } } },
-  });
-
-  if (!project) throw new NotFoundError('Project not found');
-
-  const isMember = project.team.members.some(m => m.studentProfileId === profile.id);
-  if (!isMember) throw new ForbiddenError('You are not a member of this project\'s team');
-
-  await prisma.guidePreference.deleteMany({
-    where: { projectId: data.projectId, status: GuidePreferenceStatus.PENDING },
-  });
-
-  const preferences = await prisma.guidePreference.createMany({
-    data: data.preferences.map(pref => ({
-      projectId: data.projectId,
-      facultyProfileId: pref.facultyProfileId,
-      rank: pref.rank,
-      status: GuidePreferenceStatus.PENDING,
-    })),
-  });
-
-  return { message: 'Preferences submitted successfully', count: preferences.count };
-};
-
-export const getGuidePreferences = async (projectId: string) => {
-  const preferences = await prisma.guidePreference.findMany({
-    where: { projectId },
-    include: { facultyProfile: { include: { user: true } } },
-    orderBy: { rank: 'asc' },
-  });
-  return preferences;
-};
-
-export const getAllGuidePreferences = async () => {
-  const preferences = await prisma.guidePreference.findMany({
-    include: {
-      project: { select: { id: true, title: true } },
-      facultyProfile: { include: { user: true } },
-    },
-    orderBy: { rank: 'asc' },
-  });
-  return preferences;
-};
+import { AuditAction, Role } from '@prisma/client';
 
 export const getGuideAssignments = async () => {
   const assignments = await prisma.guideAssignment.findMany({
@@ -63,87 +13,6 @@ export const getGuideAssignments = async () => {
     orderBy: { assignedAt: 'desc' },
   });
   return assignments;
-};
-
-export const approvePreference = async (preferenceId: string, reviewerId: string) => {
-  const preference = await prisma.guidePreference.findUnique({ where: { id: preferenceId } });
-  if (!preference) throw new NotFoundError('Preference not found');
-
-  const updatedPreference = await prisma.guidePreference.update({
-    where: { id: preferenceId },
-    data: {
-      status: GuidePreferenceStatus.APPROVED,
-      reviewedById: reviewerId,
-      reviewedAt: new Date(),
-    },
-  });
-
-  await prisma.guideAssignment.create({
-    data: {
-      projectId: preference.projectId,
-      facultyProfileId: preference.facultyProfileId,
-      assignedById: reviewerId,
-      isActive: true,
-    },
-  });
-
-  await prisma.guidePreference.updateMany({
-    where: { projectId: preference.projectId, id: { not: preferenceId }, status: GuidePreferenceStatus.PENDING },
-    data: { status: GuidePreferenceStatus.REJECTED },
-  });
-
-  const project = await prisma.project.findUnique({
-    where: { id: preference.projectId },
-    include: { team: { include: { members: { include: { studentProfile: true } } } } },
-  });
-
-  const faculty = await prisma.facultyProfile.findUnique({
-    where: { id: preference.facultyProfileId },
-    include: { user: true },
-  });
-
-  if (project) {
-    for (const member of project.team.members) {
-      await notificationService.sendNotification(
-        member.studentProfile.userId,
-        'Guide Assigned',
-        'A guide has been assigned to your project based on preferences.',
-        'GENERAL'
-      );
-    }
-  }
-
-  if (faculty) {
-    await notificationService.sendNotification(
-      faculty.userId,
-      'Project Assigned',
-      'You have been assigned as a guide to a new project.',
-      'GENERAL'
-    );
-  }
-
-  await auditService.createAuditLog({
-    action: AuditAction.CREATE,
-    entityType: 'GUIDE_ASSIGNMENT',
-    entityId: preference.projectId,
-    userId: reviewerId,
-    newValue: JSON.stringify({ facultyProfileId: preference.facultyProfileId }),
-  });
-
-  return updatedPreference;
-};
-
-export const rejectPreference = async (preferenceId: string, note: string, reviewerId: string) => {
-  const preference = await prisma.guidePreference.update({
-    where: { id: preferenceId },
-    data: {
-      status: GuidePreferenceStatus.REJECTED,
-      note,
-      reviewedById: reviewerId,
-      reviewedAt: new Date(),
-    },
-  });
-  return preference;
 };
 
 export const assignGuide = async (data: { projectId: string; facultyProfileId: string }, assignedById: string) => {

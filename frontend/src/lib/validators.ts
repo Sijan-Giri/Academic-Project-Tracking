@@ -75,12 +75,7 @@ export const userCreateSchema = z.object({
   phone: z.string().optional(),
 });
 
-export const guidePreferenceSchema = z.object({
-  preferences: z.array(z.object({
-    facultyProfileId: z.string(),
-    rank: z.number(),
-  })),
-});
+
 
 export const scheduleSchema = z.object({
   reviewStageId: z.string(),

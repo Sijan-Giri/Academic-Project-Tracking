@@ -29,19 +29,22 @@ export interface UseNotificationsReturn {
 
 /**
  * Hook to fetch notifications and expose read-state mutation helpers.
+ * Accepts options.enabled (default true) to conditionally trigger API calls only when needed.
  */
-export function useNotifications(): UseNotificationsReturn {
+export function useNotifications(options?: { enabled?: boolean }): UseNotificationsReturn {
   const queryClient = useQueryClient();
+  const enabled = options?.enabled ?? true;
 
   const { data: rawNotifications = [], isLoading } = useQuery({
     queryKey: NOTIFICATIONS_QUERY_KEY,
     queryFn: () => getMyNotifications({ limit: 20 }),
+    enabled,
   });
 
-  const { data: unreadCount = 0 } = useQuery({
+  const { data: unreadCountData } = useQuery({
     queryKey: UNREAD_COUNT_QUERY_KEY,
     queryFn: getUnreadCount,
-    refetchInterval: 30_000, // poll every 30s
+    enabled,
   });
 
   const invalidate = () => {
@@ -60,10 +63,11 @@ export function useNotifications(): UseNotificationsReturn {
   });
 
   const notifications = Array.isArray(rawNotifications) ? rawNotifications : [];
+  const unreadCount = typeof unreadCountData === 'number' ? unreadCountData : 0;
 
   return {
     notifications,
-    unreadCount: typeof unreadCount === 'number' ? unreadCount : 0,
+    unreadCount,
     isLoading,
     markAsRead,
     markAllAsRead,

@@ -560,7 +560,6 @@ export const deleteTeam = async (id: string, userId: string) => {
         await tx.milestone.deleteMany({ where: { projectId } });
       }
 
-      await tx.guidePreference.deleteMany({ where: { projectId } });
       await tx.guideAssignment.deleteMany({ where: { projectId } });
       await tx.evaluation.deleteMany({ where: { projectId } });
       await tx.reviewSchedule.deleteMany({ where: { projectId } });

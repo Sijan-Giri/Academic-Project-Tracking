@@ -137,6 +137,14 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Prevent Radix Portal / DropdownMenu body scroll-lock layout shift */
+  body[data-scroll-locked],
+  body[style*="margin-right"],
+  [data-radix-scroll-lock] {
+    margin-right: 0px !important;
+    padding-right: 0px !important;
+  }
+
   /* Semantic Typography Hierarchy Mapping */
   h1, h2, h3, h4, h5, h6 {
     font-weight: 600;

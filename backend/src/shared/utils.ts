@@ -2,6 +2,7 @@ import { Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { JwtPayload, PaginatedResult } from './types';
+import { UnauthorizedError } from './errors';
 
 export const sendSuccess = <T>(res: Response, data: T, message = 'Success', statusCode = 200) => {
   return res.status(statusCode).json({ success: true, data, message });
@@ -32,9 +33,19 @@ export const generateToken = (payload: object, secret: string, expiresIn: string
   jwt.sign(payload, secret, { expiresIn } as jwt.SignOptions);
 
 export const verifyToken = (token: string, secret: string): JwtPayload => {
-  const decoded = jwt.verify(token, secret) as any;
-  const userId = decoded.userId || decoded.id;
-  return { ...decoded, userId, id: userId };
+  try {
+    const decoded = jwt.verify(token, secret) as any;
+    const userId = decoded.userId || decoded.id;
+    return { ...decoded, userId, id: userId };
+  } catch (error: any) {
+    if (error?.name === 'TokenExpiredError' || error?.message === 'jwt expired') {
+      throw new UnauthorizedError('Session has expired', 'TOKEN_EXPIRED');
+    }
+    if (error?.name === 'JsonWebTokenError') {
+      throw new UnauthorizedError('Invalid access token', 'INVALID_TOKEN');
+    }
+    throw new UnauthorizedError('Authentication failed', 'UNAUTHORIZED');
+  }
 };
 
 export const exclude = <T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> => {

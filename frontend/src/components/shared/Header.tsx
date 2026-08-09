@@ -87,7 +87,7 @@ export default function Header({ className }: HeaderProps) {
         <NotificationDropdown />
 
         {/* User Profile Dropdown */}
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 border border-slate-200 dark:border-white/10">
               <Avatar className="h-9 w-9">

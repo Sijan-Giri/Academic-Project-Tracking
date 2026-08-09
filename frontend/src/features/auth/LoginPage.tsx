@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useLogin } from '@/hooks/useLogin';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
@@ -18,12 +18,17 @@ type LoginForm = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isSessionExpired = searchParams.get('reason') === 'expired';
   const setAuth = useAuthStore((s) => s.setAuth);
 
   useEffect(() => {
     let isMounted = true;
 
     async function checkSessionOnMount() {
+      // If session expired flag is set in URL, don't attempt auto-login
+      if (isSessionExpired) return;
+
       // If access token already exists in memory, send user to dashboard immediately
       const state = useAuthStore.getState();
       if (state.accessToken && state.user) {
@@ -61,7 +66,7 @@ export default function LoginPage() {
     return () => {
       isMounted = false;
     };
-  }, [navigate, setAuth]);
+  }, [navigate, setAuth, isSessionExpired]);
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -71,10 +76,18 @@ export default function LoginPage() {
 
   return (
     <div className="w-full">
-      <div className="mb-8">
+      <div className="mb-6">
         <h2 className="text-3xl font-bold text-white mb-2">Welcome back</h2>
         <p className="text-gray-400">Sign in to your APTS account</p>
       </div>
+
+      {isSessionExpired && (
+        <div className="mb-5 p-3.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-medium flex items-center gap-2.5 shadow-sm">
+          <AlertCircle className="w-4.5 h-4.5 shrink-0 text-amber-400" />
+          <span>Your session has expired. Please sign in again to continue.</span>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit(d => mutate(d))} className="space-y-5">
         <div className="space-y-2">
           <Label htmlFor="login-email" className="text-gray-300">Email address</Label>

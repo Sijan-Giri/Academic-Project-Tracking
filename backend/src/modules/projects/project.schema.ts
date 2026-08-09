@@ -8,12 +8,6 @@ export const createProjectSchema = z.object({
   teamId: z.string().min(1, 'Team ID is required'),
   semesterId: z.string().optional(),
   githubLink: z.string().url().optional().or(z.literal('')),
-  guidePreferences: z.array(
-    z.object({
-      facultyProfileId: z.string(),
-      rank: z.number(),
-    })
-  ).optional(),
 });
 
 export const updateProjectSchema = z.object({

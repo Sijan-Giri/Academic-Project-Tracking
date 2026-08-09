@@ -4,9 +4,9 @@ export class AppError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
-export class NotFoundError extends AppError { constructor(msg = 'Resource not found') { super(msg, 404, 'NOT_FOUND'); } }
-export class UnauthorizedError extends AppError { constructor(msg = 'Unauthorized') { super(msg, 401, 'UNAUTHORIZED'); } }
-export class ForbiddenError extends AppError { constructor(msg = 'Forbidden') { super(msg, 403, 'FORBIDDEN'); } }
-export class ConflictError extends AppError { constructor(msg = 'Conflict') { super(msg, 409, 'CONFLICT'); } }
-export class ValidationError extends AppError { constructor(msg = 'Validation failed') { super(msg, 422, 'VALIDATION'); } }
-export class LockedError extends AppError { constructor(msg = 'This evaluation is locked and cannot be modified') { super(msg, 423, 'LOCKED'); } }
+export class NotFoundError extends AppError { constructor(msg = 'Resource not found', code = 'NOT_FOUND') { super(msg, 404, code); } }
+export class UnauthorizedError extends AppError { constructor(msg = 'Unauthorized', code = 'UNAUTHORIZED') { super(msg, 401, code); } }
+export class ForbiddenError extends AppError { constructor(msg = 'Forbidden', code = 'FORBIDDEN') { super(msg, 403, code); } }
+export class ConflictError extends AppError { constructor(msg = 'Conflict', code = 'CONFLICT') { super(msg, 409, code); } }
+export class ValidationError extends AppError { constructor(msg = 'Validation failed', code = 'VALIDATION') { super(msg, 422, code); } }
+export class LockedError extends AppError { constructor(msg = 'This evaluation is locked and cannot be modified', code = 'LOCKED') { super(msg, 423, code); } }
