@@ -83,3 +83,9 @@ export const rejectTeamHandler = async (req: AuthRequest, res: Response) => {
   const team = await teamService.rejectTeam(req.params.id, req.body.rejectionReason, req.user!.userId);
   res.json(team);
 };
+
+export const deleteTeamHandler = async (req: AuthRequest, res: Response) => {
+  const result = await teamService.deleteTeam(req.params.id, req.user!.userId);
+  res.json(result);
+};
+

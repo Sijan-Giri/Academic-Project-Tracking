@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { CheckCircle, XCircle, UserPlus, Loader2, User } from 'lucide-react';
+import { CheckCircle, XCircle, UserPlus, User } from 'lucide-react';
 import { format } from 'date-fns';
 import PageHeader from '@/components/shared/PageHeader';
 import EmptyState from '@/components/shared/EmptyState';
@@ -158,9 +158,15 @@ export default function GuideAllocationPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={handleDirectAssign} disabled={!assignProjectId || !assignFacultyId || isSubmitting} id="direct-assign-btn" className="btn-primary">
-              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <UserPlus className="h-4 w-4 mr-2" />}
-              Assign Guide
+            <Button
+              onClick={handleDirectAssign}
+              disabled={!assignProjectId || !assignFacultyId}
+              isLoading={isSubmitting}
+              loadingText="Assigning Guide..."
+              id="direct-assign-btn"
+              className="btn-primary"
+            >
+              <UserPlus className="h-4 w-4 mr-2" /> Assign Guide
             </Button>
           </div>
 

@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Users, UserPlus, LogOut, Info, AlertTriangle, Mail, Check, X } from 'lucide-react';
+import { Users, UserPlus, LogOut, Info, AlertTriangle, Mail, Check, X, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import PageHeader from '@/components/shared/PageHeader';
 import StatusBadge from '@/components/shared/StatusBadge';
+import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { useAuthStore } from '@/store/auth.store';
 import { cn } from '@/lib/utils';
 import { useMyTeam } from '@/hooks/useMyTeam';
@@ -16,6 +17,7 @@ export default function MyTeamPage() {
   const [teamName, setTeamName] = useState('');
   const [inviteStudentId, setInviteStudentId] = useState('');
   const [activeTab, setActiveTab] = useState<'CREATE' | 'JOIN'>('CREATE');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const {
     team,
@@ -25,9 +27,18 @@ export default function MyTeamPage() {
     inviteMember,
     removeMember,
     leaveTeam,
+    deleteTeam,
     acceptInvitation,
     declineInvitation,
+    isCreating,
+    isInviting,
+    isRemoving,
+    isLeaving,
+    isDeleting,
+    isAccepting,
+    isDeclining,
   } = useMyTeam();
+
   const handleCreateTeam = async () => {
     if (!teamName.trim()) return;
     try {
@@ -55,6 +66,14 @@ export default function MyTeamPage() {
     if (!team) return;
     try {
       await leaveTeam(team.id);
+    } catch (_) {}
+  };
+
+  const handleDeleteTeam = async () => {
+    if (!team) return;
+    try {
+      await deleteTeam(team.id);
+      setDeleteModalOpen(false);
     } catch (_) {}
   };
 
@@ -109,6 +128,8 @@ export default function MyTeamPage() {
                       size="sm"
                       onClick={() => acceptInvitation(inv.id)}
                       className="btn-primary"
+                      isLoading={isAccepting}
+                      loadingText="Accepting..."
                     >
                       <Check className="w-4 h-4 mr-1.5" /> Accept
                     </Button>
@@ -116,6 +137,8 @@ export default function MyTeamPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => declineInvitation(inv.id)}
+                      isLoading={isDeclining}
+                      loadingText="Declining..."
                     >
                       <X className="w-4 h-4 mr-1.5" /> Decline
                     </Button>
@@ -182,6 +205,8 @@ export default function MyTeamPage() {
                     onClick={handleCreateTeam}
                     disabled={!teamName.trim()}
                     className="btn-primary w-full"
+                    isLoading={isCreating}
+                    loadingText="Creating Team..."
                   >
                     Create Team & Continue
                   </Button>
@@ -212,13 +237,25 @@ export default function MyTeamPage() {
         title="My Team Roster"
         subtitle="Manage team members, invite new peers, and track team status."
         actions={
-          <Button
-            variant="outline"
-            onClick={handleLeave}
-            className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 text-xs font-semibold"
-          >
-            <LogOut className="w-4 h-4 mr-1.5" /> Leave Team
-          </Button>
+          isLeader ? (
+            <Button
+              variant="outline"
+              onClick={() => setDeleteModalOpen(true)}
+              className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 text-xs font-semibold"
+            >
+              <Trash2 className="w-4 h-4 mr-1.5" /> Disband Team
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={handleLeave}
+              className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 text-xs font-semibold"
+              isLoading={isLeaving}
+              loadingText="Leaving Team..."
+            >
+              <LogOut className="w-4 h-4 mr-1.5" /> Leave Team
+            </Button>
+          )
         }
       />
 
@@ -289,6 +326,8 @@ export default function MyTeamPage() {
                           size="sm"
                           onClick={() => handleRemove(m.id)}
                           className="text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 h-8 text-xs font-semibold"
+                          isLoading={isRemoving}
+                          loadingText="Removing..."
                         >
                           Remove
                         </Button>
@@ -326,6 +365,8 @@ export default function MyTeamPage() {
                   onClick={handleInvite}
                   disabled={!inviteStudentId.trim()}
                   className="btn-primary w-full"
+                  isLoading={isInviting}
+                  loadingText="Sending Invitation..."
                 >
                   Send Invitation
                 </Button>
@@ -356,6 +397,18 @@ export default function MyTeamPage() {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        onConfirm={handleDeleteTeam}
+        isLoading={isDeleting}
+        loadingLabel="Disbanding Team..."
+        title="Disband & Delete Team"
+        description={`Are you sure you want to delete team "${team?.name}"? All team members will be removed and any associated project or invitations will be deleted. This action cannot be undone.`}
+        confirmLabel="Disband Team"
+        variant="danger"
+      />
     </div>
   );
 }

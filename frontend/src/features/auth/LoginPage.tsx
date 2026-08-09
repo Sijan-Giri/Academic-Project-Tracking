@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useLogin } from '@/hooks/useLogin';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
@@ -95,8 +95,8 @@ export default function LoginPage() {
           </div>
           {errors.password && <p className="text-red-400 text-xs">{errors.password.message}</p>}
         </div>
-        <Button type="submit" className="w-full bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white border-0" size="lg" disabled={isPending} id="login-submit">
-          {isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Signing in...</> : 'Sign In'}
+        <Button type="submit" className="w-full bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white border-0" size="lg" isLoading={isPending} loadingText="Signing in..." id="login-submit">
+          Sign In
         </Button>
       </form>
       <p className="mt-6 text-center text-sm text-gray-400">

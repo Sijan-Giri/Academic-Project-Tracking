@@ -24,6 +24,9 @@ export const removeMember = async (teamId: string, memberId: string) =>
 export const leaveTeam = async (teamId: string) =>
   (await api.post<ApiResponse<any>>(`/teams/${teamId}/leave`)).data;
 
+export const deleteTeam = async (teamId: string) =>
+  (await api.delete<ApiResponse<any>>(`/teams/${teamId}`)).data;
+
 export const getTeams = async (params?: any) =>
   (await api.get<ApiResponse<PaginatedResponse<Team>>>('/teams', { params })).data;
 

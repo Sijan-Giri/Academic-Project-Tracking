@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, FileText, CheckCircle2, Github, Users, GraduationCap } from 'lucide-react';
+import { ArrowLeft, Download, FileText, CheckCircle2, Github, Users, GraduationCap, Loader2 } from 'lucide-react';
 
 import { useProjectDetail } from '@/hooks/useProjectDetail';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,8 @@ export default function ProjectDetailPage() {
   const user = useAuthStore(s => s.user);
   const [activeTab, setActiveTab] = useState('overview');
 
-  const { project, isLoading, reviewAbstract, updateProjectStatus } = useProjectDetail(id || '');
+  const { project, isLoading, reviewAbstract, updateProjectStatus, isReviewing, isUpdatingStatus } = useProjectDetail(id || '');
+  const isStatusChanging = isReviewing || isUpdatingStatus;
 
   const ABSTRACT_REVIEW_STATUSES = ['ABSTRACT_APPROVED', 'ABSTRACT_REJECTED', 'REVISION_NEEDED'];
 
@@ -67,6 +68,12 @@ export default function ProjectDetailPage() {
               {project.domain || 'General'}
             </span>
             <StatusBadge status={project.status} type="project" />
+            {isStatusChanging && (
+              <span className="px-2.5 py-0.5 rounded-md bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 text-xs font-semibold flex items-center gap-1.5 animate-pulse">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-600 dark:text-amber-400" />
+                Pending Status Update...
+              </span>
+            )}
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{project.title}</h1>
         </div>
@@ -75,13 +82,23 @@ export default function ProjectDetailPage() {
           {/* Status Change selector for Coordinator & Admin */}
           {isCoordinatorOrAdmin && (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Change Status:</span>
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                {isStatusChanging ? 'Updating Status...' : 'Change Status:'}
+              </span>
               <Select
                 value={project.status}
                 onValueChange={handleStatusChange}
+                disabled={isStatusChanging}
               >
-                <SelectTrigger className="w-[180px] bg-card border-input text-foreground font-semibold text-xs h-9">
-                  <SelectValue placeholder="Select status" />
+                <SelectTrigger className="w-[190px] bg-card border-input text-foreground font-semibold text-xs h-9 disabled:opacity-75">
+                  {isStatusChanging ? (
+                    <span className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Updating Status...
+                    </span>
+                  ) : (
+                    <SelectValue placeholder="Select status" />
+                  )}
                 </SelectTrigger>
                 <SelectContent className="bg-card border-border text-foreground">
                   {STATUS_OPTIONS.map((st) => (

@@ -6,6 +6,7 @@ import {
   inviteMember,
   removeMember,
   leaveTeam,
+  deleteTeam,
   getMyInvitations,
   acceptInvitation,
   declineInvitation,
@@ -67,8 +68,19 @@ export function useMyTeam(enabled = true) {
     onSuccess: () => {
       toast.success('You left the team');
       queryClient.invalidateQueries({ queryKey: MY_TEAM_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ['my-project'] });
     },
     onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to leave team'),
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: (teamId: string) => deleteTeam(teamId),
+    onSuccess: () => {
+      toast.success('Team disbanded successfully');
+      queryClient.invalidateQueries({ queryKey: MY_TEAM_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ['my-project'] });
+    },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to delete team'),
   });
 
   const acceptMut = useMutation({
@@ -100,7 +112,15 @@ export function useMyTeam(enabled = true) {
     inviteMember: inviteMut.mutateAsync,
     removeMember: removeMut.mutateAsync,
     leaveTeam: leaveMut.mutateAsync,
+    deleteTeam: deleteMut.mutateAsync,
     acceptInvitation: acceptMut.mutateAsync,
     declineInvitation: declineMut.mutateAsync,
+    isCreating: createMut.isPending,
+    isInviting: inviteMut.isPending,
+    isRemoving: removeMut.isPending,
+    isLeaving: leaveMut.isPending,
+    isDeleting: deleteMut.isPending,
+    isAccepting: acceptMut.isPending,
+    isDeclining: declineMut.isPending,
   };
 }

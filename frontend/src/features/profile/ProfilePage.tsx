@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useProfile } from '@/hooks/useProfile';
-import { User, Lock, Save, Loader2, Eye, EyeOff, BookOpen, GraduationCap, Building2, BadgeCheck, Hash, ShieldCheck, Phone } from 'lucide-react';
+import { User, Lock, Save, Eye, EyeOff, BookOpen, GraduationCap, Building2, BadgeCheck, Hash, ShieldCheck, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -157,8 +157,8 @@ export default function ProfilePage() {
               ) : null}
 
               <div className="flex justify-end pt-2">
-                <Button type="submit" disabled={updateProfileMut.isPending} className="btn-primary">
-                  {updateProfileMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                <Button type="submit" isLoading={updateProfileMut.isPending} loadingText="Saving Profile..." className="btn-primary">
+                  <Save className="w-4 h-4 mr-2" />
                   Save Profile Changes
                 </Button>
               </div>
@@ -210,8 +210,8 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex justify-end pt-2">
-                <Button type="submit" disabled={changePasswordMut.isPending} className="btn-primary">
-                  {changePasswordMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ShieldCheck className="w-4 h-4 mr-2" />}
+                <Button type="submit" isLoading={changePasswordMut.isPending} loadingText="Updating Password..." className="btn-primary">
+                  <ShieldCheck className="w-4 h-4 mr-2" />
                   Update Security Password
                 </Button>
               </div>

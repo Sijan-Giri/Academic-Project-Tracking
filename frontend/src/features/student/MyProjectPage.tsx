@@ -127,6 +127,45 @@ export default function MyProjectPage() {
         </div>
       )}
 
+      {/* Pending Status Banners */}
+      {project.status === 'ABSTRACT_SUBMITTED' && (
+        <div className="rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 text-blue-900 dark:text-blue-300 p-5 flex items-center gap-3 shadow-xs">
+          <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+            <Clock className="w-5 h-5 animate-pulse" />
+          </div>
+          <div>
+            <h4 className="font-bold text-sm flex items-center gap-2">
+              Status Pending Coordinator Review
+              <span className="px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-700 dark:text-blue-300 text-[11px] font-bold uppercase tracking-wider">
+                Pending Approval
+              </span>
+            </h4>
+            <p className="text-xs mt-1 opacity-90 font-normal">
+              Your project proposal abstract has been submitted and is currently pending review and status approval by the coordinator.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {project.status === 'UNDER_REVIEW' && (
+        <div className="rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-900 dark:text-amber-300 p-5 flex items-center gap-3 shadow-xs">
+          <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+            <Clock className="w-5 h-5 animate-pulse" />
+          </div>
+          <div>
+            <h4 className="font-bold text-sm flex items-center gap-2">
+              Evaluation & Review Pending
+              <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[11px] font-bold uppercase tracking-wider">
+                In Evaluation
+              </span>
+            </h4>
+            <p className="text-xs mt-1 opacity-90 font-normal">
+              Your project is currently under evaluation by the panel and coordinator. Official marks and status will be posted upon review completion.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Top Overview Card */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-xs transition-colors duration-200">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-6">

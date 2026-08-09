@@ -43,6 +43,7 @@ router.get('/:id/invitations', requireRoles('STUDENT'), controller.getTeamInvita
 // Member management
 router.delete('/:id/members/:memberId', requireRoles('STUDENT'), controller.removeMemberHandler);
 router.post('/:id/leave', requireRoles('STUDENT'), controller.leaveTeamHandler);
+router.delete('/:id', controller.deleteTeamHandler);
 
 // ── Generic team lookup (authenticated) ───────────────────────────────────
 router.get('/:id', controller.getTeamHandler);

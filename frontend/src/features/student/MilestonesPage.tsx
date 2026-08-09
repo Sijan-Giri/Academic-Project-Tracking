@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Upload, FileText, Clock, X, FolderUp, Loader2 } from 'lucide-react';
+import { Calendar, Upload, FileText, Clock, X, FolderUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
 import PageHeader from '@/components/shared/PageHeader';
@@ -205,18 +205,12 @@ export default function MilestonesPage() {
               </Button>
               <Button
                 onClick={handleUploadSubmit}
-                disabled={isSubmitting || selectedFiles.length === 0}
+                disabled={selectedFiles.length === 0}
+                isLoading={isSubmitting}
+                loadingText="Uploading Deliverables..."
                 className="btn-primary"
               >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-4 h-4 mr-2" /> Submit Deliverables
-                  </>
-                )}
+                <Upload className="w-4 h-4 mr-2" /> Submit Deliverables
               </Button>
             </div>
           </div>

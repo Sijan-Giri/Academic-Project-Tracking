@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Calendar, Trash2, CheckCircle, Wifi, WifiOff, MapPin, Users, Loader2 } from 'lucide-react';
+import { Plus, Calendar, Trash2, CheckCircle, Wifi, WifiOff, MapPin, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -249,15 +249,8 @@ export default function SchedulesPage() {
 
             <DialogFooter className="gap-2 pt-2">
               <Button variant="ghost" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={isCreating} id="submit-sch-btn" className="btn-primary">
-                {isCreating ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Scheduling...
-                  </>
-                ) : (
-                  'Schedule Review'
-                )}
+              <Button type="submit" isLoading={isCreating} loadingText="Scheduling Review..." id="submit-sch-btn" className="btn-primary">
+                Schedule Review
               </Button>
             </DialogFooter>
           </form>

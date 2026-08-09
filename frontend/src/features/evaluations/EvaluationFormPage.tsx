@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { ArrowLeft, Lock, Save, AlertTriangle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Lock, Save, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuthStore } from '@/store/auth.store';
 import { useEvaluationForm } from '@/hooks/useEvaluationForm';
@@ -228,20 +228,13 @@ export default function EvaluationFormPage() {
         
         <Button 
           onClick={handleSave} 
-          disabled={isLocked || isSubmitting}
+          disabled={isLocked}
+          isLoading={isSubmitting}
+          loadingText="Submitting Evaluation..."
           className="btn-primary px-6"
         >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Submitting Evaluation...
-            </>
-          ) : (
-            <>
-              <Save className="w-4 h-4 mr-2" />
-              Submit Evaluation
-            </>
-          )}
+          <Save className="w-4 h-4 mr-2" />
+          Save & Submit Marks
         </Button>
       </div>
     </div>

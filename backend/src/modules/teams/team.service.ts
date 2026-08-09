@@ -508,3 +508,92 @@ export const rejectTeam = async (id: string, reason?: string, userId?: string) =
 
   return team;
 };
+
+export const deleteTeam = async (id: string, userId: string) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new NotFoundError('User not found');
+
+  const profile = await prisma.studentProfile.findUnique({ where: { userId } });
+  const isLeader = profile
+    ? await prisma.teamMember.findFirst({
+        where: { teamId: id, studentProfileId: profile.id, isLeader: true },
+      })
+    : false;
+
+  const isPrivileged = user.role === Role.ADMIN || user.role === Role.COORDINATOR;
+
+  if (!isLeader && !isPrivileged) {
+    throw new ForbiddenError('Only the team leader or an admin/coordinator can delete the team');
+  }
+
+  const team = await prisma.team.findUnique({
+    where: { id },
+    include: {
+      members: { include: { studentProfile: true } },
+      project: true,
+    },
+  });
+
+  if (!team) throw new NotFoundError('Team not found');
+
+  await prisma.$transaction(async (tx) => {
+    // Delete pending team invitations
+    await tx.teamInvitation.deleteMany({ where: { teamId: id } });
+
+    // If there is an associated project, clean up related entities
+    if (team.project) {
+      const projectId = team.project.id;
+      const milestones = await tx.milestone.findMany({ where: { projectId } });
+      const milestoneIds = milestones.map((m) => m.id);
+
+      if (milestoneIds.length > 0) {
+        const submissions = await tx.submission.findMany({
+          where: { milestoneId: { in: milestoneIds } },
+          include: { files: true },
+        });
+
+        const fileIds = submissions.flatMap((s) => s.files.map((f) => f.id));
+        if (fileIds.length > 0) {
+          await tx.file.deleteMany({ where: { id: { in: fileIds } } });
+        }
+        await tx.submission.deleteMany({ where: { milestoneId: { in: milestoneIds } } });
+        await tx.milestone.deleteMany({ where: { projectId } });
+      }
+
+      await tx.guidePreference.deleteMany({ where: { projectId } });
+      await tx.guideAssignment.deleteMany({ where: { projectId } });
+      await tx.evaluation.deleteMany({ where: { projectId } });
+      await tx.reviewSchedule.deleteMany({ where: { projectId } });
+      await tx.project.delete({ where: { id: projectId } });
+    }
+
+    await tx.teamMember.deleteMany({ where: { teamId: id } });
+    await tx.team.delete({ where: { id } });
+  });
+
+  for (const member of team.members) {
+    if (member.studentProfile.userId !== userId) {
+      await notificationService.sendNotification(
+        member.studentProfile.userId,
+        'Team Disbanded',
+        `Team "${team.name}" has been deleted by the team leader.`,
+        'GENERAL'
+      );
+    }
+  }
+
+  await auditService.createAuditLog({
+    action: AuditAction.DELETE,
+    entityType: 'TEAM',
+    entityId: id,
+    userId,
+    oldValue: JSON.stringify({ name: team.name }),
+  });
+
+  try {
+    broadcastEvent('team:deleted', { id });
+  } catch (_) {}
+
+  return { message: 'Team deleted successfully' };
+};
+

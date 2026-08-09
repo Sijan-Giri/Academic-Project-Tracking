@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
-import { Mail, Lock, User, Eye, EyeOff, Loader2, GraduationCap, Briefcase, Phone, Hash } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, GraduationCap, Briefcase, Phone, Hash } from 'lucide-react';
 import { useRegister } from '@/hooks/useRegister';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -152,8 +152,8 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <Button type="submit" className="w-full bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white border-0 mt-2" size="lg" disabled={isPending}>
-          {isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creating Account...</> : 'Create Account'}
+        <Button type="submit" className="w-full bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white border-0 mt-2" size="lg" isLoading={isPending} loadingText="Creating Account...">
+          Create Account
         </Button>
       </form>
 

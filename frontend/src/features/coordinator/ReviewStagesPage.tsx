@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Calendar, Trash2, PlusCircle, BookOpen, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { Plus, Calendar, Trash2, PlusCircle, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -338,15 +338,8 @@ export default function ReviewStagesPage() {
             </div>
             <DialogFooter className="gap-2 pt-2">
               <Button variant="ghost" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={isCreatingStage} id="submit-stage-btn" className="btn-primary">
-                {isCreatingStage ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Creating Stage...
-                  </>
-                ) : (
-                  'Create Stage'
-                )}
+              <Button type="submit" isLoading={isCreatingStage} loadingText="Creating Stage..." id="submit-stage-btn" className="btn-primary">
+                Create Stage
               </Button>
             </DialogFooter>
           </form>
@@ -378,15 +371,8 @@ export default function ReviewStagesPage() {
             </div>
             <DialogFooter className="gap-2 pt-2">
               <Button variant="ghost" onClick={() => setCriteriaModal(null)}>Cancel</Button>
-              <Button type="submit" disabled={isAddingCriteria} id="submit-criteria-btn" className="btn-primary">
-                {isAddingCriteria ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Adding Criteria...
-                  </>
-                ) : (
-                  'Add Criteria'
-                )}
+              <Button type="submit" isLoading={isAddingCriteria} loadingText="Adding Criteria..." id="submit-criteria-btn" className="btn-primary">
+                Add Criteria
               </Button>
             </DialogFooter>
           </form>

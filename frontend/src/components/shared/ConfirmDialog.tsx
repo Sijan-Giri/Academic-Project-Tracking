@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { AlertTriangle, Trash2, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ConfirmDialogProps {
@@ -74,36 +75,28 @@ export default function ConfirmDialog({
           <div className="h-px bg-border" />
 
           <div className="flex items-center justify-end gap-3">
-            <button
+            <Button
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
-              className="px-4 py-2 rounded-lg text-sm font-semibold text-foreground bg-secondary hover:bg-secondary/80 border border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              variant="outline"
             >
               Cancel
-            </button>
+            </Button>
 
-            <button
+            <Button
               onClick={onConfirm}
-              disabled={isLoading}
+              isLoading={isLoading}
+              loadingText={activeLabel}
               className={cn(
-                'min-w-[120px] px-5 py-2 rounded-lg text-sm font-bold text-white flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 disabled:cursor-not-allowed',
+                'min-w-[120px] font-bold text-white',
                 isDanger
-                  ? 'bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700'
-                  : 'bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700'
+                  ? 'bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 border-0'
+                  : 'bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 border-0'
               )}
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  {activeLabel}
-                </>
-              ) : (
-                <>
-                  {isDanger && <Trash2 className="w-3.5 h-3.5" />}
-                  {label}
-                </>
-              )}
-            </button>
+              {isDanger && <Trash2 className="w-3.5 h-3.5 mr-1.5" />}
+              {label}
+            </Button>
           </div>
         </div>
       </DialogContent>

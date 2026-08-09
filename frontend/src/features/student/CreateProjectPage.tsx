@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
-import { X, ChevronRight, ChevronLeft, Loader2, Save, CheckCircle2, AlertTriangle, FolderPlus, Users, Award } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Save, CheckCircle2, AlertTriangle, FolderPlus, Users, Award } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -264,18 +264,8 @@ export default function CreateProjectPage() {
                   <Button type="button" variant="outline" onClick={() => setStep(1)} className="btn-outline">
                     <ChevronLeft className="w-4 h-4 mr-1" /> Back
                   </Button>
-                  <Button type="submit" disabled={isPending} className="btn-primary">
-                    {isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Submitting Proposal...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4 mr-2" />
-                        Submit Proposal
-                      </>
-                    )}
+                  <Button type="submit" isLoading={isPending} loadingText="Submitting Proposal..." className="btn-primary">
+                    <Save className="w-4 h-4 mr-2" /> Submit Proposal
                   </Button>
                 </div>
               </div>

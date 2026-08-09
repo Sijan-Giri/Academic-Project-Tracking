@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Plus, Megaphone, Trash2, Calendar, Loader2 } from 'lucide-react';
+import { Plus, Megaphone, Trash2, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 
 import PageHeader from '@/components/shared/PageHeader';
@@ -191,8 +191,7 @@ export default function CoordinatorAnnouncementsPage() {
               <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting} className="btn-primary">
-                {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              <Button type="submit" isLoading={isSubmitting} loadingText="Broadcasting Notice..." className="btn-primary">
                 Broadcast Notice
               </Button>
             </div>
