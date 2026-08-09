@@ -41,3 +41,8 @@ export const getAvailableGuidesHandler = async (req: AuthRequest, res: Response)
   const guides = await guideService.getAvailableGuides();
   res.json(guides);
 };
+
+export const getGuideAssignmentsHandler = async (req: AuthRequest, res: Response) => {
+  const assignments = await guideService.getGuideAssignments();
+  res.json(assignments);
+};

@@ -3,6 +3,7 @@ import { FileText, FolderGit2, Calendar, Download, Trash2, Loader2 } from 'lucid
 import { downloadFile, deleteFile } from '@/api/submissions.api';
 import PageHeader from '@/components/shared/PageHeader';
 import { ConfirmDialog } from '@/components/shared';
+import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 import { useSubmissions } from '@/hooks/useSubmissions';
 import { useQueryClient } from '@tanstack/react-query';
@@ -147,28 +148,28 @@ export default function SubmissionsPage() {
                           ) : null}
 
                           {/* Download */}
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => handleDownload(file.id, file.originalName)}
-                            disabled={downloadingId === file.id}
+                            isLoading={downloadingId === file.id}
                             title="Download file"
-                            className="ml-1 p-1 rounded text-muted-foreground hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors disabled:opacity-50"
+                            className="h-7 w-7 ml-1 p-0 text-muted-foreground hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
                           >
-                            {downloadingId === file.id
-                              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              : <Download className="w-3.5 h-3.5" />}
-                          </button>
+                            <Download className="w-3.5 h-3.5" />
+                          </Button>
 
                           {/* Delete */}
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => requestDelete(file.id, file.originalName || 'this file')}
-                            disabled={deletingId === file.id}
+                            isLoading={deletingId === file.id}
                             title="Delete file"
-                            className="p-1 rounded text-muted-foreground hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors disabled:opacity-50"
+                            className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10"
                           >
-                            {deletingId === file.id
-                              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              : <Trash2 className="w-3.5 h-3.5" />}
-                          </button>
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
                         </div>
                       ))}
                     </div>

@@ -140,7 +140,9 @@ export default function NotificationDropdown() {
 
         {/* Filter Tabs */}
         <div className="flex border-b border-border bg-secondary/30 px-3 py-1.5 gap-2">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setFilter('ALL')}
             className={cn(
               'px-3 py-1 rounded-lg text-xs font-semibold transition-colors',
@@ -150,8 +152,10 @@ export default function NotificationDropdown() {
             )}
           >
             All
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setFilter('UNREAD')}
             className={cn(
               'px-3 py-1 rounded-lg text-xs font-semibold transition-colors',
@@ -161,7 +165,7 @@ export default function NotificationDropdown() {
             )}
           >
             Unread ({unreadCount})
-          </button>
+          </Button>
         </div>
 
         {/* Notification Items List */}

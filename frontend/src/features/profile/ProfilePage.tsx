@@ -178,9 +178,9 @@ export default function ProfilePage() {
                 <Label htmlFor="currentPassword" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Current Password</Label>
                 <div className="relative">
                   <Input id="currentPassword" type={showOldPw ? 'text' : 'password'} {...regPw('currentPassword')} />
-                  <button type="button" onClick={() => setShowOldPw(!showOldPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <Button variant="ghost" size="icon" type="button" onClick={() => setShowOldPw(!showOldPw)} className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground">
                     {showOldPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+                  </Button>
                 </div>
                 {pwErrors.currentPassword?.message && <p className="text-xs text-rose-600 font-medium">{String(pwErrors.currentPassword.message)}</p>}
               </div>
@@ -190,9 +190,9 @@ export default function ProfilePage() {
                   <Label htmlFor="newPassword" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">New Password</Label>
                   <div className="relative">
                     <Input id="newPassword" type={showNewPw ? 'text' : 'password'} {...regPw('newPassword')} />
-                    <button type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <Button variant="ghost" size="icon" type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground">
                       {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
+                    </Button>
                   </div>
                   {pwErrors.newPassword?.message && <p className="text-xs text-rose-600 font-medium">{String(pwErrors.newPassword.message)}</p>}
                 </div>
@@ -201,9 +201,9 @@ export default function ProfilePage() {
                   <Label htmlFor="confirmPassword" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Confirm New Password</Label>
                   <div className="relative">
                     <Input id="confirmPassword" type={showConfirmPw ? 'text' : 'password'} {...regPw('confirmPassword')} />
-                    <button type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <Button variant="ghost" size="icon" type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground">
                       {showConfirmPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
+                    </Button>
                   </div>
                   {pwErrors.confirmPassword?.message && <p className="text-xs text-rose-600 font-medium">{String(pwErrors.confirmPassword.message)}</p>}
                 </div>

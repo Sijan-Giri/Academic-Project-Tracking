@@ -210,9 +210,9 @@ export default function CreateProjectPage() {
                     {keywords.map(kw => (
                       <span key={kw} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary text-foreground text-xs font-medium border border-border">
                         #{kw}
-                        <button type="button" onClick={() => removeKeyword(kw)} className="text-muted-foreground hover:text-rose-600">
+                        <Button variant="ghost" size="icon" type="button" onClick={() => removeKeyword(kw)} className="h-4 w-4 p-0 text-muted-foreground hover:text-rose-600">
                           <X className="w-3.5 h-3.5" />
-                        </button>
+                        </Button>
                       </span>
                     ))}
                   </div>

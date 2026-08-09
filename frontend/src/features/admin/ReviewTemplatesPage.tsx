@@ -42,6 +42,7 @@ export default function ReviewTemplatesPage() {
     createTemplate,
     updateTemplate,
     deleteTemplate,
+    isSubmitting,
   } = useReviewTemplates();
 
   const { departments } = useDepartments();
@@ -184,7 +185,7 @@ export default function ReviewTemplatesPage() {
               )} />
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={() => { setCreateOpen(false); setEditItem(null); }}>Cancel</Button>
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white">{editItem ? 'Update' : 'Create'}</Button>
+                <Button type="submit" isLoading={isSubmitting} loadingText={editItem ? 'Updating...' : 'Creating...'} className="bg-indigo-600 hover:bg-indigo-700 text-white">{editItem ? 'Update' : 'Create'}</Button>
               </div>
             </form>
           </Form>

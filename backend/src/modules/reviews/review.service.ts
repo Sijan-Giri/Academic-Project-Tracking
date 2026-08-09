@@ -176,7 +176,44 @@ export const reviewService = {
   },
 
   async deleteReviewStage(id: string) {
-    return prisma.reviewStage.delete({ where: { id } });
+    return prisma.$transaction(async (tx) => {
+      const criteria = await tx.evaluationCriteria.findMany({ where: { reviewStageId: id } });
+      const criteriaIds = criteria.map((c) => c.id);
+
+      if (criteriaIds.length > 0) {
+        await tx.evaluationScore.deleteMany({ where: { criteriaId: { in: criteriaIds } } });
+        await tx.evaluationCriteria.deleteMany({ where: { reviewStageId: id } });
+      }
+
+      await tx.evaluation.deleteMany({ where: { reviewStageId: id } });
+
+      const schedules = await tx.reviewSchedule.findMany({ where: { reviewStageId: id } });
+      const scheduleIds = schedules.map((s) => s.id);
+
+      if (scheduleIds.length > 0) {
+        await tx.panelAssignment.deleteMany({ where: { scheduleId: { in: scheduleIds } } });
+        await tx.reviewSchedule.deleteMany({ where: { reviewStageId: id } });
+      }
+
+      const milestones = await tx.milestone.findMany({ where: { reviewStageId: id } });
+      const milestoneIds = milestones.map((m) => m.id);
+
+      if (milestoneIds.length > 0) {
+        const submissions = await tx.submission.findMany({
+          where: { milestoneId: { in: milestoneIds } },
+          include: { files: true },
+        });
+
+        const fileIds = submissions.flatMap((s) => s.files.map((f) => f.id));
+        if (fileIds.length > 0) {
+          await tx.file.deleteMany({ where: { id: { in: fileIds } } });
+        }
+        await tx.submission.deleteMany({ where: { milestoneId: { in: milestoneIds } } });
+        await tx.milestone.deleteMany({ where: { reviewStageId: id } });
+      }
+
+      return tx.reviewStage.delete({ where: { id } });
+    });
   },
 
   async getStageCriteria(stageId: string) {
@@ -200,8 +237,11 @@ export const reviewService = {
   },
 
   async deleteCriteria(stageId: string, criteriaId: string) {
-    return prisma.evaluationCriteria.delete({
-      where: { id: criteriaId, reviewStageId: stageId },
+    return prisma.$transaction(async (tx) => {
+      await tx.evaluationScore.deleteMany({ where: { criteriaId } });
+      return tx.evaluationCriteria.delete({
+        where: { id: criteriaId, reviewStageId: stageId },
+      });
     });
   },
 };

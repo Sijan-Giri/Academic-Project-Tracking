@@ -3,6 +3,7 @@ import { GraduationCap, LayoutDashboard, Building2, Calendar, Users, Settings, F
 import { useAuthStore } from '@/store/auth.store';
 import { logout as logoutApi } from '@/api/auth.api';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import type { Role } from '@/types/user.types';
 
 interface SidebarProps { className?: string; }
@@ -85,16 +86,18 @@ export default function Sidebar({ className }: SidebarProps) {
             <p className="truncate text-sm font-semibold text-foreground">{user?.name}</p>
             <p className="truncate text-xs text-muted-foreground">{user?.role}</p>
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={async () => {
               try { await logoutApi(); } catch (_) {}
               clearAuth();
               window.location.href = '/login';
             }}
-            className="p-1.5 text-muted-foreground hover:text-rose-600 dark:hover:text-rose-400 transition-colors lg:opacity-0 lg:group-hover:opacity-100 rounded-md"
+            className="p-1.5 h-8 w-8 text-muted-foreground hover:text-rose-600 dark:hover:text-rose-400 transition-colors lg:opacity-0 lg:group-hover:opacity-100 rounded-md"
           >
-            <LogOut className="h-4 w-4 shrink-0" />
-          </button>
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </aside>

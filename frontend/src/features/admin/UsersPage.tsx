@@ -42,6 +42,7 @@ export default function UsersPage() {
     isLoading,
     createUser,
     toggleUserStatus,
+    isSubmitting,
   } = useUsers({ role: roleFilter === 'ALL' ? undefined : roleFilter, search });
 
   const form = useForm<UserFormValues>({
@@ -233,7 +234,7 @@ export default function UsersPage() {
 
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-white/10">Cancel</Button>
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">Create User</Button>
+                <Button type="submit" isLoading={isSubmitting} loadingText="Creating User..." className="bg-indigo-600 hover:bg-indigo-700">Create User</Button>
               </div>
             </form>
           </Form>

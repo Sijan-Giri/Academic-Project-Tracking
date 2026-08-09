@@ -108,8 +108,10 @@ export default function ProjectsPage() {
 
         <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
           {['ALL', 'DRAFT', 'ABSTRACT_SUBMITTED', 'ABSTRACT_APPROVED', 'IN_PROGRESS', 'COMPLETED'].map((st) => (
-            <button
+            <Button
               key={st}
+              variant="ghost"
+              size="sm"
               onClick={() => setStatusFilter(st)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 statusFilter === st
@@ -118,7 +120,7 @@ export default function ProjectsPage() {
               }`}
             >
               {st === 'ALL' ? 'All Statuses' : st.replace('_', ' ')}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

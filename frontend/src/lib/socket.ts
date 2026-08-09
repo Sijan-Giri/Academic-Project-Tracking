@@ -27,11 +27,11 @@ export const connectSocket = (token: string): Socket => {
   });
 
   socket.on('connect', () => {
-    console.log('⚡ Connected to real-time Socket.IO server');
+    console.log('Connected to real-time Socket.IO server');
   });
 
   socket.on('disconnect', (reason) => {
-    console.log('⚡ Disconnected from Socket.IO server:', reason);
+    console.log(' Disconnected from Socket.IO server:', reason);
   });
 
   socket.on('connect_error', (error) => {

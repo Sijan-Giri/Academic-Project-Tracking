@@ -152,28 +152,30 @@ export default function MyTeamPage() {
         {/* Create / Join Team Tabs */}
         <div className="rounded-xl border border-border bg-card shadow-xs overflow-hidden">
           <div className="flex border-b border-border">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setActiveTab('CREATE')}
               className={cn(
-                'flex-1 py-4 text-center font-semibold text-sm transition-colors border-b-2',
+                'flex-1 py-4 h-auto rounded-none text-center font-semibold text-sm transition-colors border-b-2',
                 activeTab === 'CREATE'
                   ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-secondary/50'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               )}
             >
               Create New Team
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
               onClick={() => setActiveTab('JOIN')}
               className={cn(
-                'flex-1 py-4 text-center font-semibold text-sm transition-colors border-b-2',
+                'flex-1 py-4 h-auto rounded-none text-center font-semibold text-sm transition-colors border-b-2',
                 activeTab === 'JOIN'
                   ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-secondary/50'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               )}
             >
               Join Existing Team
-            </button>
+            </Button>
           </div>
 
           <div className="p-8">

@@ -1,7 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { getProjects } from '@/api/projects.api';
-import { getAvailableGuides, assignGuide, removeGuideAssignment } from '@/api/guides.api';
+import {
+  getAvailableGuides,
+  getAllGuidePreferences,
+  getGuideAssignments,
+  approvePreference,
+  rejectPreference,
+  assignGuide,
+  removeGuideAssignment,
+} from '@/api/guides.api';
 import { unwrapList } from '@/utils/apiUtils';
 import type { Project } from '@/types/project.types';
 
@@ -10,7 +18,7 @@ export function useGuideAllocation() {
 
   const { data: rawProjects, isLoading: loadingProjects } = useQuery({
     queryKey: ['guide-allocation-projects'],
-    queryFn: () => getProjects(),
+    queryFn: () => getProjects({ limit: 100 }),
   });
 
   const { data: rawGuides, isLoading: loadingGuides } = useQuery({
@@ -18,12 +26,50 @@ export function useGuideAllocation() {
     queryFn: getAvailableGuides,
   });
 
+  const { data: rawPreferences, isLoading: loadingPrefs } = useQuery({
+    queryKey: ['all-guide-preferences'],
+    queryFn: getAllGuidePreferences,
+  });
+
+  const { data: rawAssignments, isLoading: loadingAssignments } = useQuery({
+    queryKey: ['all-guide-assignments'],
+    queryFn: getGuideAssignments,
+  });
+
   const projects = unwrapList<Project>(rawProjects);
   const guides = unwrapList<any>(rawGuides);
+  const preferences = unwrapList<any>(rawPreferences);
+  const assignments = unwrapList<any>(rawAssignments);
+
+  const approvePrefMut = useMutation({
+    mutationFn: approvePreference,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-guide-preferences'] });
+      queryClient.invalidateQueries({ queryKey: ['all-guide-assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['guide-allocation-projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      toast.success('Guide preference approved & guide assigned!');
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || 'Failed to approve preference');
+    },
+  });
+
+  const rejectPrefMut = useMutation({
+    mutationFn: ({ id, note }: { id: string; note?: string }) => rejectPreference(id, note),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-guide-preferences'] });
+      toast.success('Guide preference rejected!');
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || 'Failed to reject preference');
+    },
+  });
 
   const assignMut = useMutation({
     mutationFn: assignGuide,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-guide-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['guide-allocation-projects'] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       toast.success('Guide assigned successfully!');
@@ -36,6 +82,7 @@ export function useGuideAllocation() {
   const removeMut = useMutation({
     mutationFn: removeGuideAssignment,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-guide-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['guide-allocation-projects'] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       toast.success('Guide assignment removed!');
@@ -48,9 +95,13 @@ export function useGuideAllocation() {
   return {
     projects,
     guides,
-    isLoading: loadingProjects || loadingGuides,
+    preferences,
+    assignments,
+    isLoading: loadingProjects || loadingGuides || loadingPrefs || loadingAssignments,
+    approvePreference: approvePrefMut.mutateAsync,
+    rejectPreference: rejectPrefMut.mutateAsync,
     assignGuide: assignMut.mutateAsync,
     removeGuide: removeMut.mutateAsync,
-    isSubmitting: assignMut.isPending || removeMut.isPending,
+    isSubmitting: assignMut.isPending || removeMut.isPending || approvePrefMut.isPending || rejectPrefMut.isPending,
   };
 }

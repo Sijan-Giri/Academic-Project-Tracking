@@ -21,7 +21,7 @@ const settingsSchema = z.object({
 type SettingsValues = z.infer<typeof settingsSchema>;
 
 export default function SettingsPage() {
-  const { settings, isLoading, updateSetting } = useSettings();
+  const { settings, isLoading, updateSetting, isUpdating: isSubmitting } = useSettings();
 
   const settingsMap: Record<string, any> = {};
   if (Array.isArray(settings)) {
@@ -117,7 +117,7 @@ export default function SettingsPage() {
             </div>
 
             <div className="flex justify-end pt-4 border-t dark:border-white/10 border-slate-200">
-              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white h-11 px-8">
+              <Button type="submit" isLoading={isSubmitting} loadingText="Saving All Settings..." className="bg-indigo-600 hover:bg-indigo-700 text-white h-11 px-8">
                 <Save className="w-4 h-4 mr-2" /> 
                 Save All Settings
               </Button>

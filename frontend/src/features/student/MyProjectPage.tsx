@@ -227,12 +227,13 @@ export default function MyProjectPage() {
             {showFullAbstract ? project.abstract : `${project.abstract?.substring(0, 180) || ''}${(project.abstract?.length ?? 0) > 180 ? '...' : ''}`}
           </p>
           {(project.abstract?.length ?? 0) > 180 && (
-            <button
+            <Button
+              variant="link"
               onClick={() => setShowFullAbstract(!showFullAbstract)}
-              className="text-indigo-600 dark:text-indigo-400 hover:underline text-xs font-semibold mt-2 inline-flex items-center gap-1 focus:outline-none"
+              className="text-indigo-600 dark:text-indigo-400 hover:underline text-xs font-semibold mt-2 p-0 h-auto inline-flex items-center gap-1 focus:outline-none"
             >
               {showFullAbstract ? 'Show less' : 'Read full abstract →'}
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -450,53 +451,56 @@ export default function MyProjectPage() {
 
       {/* Quick Action Navigation Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <button
+        <Button
+          variant="outline"
           onClick={() => navigate('/my-project/abstract')}
-          className="p-5 rounded-xl border border-border bg-card hover:bg-secondary text-left transition-all group flex flex-col justify-between space-y-4 shadow-xs"
+          className="p-5 h-auto rounded-xl border border-border bg-card hover:bg-secondary text-left transition-all group flex flex-col justify-between space-y-4 shadow-xs"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between w-full">
             <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-indigo-600 dark:text-indigo-400">
               <FileCode2 className="w-5 h-5" />
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-transform group-hover:translate-x-0.5" />
           </div>
-          <div>
+          <div className="w-full">
             <h4 className="text-sm font-semibold text-foreground mb-0.5">Abstract Proposal</h4>
             <p className="text-xs text-muted-foreground font-normal">View or copy project abstract details.</p>
           </div>
-        </button>
+        </Button>
 
-        <button
+        <Button
+          variant="outline"
           onClick={() => navigate('/my-project/milestones')}
-          className="p-5 rounded-xl border border-border bg-card hover:bg-secondary text-left transition-all group flex flex-col justify-between space-y-4 shadow-xs"
+          className="p-5 h-auto rounded-xl border border-border bg-card hover:bg-secondary text-left transition-all group flex flex-col justify-between space-y-4 shadow-xs"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between w-full">
             <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-indigo-600 dark:text-indigo-400">
               <Clock className="w-5 h-5" />
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-transform group-hover:translate-x-0.5" />
           </div>
-          <div>
+          <div className="w-full">
             <h4 className="text-sm font-semibold text-foreground mb-0.5">Milestone Tracker</h4>
             <p className="text-xs text-muted-foreground font-normal">Check deadlines and submit deliverables.</p>
           </div>
-        </button>
+        </Button>
 
-        <button
+        <Button
+          variant="outline"
           onClick={() => navigate('/my-project/submissions')}
-          className="p-5 rounded-xl border border-border bg-card hover:bg-secondary text-left transition-all group flex flex-col justify-between space-y-4 shadow-xs"
+          className="p-5 h-auto rounded-xl border border-border bg-card hover:bg-secondary text-left transition-all group flex flex-col justify-between space-y-4 shadow-xs"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between w-full">
             <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-indigo-600 dark:text-indigo-400">
               <FileText className="w-5 h-5" />
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-transform group-hover:translate-x-0.5" />
           </div>
-          <div>
-            <h4 className="text-sm font-semibold text-foreground mb-0.5">Submission History</h4>
-            <p className="text-xs text-muted-foreground font-normal">Download uploaded milestone files.</p>
+          <div className="w-full">
+            <h4 className="text-sm font-semibold text-foreground mb-0.5">Submissions Archive</h4>
+            <p className="text-xs text-muted-foreground font-normal">Review uploaded project documents & history.</p>
           </div>
-        </button>
+        </Button>
       </div>
     </div>
   );

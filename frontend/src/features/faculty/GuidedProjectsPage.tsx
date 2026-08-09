@@ -20,6 +20,7 @@ export default function GuidedProjectsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [feedbackText, setFeedbackText] = useState('');
+  const [isSendingFeedback, setIsSendingFeedback] = useState(false);
 
   const { projects, isLoading } = useGuidedProjects();
 
@@ -33,10 +34,15 @@ export default function GuidedProjectsPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleSendFeedback = (teamName: string) => {
+  const handleSendFeedback = async (teamName: string) => {
     if (!feedbackText.trim()) return;
-    toast.success(`Feedback sent to team ${teamName}`);
-    setFeedbackText('');
+    setIsSendingFeedback(true);
+    try {
+      toast.success(`Feedback sent to team ${teamName}`);
+      setFeedbackText('');
+    } finally {
+      setIsSendingFeedback(false);
+    }
   };
 
   return (
@@ -153,7 +159,12 @@ export default function GuidedProjectsPage() {
                         onChange={(e) => setFeedbackText(e.target.value)}
                         className="input-field min-h-[120px]"
                       />
-                      <Button onClick={() => handleSendFeedback(p.team?.name || 'Team')} className="btn-primary w-full">
+                      <Button
+                        onClick={() => handleSendFeedback(p.team?.name || 'Team')}
+                        isLoading={isSendingFeedback}
+                        loadingText="Sending Feedback..."
+                        className="btn-primary w-full"
+                      >
                         Send Feedback
                       </Button>
                     </div>

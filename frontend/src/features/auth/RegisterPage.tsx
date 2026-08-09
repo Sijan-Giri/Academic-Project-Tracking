@@ -52,20 +52,22 @@ export default function RegisterPage() {
 
       {/* Role Toggle Tabs */}
       <div className="grid grid-cols-2 gap-2 p-1 bg-white/5 border border-white/10 rounded-xl mb-6">
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => handleRoleChange('STUDENT')}
           className={`flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-lg transition-all ${selectedRole === 'STUDENT' ? 'bg-indigo-600 text-white shadow' : 'text-gray-400 hover:text-white'}`}
         >
           <GraduationCap className="w-4 h-4" /> Student
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => handleRoleChange('FACULTY')}
           className={`flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-lg transition-all ${selectedRole === 'FACULTY' ? 'bg-indigo-600 text-white shadow' : 'text-gray-400 hover:text-white'}`}
         >
           <Briefcase className="w-4 h-4" /> Faculty
-        </button>
+        </Button>
       </div>
 
       <form onSubmit={handleSubmit(d => mutate({ ...d, role: selectedRole }))} className="space-y-4">
@@ -95,9 +97,9 @@ export default function RegisterPage() {
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input {...register('password')} type={showPassword ? 'text' : 'password'} placeholder="••••••••" className="pl-10 pr-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500" />
-            <button type="button" onClick={() => setShowPassword(p => !p)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+            <Button variant="ghost" size="icon" type="button" onClick={() => setShowPassword(p => !p)} className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-400 hover:text-white">
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
+            </Button>
           </div>
           {errors.password && <p className="text-red-400 text-xs">{errors.password.message}</p>}
         </div>

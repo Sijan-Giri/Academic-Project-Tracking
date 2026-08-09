@@ -54,6 +54,17 @@ export const getAllGuidePreferences = async () => {
   return preferences;
 };
 
+export const getGuideAssignments = async () => {
+  const assignments = await prisma.guideAssignment.findMany({
+    include: {
+      project: { select: { id: true, title: true } },
+      facultyProfile: { include: { user: true } },
+    },
+    orderBy: { assignedAt: 'desc' },
+  });
+  return assignments;
+};
+
 export const approvePreference = async (preferenceId: string, reviewerId: string) => {
   const preference = await prisma.guidePreference.findUnique({ where: { id: preferenceId } });
   if (!preference) throw new NotFoundError('Preference not found');
@@ -137,24 +148,30 @@ export const rejectPreference = async (preferenceId: string, note: string, revie
 
 export const assignGuide = async (data: { projectId: string; facultyProfileId: string }, assignedById: string) => {
   const existing = await prisma.guideAssignment.findFirst({
-    where: { projectId: data.projectId, isActive: true },
+    where: { projectId: data.projectId },
   });
 
+  let assignment;
   if (existing) {
-    await prisma.guideAssignment.update({
+    assignment = await prisma.guideAssignment.update({
       where: { id: existing.id },
-      data: { isActive: false },
+      data: {
+        facultyProfileId: data.facultyProfileId,
+        assignedById,
+        assignedAt: new Date(),
+        isActive: true,
+      },
+    });
+  } else {
+    assignment = await prisma.guideAssignment.create({
+      data: {
+        projectId: data.projectId,
+        facultyProfileId: data.facultyProfileId,
+        assignedById,
+        isActive: true,
+      },
     });
   }
-
-  const assignment = await prisma.guideAssignment.create({
-    data: {
-      projectId: data.projectId,
-      facultyProfileId: data.facultyProfileId,
-      assignedById,
-      isActive: true,
-    },
-  });
 
   const project = await prisma.project.findUnique({
     where: { id: data.projectId },

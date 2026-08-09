@@ -21,13 +21,52 @@ export default function GuideAllocationPage() {
   const {
     projects,
     guides,
+    preferences,
+    assignments,
     isLoading: prefsLoading,
+    approvePreference,
+    rejectPreference,
     assignGuide,
     removeGuide,
     isSubmitting,
   } = useGuideAllocation();
 
-  const preferences: any[] = [];
+  const activeAssignmentsList = assignments.length > 0
+    ? assignments.map((a: any) => ({
+        id: a.id,
+        projectId: a.projectId,
+        projectTitle: a.project?.title || 'Project',
+        facultyName: a.facultyProfile?.user?.name || 'Assigned Faculty',
+        facultyDesignation: a.facultyProfile?.designation || 'Faculty Guide',
+        assignedAt: a.assignedAt,
+        isActive: a.isActive,
+      }))
+    : projects
+        .filter((p: any) => p.guideAssignment)
+        .map((p: any) => ({
+          id: p.guideAssignment.id,
+          projectId: p.id,
+          projectTitle: p.title,
+          facultyName: p.guideAssignment.facultyProfile?.user?.name || 'Assigned Faculty',
+          facultyDesignation: p.guideAssignment.facultyProfile?.designation || 'Faculty Guide',
+          assignedAt: p.guideAssignment.assignedAt,
+          isActive: p.guideAssignment.isActive,
+        }));
+
+  const handleApprovePref = async (id: string) => {
+    try {
+      await approvePreference(id);
+    } catch (_) {}
+  };
+
+  const handleRejectPref = async () => {
+    if (!rejectModal) return;
+    try {
+      await rejectPreference({ id: rejectModal.id, note: rejectNote });
+      setRejectModal(null);
+      setRejectNote('');
+    } catch (_) {}
+  };
 
   const handleDirectAssign = async () => {
     if (!assignProjectId || !assignFacultyId) return;
@@ -104,10 +143,10 @@ export default function GuideAllocationPage() {
                         <td className="px-5 py-3.5">
                           {p.status === 'PENDING' && (
                             <div className="flex items-center gap-2">
-                              <Button size="sm" variant="success" id={`approve-pref-${p.id}`} className="text-xs font-semibold">
+                              <Button size="sm" variant="success" onClick={() => handleApprovePref(p.id)} disabled={isSubmitting} id={`approve-pref-${p.id}`} className="text-xs font-semibold">
                                 <CheckCircle className="h-3.5 w-3.5 mr-1" /> Approve
                               </Button>
-                              <Button size="sm" variant="destructive" onClick={() => setRejectModal({ id: p.id })} id={`reject-pref-${p.id}`} className="text-xs font-semibold">
+                              <Button size="sm" variant="destructive" onClick={() => setRejectModal({ id: p.id })} disabled={isSubmitting} id={`reject-pref-${p.id}`} className="text-xs font-semibold">
                                 <XCircle className="h-3.5 w-3.5 mr-1" /> Reject
                               </Button>
                             </div>
@@ -186,24 +225,24 @@ export default function GuideAllocationPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {projects.filter((p: any) => p.guideAssignment?.isActive).map((p: any) => (
-                    <tr key={p.id} className="hover:bg-secondary/40 transition-colors">
-                      <td className="px-5 py-3.5 text-foreground font-semibold">{p.title}</td>
+                  {activeAssignmentsList.map((item: any) => (
+                    <tr key={item.id} className="hover:bg-secondary/40 transition-colors">
+                      <td className="px-5 py-3.5 text-foreground font-semibold">{item.projectTitle}</td>
                       <td className="px-5 py-3.5">
-                        <div className="text-foreground font-semibold">{p.guideAssignment?.facultyProfile?.user?.name}</div>
-                        <div className="text-xs text-muted-foreground font-normal">{p.guideAssignment?.facultyProfile?.designation}</div>
+                        <div className="text-foreground font-semibold">{item.facultyName}</div>
+                        <div className="text-xs text-muted-foreground font-normal">{item.facultyDesignation}</div>
                       </td>
                       <td className="px-5 py-3.5 text-muted-foreground text-xs font-medium">
-                        {p.guideAssignment?.assignedAt ? format(new Date(p.guideAssignment.assignedAt), 'MMM d, yyyy') : '—'}
+                        {item.assignedAt ? format(new Date(item.assignedAt), 'MMM d, yyyy') : '—'}
                       </td>
                       <td className="px-5 py-3.5">
-                        <Button size="sm" variant="destructive" onClick={() => handleRemoveAssignment(p.guideAssignment.id)} disabled={isSubmitting} id={`remove-guide-${p.id}`}>
+                        <Button size="sm" variant="destructive" onClick={() => handleRemoveAssignment(item.id)} disabled={isSubmitting} id={`remove-guide-${item.id}`}>
                           Remove Assignment
                         </Button>
                       </td>
                     </tr>
                   ))}
-                  {projects.filter((p: any) => p.guideAssignment?.isActive).length === 0 && (
+                  {activeAssignmentsList.length === 0 && (
                     <tr><td colSpan={4} className="px-5 py-8 text-center text-muted-foreground font-normal">No active guide assignments.</td></tr>
                   )}
                 </tbody>
@@ -223,7 +262,7 @@ export default function GuideAllocationPage() {
           </div>
           <DialogFooter className="gap-2">
             <Button variant="ghost" onClick={() => setRejectModal(null)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => setRejectModal(null)} id="confirm-reject-btn">
+            <Button variant="destructive" onClick={handleRejectPref} isLoading={isSubmitting} id="confirm-reject-btn">
               Confirm Reject
             </Button>
           </DialogFooter>

@@ -171,9 +171,11 @@ export default function CoordinatorAnnouncementsPage() {
               <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Target Department (Optional)</Label>
               <div className="flex flex-wrap gap-2">
                 {departmentsList.map((d: any) => (
-                  <button
+                  <Button
                     key={d.id}
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => toggleTarget('departmentIds', d.id)}
                     className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition-all ${
                       selectedDepts.includes(d.id)
@@ -182,7 +184,7 @@ export default function CoordinatorAnnouncementsPage() {
                     }`}
                   >
                     {d.name}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>

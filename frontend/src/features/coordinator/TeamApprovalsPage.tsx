@@ -15,18 +15,23 @@ export default function TeamApprovalsPage() {
   const [rejectItem, setRejectItem] = useState<any>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [viewTeam, setViewTeam] = useState<any>(null);
+  const [actionTeamId, setActionTeamId] = useState<string | null>(null);
 
   const {
     teams: teamsList,
     isLoading,
     approveTeam,
     rejectTeam,
+    isSubmitting,
   } = useTeamApprovals(statusFilter !== 'ALL' ? { status: statusFilter } : undefined);
 
   const handleApprove = async (id: string) => {
+    setActionTeamId(id);
     try {
       await approveTeam(id);
-    } catch (_) {}
+    } catch (_) {} finally {
+      setActionTeamId(null);
+    }
   };
 
   const handleConfirmReject = async () => {
@@ -105,6 +110,8 @@ export default function TeamApprovalsPage() {
               variant="ghost"
               size="sm"
               onClick={() => handleApprove(row.original.id)}
+              isLoading={actionTeamId === row.original.id && isSubmitting}
+              loadingText="Approving..."
               className="bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 border border-emerald-200 dark:border-emerald-500/20 text-xs font-semibold"
             >
               <CheckCircle className="w-3.5 h-3.5 mr-1" /> Approve
@@ -126,7 +133,7 @@ export default function TeamApprovalsPage() {
   ];
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
       <PageHeader
         title="Team Approvals"
         subtitle="Review, approve, or reject student teams for your department."
@@ -143,8 +150,10 @@ export default function TeamApprovalsPage() {
           const Icon = tab.icon;
           const isActive = statusFilter === tab.value;
           return (
-            <button
+            <Button
               key={tab.value}
+              variant="ghost"
+              size="sm"
               onClick={() => setStatusFilter(tab.value)}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 isActive
@@ -154,7 +163,7 @@ export default function TeamApprovalsPage() {
             >
               <Icon className="w-4 h-4" />
               {tab.label}
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -171,6 +180,8 @@ export default function TeamApprovalsPage() {
         description={`Are you sure you want to reject team "${rejectItem?.name}"? You may optionally provide a reason.`}
         onConfirm={handleConfirmReject}
         confirmText="Reject Team"
+        isLoading={isSubmitting}
+        loadingLabel="Rejecting Team..."
         variant="danger"
       >
         <div className="py-3">

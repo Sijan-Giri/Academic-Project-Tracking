@@ -62,17 +62,10 @@ export default function RoleGuard({ allowedRoles }: RoleGuardProps) {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-background z-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <Loader2 className="w-7 h-7 text-white animate-spin" />
-            </div>
-          </div>
-          <div className="text-center space-y-1">
-            <p className="text-sm font-semibold text-foreground">Loading</p>
-            <p className="text-xs text-muted-foreground font-normal">Setting up your session...</p>
-          </div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary text-primary" />
+          <p className="text-sm text-muted-foreground">Loading...</p>
         </div>
       </div>
     );

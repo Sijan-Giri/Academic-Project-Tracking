@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 
 import { useAcademicYears } from '@/hooks/useAcademicYears';
 import PageHeader from '@/components/shared/PageHeader';
@@ -154,15 +154,8 @@ export default function AcademicYearsPage() {
               )} />
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={() => { setCreateOpen(false); setEditItem(null); }}>Cancel</Button>
-                <Button type="submit" disabled={isSubmitting} className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {editItem ? 'Updating...' : 'Creating...'}
-                    </>
-                  ) : (
-                    editItem ? 'Update' : 'Create'
-                  )}
+                <Button type="submit" isLoading={isSubmitting} loadingText={editItem ? 'Updating...' : 'Creating...'} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                  {editItem ? 'Update' : 'Create'}
                 </Button>
               </div>
             </form>
