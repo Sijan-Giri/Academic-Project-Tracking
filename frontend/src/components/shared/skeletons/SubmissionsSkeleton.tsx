@@ -6,7 +6,7 @@ import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 /** Submissions page skeleton matching SubmissionsPage layout exactly. */
 export function SubmissionsSkeleton() {
   return (
-    <div className="space-y-6 max-w-6xl mx-auto transition-opacity duration-200 animate-in fade-in-50">
+    <div className="space-y-6 transition-opacity duration-200 animate-in fade-in-50">
       <PageHeaderSkeleton />
 
       <Card>

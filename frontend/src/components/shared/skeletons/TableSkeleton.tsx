@@ -6,7 +6,7 @@ import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 /** DataTable skeleton matching ProjectsPage, UsersPage, TeamApprovalsPage, etc. */
 export function TableSkeleton({ rows = 5, cols = 5 }: { rows?: number; cols?: number }) {
   return (
-    <div className="space-y-6 max-w-7xl mx-auto transition-opacity duration-200 animate-in fade-in-50">
+    <div className="space-y-6 transition-opacity duration-200 animate-in fade-in-50">
       <PageHeaderSkeleton />
 
       {/* Filter / Search Bar */}

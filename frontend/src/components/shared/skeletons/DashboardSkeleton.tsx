@@ -7,7 +7,7 @@ import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 /** Dashboard skeleton matching StudentDashboard, CoordinatorDashboard, AdminDashboard, and FacultyDashboard. */
 export function DashboardSkeleton() {
   return (
-    <div className="space-y-6 max-w-7xl mx-auto transition-opacity duration-200 animate-in fade-in-50">
+    <div className="space-y-6 transition-opacity duration-200 animate-in fade-in-50">
       <PageHeaderSkeleton />
 
       {/* Stats Cards Grid (4 Columns) */}

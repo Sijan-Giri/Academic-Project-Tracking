@@ -6,7 +6,7 @@ import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 /** Generic page skeleton fallback displayed during page transitions and lazy loading. */
 export function PageSkeleton() {
   return (
-    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 transition-opacity duration-300 animate-in fade-in-50">
+    <div className="space-y-6 p-4 md:p-6 transition-opacity duration-300 animate-in fade-in-50">
       <PageHeaderSkeleton />
 
       {/* Top Content Row / Metrics */}

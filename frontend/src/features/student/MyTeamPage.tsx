@@ -96,7 +96,7 @@ export default function MyTeamPage() {
 
   if (!team || !team.id) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="space-y-6">
         <PageHeader
           title="Team Roster & Invites"
           subtitle="Create a new capstone project team or accept an invitation from a peer."
@@ -234,7 +234,7 @@ export default function MyTeamPage() {
   // ── Existing Team View ───────────────────────────────────────────────────
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6">
       <PageHeader
         title="My Team Roster"
         subtitle="Manage team members, invite new peers, and track team status."

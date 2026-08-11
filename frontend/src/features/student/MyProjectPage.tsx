@@ -61,7 +61,7 @@ export default function MyProjectPage() {
 
   if (!project) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="space-y-6">
         <PageHeader title="Project Details" subtitle="View and track your capstone project deliverables." />
         <div className="flex flex-col items-center justify-center min-h-[45vh] bg-card border border-border rounded-xl p-8 text-center">
           <div className="w-12 h-12 rounded-xl bg-secondary border border-border flex items-center justify-center mb-4">
@@ -99,7 +99,7 @@ export default function MyProjectPage() {
   const currentStageIndex = statusToStageMap[project.status] ?? 0;
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6">
       {/* Page Header */}
       <PageHeader
         title={project.title || "Project Details"}

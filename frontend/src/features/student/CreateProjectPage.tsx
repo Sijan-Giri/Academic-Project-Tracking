@@ -72,7 +72,7 @@ export default function CreateProjectPage() {
 
   if (teamLoading) {
     return (
-      <div className="max-w-3xl mx-auto space-y-6 animate-pulse">
+      <div className="space-y-6 animate-pulse">
         <div className="h-44 bg-card border border-border rounded-xl" />
         <div className="h-64 bg-card border border-border rounded-xl" />
       </div>
@@ -82,7 +82,7 @@ export default function CreateProjectPage() {
   const isTeamApproved = team && team.status === 'APPROVED';
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="space-y-6">
       {/* Page Header */}
       <PageHeader
         title="Create Project Proposal"

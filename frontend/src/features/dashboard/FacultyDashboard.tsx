@@ -41,7 +41,7 @@ export default function FacultyDashboard() {
   ];
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6">
       <PageHeader
         title="Faculty Dashboard"
         subtitle="Overview of your guided student projects, upcoming evaluation schedules, and review tasks."

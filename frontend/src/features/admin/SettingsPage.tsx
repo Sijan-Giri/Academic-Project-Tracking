@@ -50,7 +50,7 @@ export default function SettingsPage() {
   if (isLoading) return <SettingsSkeleton />;
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6">
       <PageHeader
         title="System Settings"
         subtitle="Configure global parameters for the tracking system"

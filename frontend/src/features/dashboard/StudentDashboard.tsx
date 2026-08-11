@@ -58,7 +58,7 @@ export default function StudentDashboard() {
   const nearestDeadline = upcomingDeadlines[0];
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6">
       {/* Page Header */}
       <PageHeader
         title={`Welcome back, ${authUser?.name || 'Student'}`}

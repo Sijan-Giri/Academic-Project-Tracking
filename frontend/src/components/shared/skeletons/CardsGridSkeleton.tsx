@@ -6,7 +6,7 @@ import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 /** Cards grid skeleton matching GuidedProjectsPage, AnnouncementsPage, MyTeamPage. */
 export function CardsGridSkeleton({ cards = 6 }: { cards?: number }) {
   return (
-    <div className="space-y-6 max-w-7xl mx-auto transition-opacity duration-200 animate-in fade-in-50">
+    <div className="space-y-6 transition-opacity duration-200 animate-in fade-in-50">
       <PageHeaderSkeleton />
 
       {/* Toolbar */}

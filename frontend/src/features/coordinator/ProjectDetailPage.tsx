@@ -53,7 +53,7 @@ export default function ProjectDetailPage() {
   const guideInfo = project.guideAssignment?.facultyProfile;
 
   return (
-    <div className="space-y-6 pb-12 max-w-7xl mx-auto">
+    <div className="space-y-6 pb-12">
       <div className="flex items-center gap-4">
         <Button variant="ghost" onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to Projects

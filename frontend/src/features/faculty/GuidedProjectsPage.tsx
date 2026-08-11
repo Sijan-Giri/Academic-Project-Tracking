@@ -46,7 +46,7 @@ export default function GuidedProjectsPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6">
       <PageHeader
         title="My Guided Projects"
         subtitle="Manage student teams you are actively mentoring, review submissions, and provide guidance."

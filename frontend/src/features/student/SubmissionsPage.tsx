@@ -56,7 +56,7 @@ export default function SubmissionsPage() {
   if (isLoading) return <SubmissionsSkeleton />;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="space-y-6">
       <PageHeader
         title="Submission History"
         subtitle="Review, download, and manage all uploaded project milestone deliverables and version history."

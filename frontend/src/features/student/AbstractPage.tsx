@@ -21,7 +21,7 @@ export default function AbstractPage() {
 
   if (!project) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="space-y-6">
         <PageHeader title="Project Abstract Proposal" subtitle="View and track your capstone project abstract proposal." />
         <div className="flex flex-col items-center justify-center min-h-[45vh] bg-card border border-border rounded-xl p-8 text-center shadow-xs">
           <div className="w-12 h-12 rounded-xl bg-secondary border border-border flex items-center justify-center mb-4">
@@ -52,7 +52,7 @@ export default function AbstractPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <PageHeader
         title="Project Abstract Proposal"

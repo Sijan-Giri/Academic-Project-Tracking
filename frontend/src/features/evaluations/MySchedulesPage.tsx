@@ -229,7 +229,7 @@ export default function MySchedulesPage() {
   );
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6">
       <PageHeader
         title="Presentation Schedules & Links"
         subtitle="View review presentation schedules, join live online meeting links, and check panel evaluators."

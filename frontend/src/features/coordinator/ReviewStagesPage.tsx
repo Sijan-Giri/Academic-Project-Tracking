@@ -143,7 +143,7 @@ export default function ReviewStagesPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6">
       <PageHeader
         title="Review Stages & Evaluation Criteria"
         subtitle="Define evaluation milestones, criteria breakdown, and scoring weightage for semesters."

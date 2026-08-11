@@ -10,7 +10,7 @@ export default function AnnouncementsPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 max-w-6xl mx-auto">
+      <div className="space-y-6">
         <div className="h-20 bg-neutral-subtle animate-pulse rounded-xl border-border" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -22,7 +22,7 @@ export default function AnnouncementsPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold gradient-text-brand">
           Announcements

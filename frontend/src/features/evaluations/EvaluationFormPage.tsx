@@ -77,7 +77,7 @@ export default function EvaluationFormPage() {
   const dateVal = schedule.scheduledAt || (schedule as any).date;
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-12">
+    <div className="space-y-6 pb-12">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-5 h-5" />

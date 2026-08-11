@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export function SettingsSkeleton() {
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="space-y-6">
       <div className="space-y-2">
         <Skeleton className="h-7 w-36" />
         <Skeleton className="h-4 w-64" />

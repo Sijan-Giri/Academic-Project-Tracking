@@ -93,7 +93,7 @@ export default function ProfilePage() {
   const facultyProf = user?.facultyProfile;
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6">
       {/* Header */}
       <PageHeader
         title="Account Profile & Security"
