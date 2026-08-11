@@ -3,7 +3,22 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import AuthLayout from '@/layouts/AuthLayout';
 import RoleGuard from '@/layouts/RoleGuard';
-import { PageSkeleton } from '@/components/shared/Skeletons';
+
+import {
+  DashboardSkeleton,
+  TableSkeleton,
+  ProjectDetailSkeleton,
+  FormSkeleton,
+  MyTeamSkeleton,
+  AbstractSkeleton,
+  MilestonesSkeleton,
+  SubmissionsSkeleton,
+  SchedulesSkeleton,
+  ReviewStagesSkeleton,
+  SettingsSkeleton,
+  PageSkeleton,
+  CardsGridSkeleton,
+} from '@/components/shared/Skeletons';
 
 import LoginPage from '@/features/auth/LoginPage';
 import RegisterPage from '@/features/auth/RegisterPage';
@@ -50,8 +65,8 @@ const ReportsPage = lazy(() => import('@/features/reports/ReportsPage'));
 const ProfilePage = lazy(() => import('@/features/profile/ProfilePage'));
 const NotFoundPage = lazy(() => import('@/features/NotFoundPage'));
 
-const wrap = (component: React.ReactNode) => (
-  <Suspense fallback={<PageSkeleton />}>{component}</Suspense>
+const wrap = (component: React.ReactNode, skeleton: React.ReactNode = <PageSkeleton />) => (
+  <Suspense fallback={skeleton}>{component}</Suspense>
 );
 
 export const router = createBrowserRouter([
@@ -72,49 +87,49 @@ export const router = createBrowserRouter([
     children: [{
       element: <DashboardLayout />,
       children: [
-        { path: '/dashboard', element: wrap(<DashboardIndex />) },
-        { path: '/profile', element: wrap(<ProfilePage />) },
-        { path: '/notifications', element: wrap(<NotificationsPage />) },
-        { path: '/announcements', element: wrap(<AnnouncementsPage />) },
-        { path: '/reports', element: wrap(<ReportsPage />) },
+        { path: '/dashboard', element: wrap(<DashboardIndex />, <DashboardSkeleton />) },
+        { path: '/profile', element: wrap(<ProfilePage />, <FormSkeleton />) },
+        { path: '/notifications', element: wrap(<NotificationsPage />, <TableSkeleton rows={6} cols={4} />) },
+        { path: '/announcements', element: wrap(<AnnouncementsPage />, <CardsGridSkeleton />) },
+        { path: '/reports', element: wrap(<ReportsPage />, <CardsGridSkeleton />) },
         // Admin
         { element: <RoleGuard allowedRoles={['ADMIN']} />, children: [
-          { path: '/admin/departments', element: wrap(<DepartmentsPage />) },
-          { path: '/admin/academic-years', element: wrap(<AcademicYearsPage />) },
-          { path: '/admin/batches', element: wrap(<BatchesPage />) },
-          { path: '/admin/semesters', element: wrap(<SemestersPage />) },
-          { path: '/admin/users', element: wrap(<UsersPage />) },
-          { path: '/admin/review-templates', element: wrap(<ReviewTemplatesPage />) },
-          { path: '/admin/settings', element: wrap(<SettingsPage />) },
-          { path: '/admin/audit', element: wrap(<AuditLogPage />) },
+          { path: '/admin/departments', element: wrap(<DepartmentsPage />, <TableSkeleton rows={5} cols={4} />) },
+          { path: '/admin/academic-years', element: wrap(<AcademicYearsPage />, <TableSkeleton rows={5} cols={4} />) },
+          { path: '/admin/batches', element: wrap(<BatchesPage />, <TableSkeleton rows={5} cols={5} />) },
+          { path: '/admin/semesters', element: wrap(<SemestersPage />, <TableSkeleton rows={5} cols={5} />) },
+          { path: '/admin/users', element: wrap(<UsersPage />, <TableSkeleton rows={7} cols={5} />) },
+          { path: '/admin/review-templates', element: wrap(<ReviewTemplatesPage />, <TableSkeleton rows={5} cols={4} />) },
+          { path: '/admin/settings', element: wrap(<SettingsPage />, <SettingsSkeleton />) },
+          { path: '/admin/audit', element: wrap(<AuditLogPage />, <TableSkeleton rows={8} cols={6} />) },
         ]},
         // Coordinator
         { element: <RoleGuard allowedRoles={['COORDINATOR', 'ADMIN']} />, children: [
-          { path: '/coordinator/projects', element: wrap(<CoordProjectsPage />) },
-          { path: '/coordinator/projects/:id', element: wrap(<CoordProjectDetailPage />) },
-          { path: '/coordinator/teams', element: wrap(<TeamApprovalsPage />) },
-          { path: '/coordinator/guides', element: wrap(<GuideAllocationPage />) },
-          { path: '/coordinator/review-stages', element: wrap(<ReviewStagesPage />) },
-          { path: '/coordinator/schedules', element: wrap(<SchedulesPage />) },
-          { path: '/coordinator/announcements', element: wrap(<CoordAnnouncementsPage />) },
+          { path: '/coordinator/projects', element: wrap(<CoordProjectsPage />, <TableSkeleton rows={6} cols={5} />) },
+          { path: '/coordinator/projects/:id', element: wrap(<CoordProjectDetailPage />, <ProjectDetailSkeleton />) },
+          { path: '/coordinator/teams', element: wrap(<TeamApprovalsPage />, <TableSkeleton rows={6} cols={5} />) },
+          { path: '/coordinator/guides', element: wrap(<GuideAllocationPage />, <TableSkeleton rows={6} cols={4} />) },
+          { path: '/coordinator/review-stages', element: wrap(<ReviewStagesPage />, <ReviewStagesSkeleton />) },
+          { path: '/coordinator/schedules', element: wrap(<SchedulesPage />, <SchedulesSkeleton />) },
+          { path: '/coordinator/announcements', element: wrap(<CoordAnnouncementsPage />, <CardsGridSkeleton />) },
         ]},
         // Faculty
         { element: <RoleGuard allowedRoles={['FACULTY', 'ADMIN']} />, children: [
-          { path: '/faculty/projects', element: wrap(<GuidedProjectsPage />) },
+          { path: '/faculty/projects', element: wrap(<GuidedProjectsPage />, <TableSkeleton rows={6} cols={4} />) },
         ]},
         // Panel + Faculty + Student + Coordinator schedules
         { element: <RoleGuard allowedRoles={['PANEL', 'FACULTY', 'ADMIN', 'STUDENT', 'COORDINATOR']} />, children: [
-          { path: '/my-schedules', element: wrap(<MySchedulesPage />) },
-          { path: '/evaluations/:scheduleId', element: wrap(<EvaluationFormPage />) },
+          { path: '/my-schedules', element: wrap(<MySchedulesPage />, <SchedulesSkeleton />) },
+          { path: '/evaluations/:scheduleId', element: wrap(<EvaluationFormPage />, <FormSkeleton />) },
         ]},
         // Student
         { element: <RoleGuard allowedRoles={['STUDENT']} />, children: [
-          { path: '/my-project', element: wrap(<MyProjectPage />) },
-          { path: '/my-project/create', element: wrap(<CreateProjectPage />) },
-          { path: '/my-team', element: wrap(<MyTeamPage />) },
-          { path: '/my-project/abstract', element: wrap(<AbstractPage />) },
-          { path: '/my-project/milestones', element: wrap(<MilestonesPage />) },
-          { path: '/my-project/submissions', element: wrap(<StudentSubmissionsPage />) },
+          { path: '/my-project', element: wrap(<MyProjectPage />, <ProjectDetailSkeleton />) },
+          { path: '/my-project/create', element: wrap(<CreateProjectPage />, <FormSkeleton />) },
+          { path: '/my-team', element: wrap(<MyTeamPage />, <MyTeamSkeleton />) },
+          { path: '/my-project/abstract', element: wrap(<AbstractPage />, <AbstractSkeleton />) },
+          { path: '/my-project/milestones', element: wrap(<MilestonesPage />, <MilestonesSkeleton />) },
+          { path: '/my-project/submissions', element: wrap(<StudentSubmissionsPage />, <SubmissionsSkeleton />) },
         ]},
       ],
     }],

@@ -213,16 +213,18 @@ export const submitAbstract = async (id: string, userId: string) => {
     newValue: ProjectStatus.ABSTRACT_SUBMITTED,
   });
 
-  // Notify coordinators
+  // Notify coordinators concurrently
   const coordinators = await prisma.user.findMany({ where: { role: 'COORDINATOR' } });
-  for (const coord of coordinators) {
-    await notificationService.sendNotification(
-      coord.id,
-      'Abstract Submitted',
-      `Project ${project.title} has submitted its abstract`,
-      'GENERAL'
-    );
-  }
+  await Promise.all(
+    coordinators.map((coord) =>
+      notificationService.sendNotification(
+        coord.id,
+        'Abstract Submitted',
+        `Project ${project.title} has submitted its abstract`,
+        'GENERAL'
+      )
+    )
+  );
 
   return updatedProject;
 };
@@ -253,14 +255,16 @@ export const reviewAbstract = async (id: string, data: { status: string; comment
     newValue: finalStatus,
   });
 
-  for (const member of project.team.members) {
-    await notificationService.sendNotification(
-      member.studentProfile.userId,
-      'Abstract Review Updated',
-      `Your project abstract has been reviewed. Status: ${finalStatus}. Comments: ${data.comments}`,
-      'GENERAL'
-    );
-  }
+  await Promise.all(
+    project.team.members.map((member) =>
+      notificationService.sendNotification(
+        member.studentProfile.userId,
+        'Abstract Review Updated',
+        `Your project abstract has been reviewed. Status: ${finalStatus}. Comments: ${data.comments}`,
+        'GENERAL'
+      )
+    )
+  );
 
   return updatedProject;
 };
@@ -278,14 +282,16 @@ export const updateProjectStatus = async (id: string, status: ProjectStatus, use
   });
 
   if (project.team?.members) {
-    for (const member of project.team.members) {
-      await notificationService.sendNotification(
-        member.studentProfile.userId,
-        'Project Status Updated',
-        `Your project status has been updated to ${status.replace('_', ' ')}.`,
-        'STATUS_CHANGE'
-      );
-    }
+    await Promise.all(
+      project.team.members.map((member) =>
+        notificationService.sendNotification(
+          member.studentProfile.userId,
+          'Project Status Updated',
+          `Your project status has been updated to ${status.replace('_', ' ')}.`,
+          'STATUS_CHANGE'
+        )
+      )
+    );
   }
 
   await auditService.createAuditLog({

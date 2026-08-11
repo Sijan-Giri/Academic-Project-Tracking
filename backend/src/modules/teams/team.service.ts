@@ -254,7 +254,7 @@ export const acceptInvitation = async (invitationId: string, userId: string) => 
   ]);
 
   // Notify all team members
-  for (const member of updatedTeam.members) {
+  await Promise.all(updatedTeam.members.map(async (member) => {
     try {
       emitToUser(member.studentProfile.userId, 'team:updated', updatedTeam);
     } catch (_) {}
@@ -266,13 +266,13 @@ export const acceptInvitation = async (invitationId: string, userId: string) => 
         'GENERAL'
       );
     }
-  }
+  }));
 
   // Notify coordinators that team composition changed and is pending approval
   const coordinators = await prisma.user.findMany({
     where: { role: { in: ['COORDINATOR', 'ADMIN'] }, isActive: true },
   });
-  for (const coord of coordinators) {
+  await Promise.all(coordinators.map(async (coord) => {
     try {
       emitToUser(coord.id, 'team:updated', updatedTeam);
     } catch (_) {}
@@ -282,7 +282,7 @@ export const acceptInvitation = async (invitationId: string, userId: string) => 
       `Team "${updatedTeam.name}" added a new member and requires coordinator re-approval.`,
       'GENERAL'
     );
-  }
+  }));
 
   try {
     broadcastEvent('team:updated', updatedTeam);
@@ -443,10 +443,10 @@ export const approveTeam = async (id: string, userId: string) => {
       approvedById: userId,
       approvedAt: new Date(),
     },
-    include: { members: { include: { studentProfile: true } } },
+    include: { members: { include: { studentProfile: { include: { user: true } } } } },
   });
 
-  for (const member of team.members) {
+  await Promise.all(team.members.map(async (member) => {
     try {
       emitToUser(member.studentProfile.userId, 'team:updated', team);
     } catch (_) {}
@@ -456,7 +456,8 @@ export const approveTeam = async (id: string, userId: string) => {
       `Your team ${team.name} has been approved`,
       'GENERAL'
     );
-  }
+  }));
+
   try {
     broadcastEvent('team:updated', team);
   } catch (_) {}
@@ -479,10 +480,10 @@ export const rejectTeam = async (id: string, reason?: string, userId?: string) =
       status: TeamStatus.REJECTED,
       rejectionReason: reason || null,
     },
-    include: { members: { include: { studentProfile: true } } },
+    include: { members: { include: { studentProfile: { include: { user: true } } } } },
   });
 
-  for (const member of team.members) {
+  await Promise.all(team.members.map(async (member) => {
     try {
       emitToUser(member.studentProfile.userId, 'team:updated', team);
     } catch (_) {}
@@ -492,7 +493,7 @@ export const rejectTeam = async (id: string, reason?: string, userId?: string) =
       `Your team ${team.name} has been rejected.${reason ? ` Reason: ${reason}` : ''}`,
       'GENERAL'
     );
-  }
+  }));
 
   try {
     broadcastEvent('team:updated', team);
@@ -570,16 +571,18 @@ export const deleteTeam = async (id: string, userId: string) => {
     await tx.team.delete({ where: { id } });
   });
 
-  for (const member of team.members) {
-    if (member.studentProfile.userId !== userId) {
-      await notificationService.sendNotification(
-        member.studentProfile.userId,
-        'Team Disbanded',
-        `Team "${team.name}" has been deleted by the team leader.`,
-        'GENERAL'
-      );
-    }
-  }
+  await Promise.all(
+    team.members
+      .filter((member) => member.studentProfile.userId !== userId)
+      .map((member) =>
+        notificationService.sendNotification(
+          member.studentProfile.userId,
+          'Team Disbanded',
+          `Team "${team.name}" has been deleted by the team leader.`,
+          'GENERAL'
+        )
+      )
+  );
 
   await auditService.createAuditLog({
     action: AuditAction.DELETE,

@@ -14,6 +14,13 @@ export const initSocket = (httpServer: HttpServer): Server => {
   const allowedOrigins = (env.CORSORIGIN || 'http://localhost:5173').split(',').map(o => o.trim());
 
   io = new Server(httpServer, {
+    // Aggressively reclaim dead connections at scale.
+    // Default pingInterval (25s) + pingTimeout (20s) = 45s before a ghost socket is detected.
+    // At 400+ users this wastes file descriptors. Tighten both:
+    pingInterval: 20_000,   // Send ping every 20s (default: 25s)
+    pingTimeout: 10_000,    // Disconnect if no pong in 10s (default: 20s)
+    // Limit incoming HTTP upgrade payload to prevent memory abuse
+    maxHttpBufferSize: 1e6, // 1 MB (default: 1 MB, explicit for clarity)
     cors: {
       origin: (origin, callback) => {
         if (!origin) return callback(null, true);

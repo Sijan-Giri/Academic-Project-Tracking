@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { env } from './config/env';
 import { errorHandler } from './middleware/error.middleware';
+import { globalLimiter, authLimiter, uploadLimiter } from './middleware/rate-limit.middleware';
 
 // Import all routers
 import authRouter from './modules/auth/auth.router';
@@ -57,6 +58,17 @@ app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
+// ── Rate Limiting ────────────────────────────────────────────────────────────
+// Global baseline: 200 req / 15 min per IP (1000 in dev)
+app.use(globalLimiter);
+// Strict auth limiter: 10 attempts / 15 min per IP (50 in dev)
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/signup', authLimiter);
+app.use('/api/auth/refresh', authLimiter);
+// Upload limiter: 20 uploads / hour per IP (200 in dev)
+app.use('/api/auth/bulk-import', uploadLimiter);
+app.use('/api/submissions', uploadLimiter);
 
 // Mount routes
 app.use('/api/auth', authRouter);

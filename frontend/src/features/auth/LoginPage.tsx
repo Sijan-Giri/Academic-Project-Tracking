@@ -113,10 +113,13 @@ export default function LoginPage() {
         </Button>
       </form>
       <p className="mt-6 text-center text-sm text-gray-400">
-        Don't have an account?{' '}
+        Faculty member?{' '}
         <Link to="/register" className="text-indigo-400 hover:text-indigo-300 font-semibold underline">
-          Sign Up
+          Create a faculty account
         </Link>
+      </p>
+      <p className="mt-2 text-center text-xs text-gray-600">
+        Students are registered by administrators.
       </p>
     </div>
   );

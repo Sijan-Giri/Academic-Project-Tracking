@@ -53,14 +53,16 @@ export const assignGuide = async (data: { projectId: string; facultyProfileId: s
   });
 
   if (project) {
-    for (const member of project.team.members) {
-      await notificationService.sendNotification(
-        member.studentProfile.userId,
-        'Guide Assigned',
-        'A guide has been assigned to your project.',
-        'GENERAL'
-      );
-    }
+    await Promise.all(
+      project.team.members.map((member) =>
+        notificationService.sendNotification(
+          member.studentProfile.userId,
+          'Guide Assigned',
+          'A guide has been assigned to your project.',
+          'GENERAL'
+        )
+      )
+    );
   }
 
   if (faculty) {

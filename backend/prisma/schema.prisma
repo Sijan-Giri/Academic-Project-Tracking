@@ -203,6 +203,10 @@ model Team {
   members     TeamMember[]
   invitations TeamInvitation[]
   project     Project?
+
+  @@index([semesterId])
+  @@index([status])
+  @@index([semesterId, status])
 }
 
 model TeamMember {
@@ -261,6 +265,10 @@ model Project {
   evaluations     Evaluation[]
   files           File[]
   schedules       ReviewSchedule[]
+
+  @@index([semesterId])
+  @@index([status])
+  @@index([semesterId, status])
 }
 
 model GuideAssignment {
@@ -274,6 +282,9 @@ model GuideAssignment {
   project        Project        @relation(fields: [projectId], references: [id])
   facultyProfile FacultyProfile @relation(fields: [facultyProfileId], references: [id])
   assignedBy     User           @relation(fields: [assignedById], references: [id])
+
+  @@index([facultyProfileId])
+  @@index([facultyProfileId, isActive])
 }
 
 model ReviewStageTemplate {
@@ -302,6 +313,10 @@ model ReviewStage {
   schedules  ReviewSchedule[]
   criteria   EvaluationCriteria[]
   evaluations Evaluation[]
+
+  @@index([semesterId])
+  @@index([departmentId])
+  @@index([semesterId, departmentId])
 }
 
 model ReviewSchedule {
@@ -317,6 +332,10 @@ model ReviewSchedule {
   reviewStage      ReviewStage       @relation(fields: [reviewStageId], references: [id])
   project          Project           @relation(fields: [projectId], references: [id])
   panelAssignments PanelAssignment[]
+
+  @@index([projectId])
+  @@index([reviewStageId])
+  @@index([scheduledAt])
 }
 
 model PanelAssignment {
@@ -375,6 +394,8 @@ model Evaluation {
   scores      EvaluationScore[]
 
   @@unique([projectId, reviewStageId, evaluatorId])
+  @@index([projectId])
+  @@index([evaluatorId])
   @@map("evaluations")
 }
 
@@ -405,6 +426,10 @@ model Milestone {
 
   project     Project      @relation(fields: [projectId], references: [id])
   submissions Submission[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([projectId, status])
 }
 
 model Submission {
@@ -447,6 +472,10 @@ model Notification {
   createdAt        DateTime         @default(now())
 
   user User @relation(fields: [userId], references: [id])
+
+  // Most-queried patterns: "my unread notifications" and "my notification feed"
+  @@index([userId, isRead])
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 model Announcement {
@@ -472,6 +501,10 @@ model AuditLog {
   createdAt  DateTime    @default(now())
 
   user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt(sort: Desc)])
 }
 
 model Settings {

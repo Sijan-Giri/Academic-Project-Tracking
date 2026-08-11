@@ -19,18 +19,20 @@ export const scheduleService = {
 
     await createAuditLog({ action: AuditAction.CREATE, entityType: 'ReviewSchedule', entityId: schedule.id, userId: creatorId, newValue: JSON.stringify({ schedule }) });
 
-    // Send notifications to panel members
+    // Notify panel members concurrently
     if (schedule.panelAssignments) {
-      for (const assignment of schedule.panelAssignments) {
-        if (assignment.facultyProfile?.user?.id) {
-          await sendNotification(
-            assignment.facultyProfile.user.id,
-            'New Review Scheduled',
-            `You have been assigned to a review panel for project presentation on ${new Date(schedule.scheduledAt).toLocaleString()}`,
-            'DEADLINE_REMINDER'
-          );
-        }
-      }
+      await Promise.all(
+        schedule.panelAssignments
+          .filter((a) => a.facultyProfile?.user?.id)
+          .map((a) =>
+            sendNotification(
+              a.facultyProfile!.user!.id,
+              'New Review Scheduled',
+              `You have been assigned to a review panel for project presentation on ${new Date(schedule.scheduledAt).toLocaleString()}`,
+              'DEADLINE_REMINDER'
+            )
+          )
+      );
     }
 
     // Send notifications to student team members
@@ -45,17 +47,20 @@ export const scheduleService = {
         timeStyle: 'short',
       });
 
-      for (const member of teamMembers) {
-        if (member.studentProfile?.user?.id) {
-          await sendNotification(
-            member.studentProfile.user.id,
-            'Presentation Schedule Published',
-            `Your project presentation has been scheduled for ${scheduledDate} at ${schedule.venue || 'TBD'} (${schedule.mode}).`,
-            'DEADLINE_REMINDER',
-            schedule.projectId
-          );
-        }
-      }
+      // Notify team members concurrently
+      await Promise.all(
+        teamMembers
+          .filter((m) => m.studentProfile?.user?.id)
+          .map((m) =>
+            sendNotification(
+              m.studentProfile!.user!.id,
+              'Presentation Schedule Published',
+              `Your project presentation has been scheduled for ${scheduledDate} at ${schedule.venue || 'TBD'} (${schedule.mode}).`,
+              'DEADLINE_REMINDER',
+              schedule.projectId
+            )
+          )
+      );
     } catch (err) {
       console.error('Failed to notify team members of schedule:', err);
     }

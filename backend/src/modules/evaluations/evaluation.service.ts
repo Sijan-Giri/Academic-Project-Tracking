@@ -61,17 +61,19 @@ export const evaluationService = {
           include: { studentProfile: { include: { user: true } } }
         });
 
-        for (const tm of teamMembers) {
-          if (tm.studentProfile?.user?.id) {
-            await sendNotification(
-              tm.studentProfile.user.id,
-              'Evaluation Results Published',
-              `Your presentation for ${stageName} has been evaluated! Final Score: ${totalMarks} / ${maxTotalMarks} (${grade}).`,
-              'FEEDBACK',
-              data.projectId
-            );
-          }
-        }
+        await Promise.all(
+          teamMembers
+            .filter((tm) => tm.studentProfile?.user?.id)
+            .map((tm) =>
+              sendNotification(
+                tm.studentProfile!.user!.id,
+                'Evaluation Results Published',
+                `Your presentation for ${stageName} has been evaluated! Final Score: ${totalMarks} / ${maxTotalMarks} (${grade}).`,
+                'FEEDBACK',
+                data.projectId
+              )
+            )
+        );
 
         const guideAssignment = await prisma.guideAssignment.findFirst({
           where: { projectId: data.projectId, isActive: true },

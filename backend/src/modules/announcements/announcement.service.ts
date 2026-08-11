@@ -18,11 +18,13 @@ export const createAnnouncement = async (data: any, createdById: string) => {
     broadcastEvent('announcement:new', announcement);
   } catch (_) {}
 
-  // Sending notifications to relevant users
-  const users = await prisma.user.findMany({ where: { isActive: true } });
-  for (const user of users) {
-    await sendNotification(user.id, `New Announcement: ${data.title}`, data.content, 'GENERAL');
-  }
+  // Notify all active users concurrently (never block the response on this)
+  const users = await prisma.user.findMany({ where: { isActive: true }, select: { id: true } });
+  await Promise.all(
+    users.map((user) =>
+      sendNotification(user.id, `New Announcement: ${data.title}`, data.content, 'GENERAL')
+    )
+  );
 
   return announcement;
 };

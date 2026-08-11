@@ -78,14 +78,16 @@ export const updateMilestoneStatus = async (id: string, status: MilestoneStatus,
   });
 
   if (status === MilestoneStatus.APPROVED || status === MilestoneStatus.REJECTED || status === MilestoneStatus.REVISION_NEEDED) {
-    for (const member of milestone.project.team.members) {
-      await notificationService.sendNotification(
-        member.studentProfile.userId,
-        `Milestone Status: ${status}`,
-        `The status of milestone "${milestone.name}" is now ${status}.`,
-        'GENERAL'
-      );
-    }
+    await Promise.all(
+      milestone.project.team.members.map((member) =>
+        notificationService.sendNotification(
+          member.studentProfile.userId,
+          `Milestone Status: ${status}`,
+          `The status of milestone "${milestone.name}" is now ${status}.`,
+          'GENERAL'
+        )
+      )
+    );
   }
 
   await auditService.createAuditLog({
