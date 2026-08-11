@@ -79,10 +79,10 @@ export default function SubmissionsPage() {
         {/* Header */}
         <div className="p-5 border-b border-border flex items-center justify-between">
           <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-            <FolderGit2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <FolderGit2 className="w-5 h-5 text-brand" />
             Uploaded Milestone Deliverables
           </h3>
-          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-brand-subtle text-brand border border-brand">
             {submissions.length} Record(s)
           </span>
         </div>
@@ -109,7 +109,7 @@ export default function SubmissionsPage() {
                   {/* Submission header */}
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3 flex-wrap">
-                      <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+                      <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-brand-subtle text-brand border border-brand">
                         {milestoneTitle}
                       </span>
                       <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-secondary border border-border text-foreground">
@@ -132,9 +132,9 @@ export default function SubmissionsPage() {
                       {fileList.map((file: any) => (
                         <div
                           key={file.id}
-                          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 border border-border hover:border-indigo-500/30 transition-all"
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 border border-border hover:border-brand transition-all"
                         >
-                          <FileText className="w-4 h-4 text-indigo-500 shrink-0" />
+                          <FileText className="w-4 h-4 text-brand shrink-0" />
                           <span
                             className="text-xs font-medium text-foreground max-w-[160px] truncate"
                             title={file.originalName}
@@ -154,7 +154,7 @@ export default function SubmissionsPage() {
                             onClick={() => handleDownload(file.id, file.originalName)}
                             isLoading={downloadingId === file.id}
                             title="Download file"
-                            className="h-7 w-7 ml-1 p-0 text-muted-foreground hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
+                            className="h-7 w-7 ml-1 p-0 text-muted-foreground hover:text-brand hover:bg-indigo-50 dark:hover:bg-brand-subtle"
                           >
                             <Download className="w-3.5 h-3.5" />
                           </Button>

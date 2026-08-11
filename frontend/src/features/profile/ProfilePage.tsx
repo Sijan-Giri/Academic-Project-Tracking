@@ -31,7 +31,7 @@ function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label:
   return (
     <div className="flex items-start gap-3 py-3 border-b border-border last:border-0">
       <div className="w-8 h-8 rounded-lg bg-secondary border border-border flex items-center justify-center shrink-0 mt-0.5">
-        <Icon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+        <Icon className="w-4 h-4 text-brand" />
       </div>
       <div className="min-w-0">
         <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-0.5">{label}</p>
@@ -110,7 +110,7 @@ export default function ProfilePage() {
           <div className="space-y-1 min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl font-bold text-foreground tracking-tight truncate">{user?.name}</h1>
-              <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+              <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-brand-subtle text-brand border border-brand">
                 {user?.role}
               </span>
             </div>
@@ -124,7 +124,7 @@ export default function ProfilePage() {
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="border-b border-border pb-3">
               <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                <User className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <User className="w-4 h-4 text-brand" />
                 Personal Information
               </h3>
             </div>
@@ -134,7 +134,7 @@ export default function ProfilePage() {
                 <div className="space-y-1.5">
                   <Label htmlFor="name" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Full Name</Label>
                   <Input id="name" {...regProfile('name')} />
-                  {profileErrors.name?.message && <p className="text-xs text-rose-600 font-medium">{String(profileErrors.name.message)}</p>}
+                  {profileErrors.name?.message && <p className="text-xs text-danger font-medium">{String(profileErrors.name.message)}</p>}
                 </div>
 
                 <div className="space-y-1.5">
@@ -168,7 +168,7 @@ export default function ProfilePage() {
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="border-b border-border pb-3">
               <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                <Lock className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <Lock className="w-4 h-4 text-brand" />
                 Security & Password
               </h3>
             </div>
@@ -182,7 +182,7 @@ export default function ProfilePage() {
                     {showOldPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                 </div>
-                {pwErrors.currentPassword?.message && <p className="text-xs text-rose-600 font-medium">{String(pwErrors.currentPassword.message)}</p>}
+                {pwErrors.currentPassword?.message && <p className="text-xs text-danger font-medium">{String(pwErrors.currentPassword.message)}</p>}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -194,7 +194,7 @@ export default function ProfilePage() {
                       {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </Button>
                   </div>
-                  {pwErrors.newPassword?.message && <p className="text-xs text-rose-600 font-medium">{String(pwErrors.newPassword.message)}</p>}
+                  {pwErrors.newPassword?.message && <p className="text-xs text-danger font-medium">{String(pwErrors.newPassword.message)}</p>}
                 </div>
 
                 <div className="space-y-1.5">
@@ -205,7 +205,7 @@ export default function ProfilePage() {
                       {showConfirmPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </Button>
                   </div>
-                  {pwErrors.confirmPassword?.message && <p className="text-xs text-rose-600 font-medium">{String(pwErrors.confirmPassword.message)}</p>}
+                  {pwErrors.confirmPassword?.message && <p className="text-xs text-danger font-medium">{String(pwErrors.confirmPassword.message)}</p>}
                 </div>
               </div>
 
@@ -223,7 +223,7 @@ export default function ProfilePage() {
         <div className="space-y-6">
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-2">
             <h3 className="text-sm font-semibold text-foreground border-b border-border pb-3 flex items-center gap-2">
-              <BadgeCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <BadgeCheck className="w-4 h-4 text-brand" />
               Academic Metadata
             </h3>
 

@@ -34,7 +34,7 @@ export default function AuditLogPage() {
         title="Audit Log"
         subtitle={`${total} total entries`}
         actions={
-          <Button variant="outline" onClick={handleExport} disabled={exporting} id="export-audit-btn" className="dark:border-white/10 border-slate-300">
+          <Button variant="outline" onClick={handleExport} disabled={exporting} id="export-audit-btn" className="border-border">
             <Download className="h-4 w-4 mr-2" />
             {exporting ? 'Exporting…' : 'Export Excel'}
           </Button>
@@ -42,10 +42,10 @@ export default function AuditLogPage() {
       />
 
       {/* Filters */}
-      <div className="dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200 rounded-xl p-4 shadow-sm">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
         <div className="flex items-center gap-2 mb-3">
-          <Filter className="h-4 w-4 text-slate-400" />
-          <span className="text-sm text-slate-500 font-medium">Filters</span>
+          <Filter className="h-4 w-4 text-dark-muted" />
+          <span className="text-sm text-neutral-sm font-medium">Filters</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="space-y-1">
@@ -94,10 +94,10 @@ export default function AuditLogPage() {
       </div>
 
       {/* Table */}
-      <div className="dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
         {isLoading ? (
           <div className="space-y-px">
-            {[...Array(8)].map((_, i) => <div key={i} className="h-12 dark:bg-white/5 bg-slate-100 animate-pulse" />)}
+            {[...Array(8)].map((_, i) => <div key={i} className="h-12 bg-neutral-subtle animate-pulse" />)}
           </div>
         ) : logs.length === 0 ? (
           <EmptyState icon={FileText} title="No audit logs" description="No activity found for the selected filters" />
@@ -105,13 +105,13 @@ export default function AuditLogPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b dark:border-white/10 border-slate-200 dark:bg-white/5 bg-slate-50">
-                  <th className="text-left px-4 py-3 text-slate-500 font-medium w-8"></th>
-                  <th className="text-left px-4 py-3 text-slate-500 font-medium">Timestamp</th>
-                  <th className="text-left px-4 py-3 text-slate-500 font-medium">User</th>
-                  <th className="text-left px-4 py-3 text-slate-500 font-medium">Action</th>
-                  <th className="text-left px-4 py-3 text-slate-500 font-medium">Entity Type</th>
-                  <th className="text-left px-4 py-3 text-slate-500 font-medium">Entity ID</th>
+                <tr className="border-b border-border bg-neutral-subtle">
+                  <th className="text-left px-4 py-3 text-neutral-sm font-medium w-8"></th>
+                  <th className="text-left px-4 py-3 text-neutral-sm font-medium">Timestamp</th>
+                  <th className="text-left px-4 py-3 text-neutral-sm font-medium">User</th>
+                  <th className="text-left px-4 py-3 text-neutral-sm font-medium">Action</th>
+                  <th className="text-left px-4 py-3 text-neutral-sm font-medium">Entity Type</th>
+                  <th className="text-left px-4 py-3 text-neutral-sm font-medium">Entity ID</th>
                 </tr>
               </thead>
               <tbody>
@@ -119,40 +119,40 @@ export default function AuditLogPage() {
                   <>
                     <tr
                       key={log.id}
-                      className="border-b dark:border-white/5 border-slate-100 dark:hover:bg-white/5 hover:bg-slate-50 cursor-pointer transition-colors"
+                      className="border-b border-border hover:bg-neutral-subtle cursor-pointer transition-colors"
                       onClick={() => setExpandedRow(expandedRow === log.id ? null : log.id)}
                     >
-                      <td className="px-4 py-3 text-slate-400">
+                      <td className="px-4 py-3 text-dark-muted">
                         {expandedRow === log.id ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                       </td>
-                      <td className="px-4 py-3 dark:text-gray-400 text-slate-500 whitespace-nowrap">
+                      <td className="px-4 py-3 text-neutral-sm whitespace-nowrap">
                         {format(new Date(log.createdAt), 'MMM d, yyyy HH:mm:ss')}
                       </td>
-                      <td className="px-4 py-3 dark:text-white text-slate-900 font-medium">
-                        {log.user?.name || <span className="text-slate-400 italic">System</span>}
-                        {log.user?.email && <div className="text-xs text-slate-400">{log.user.email}</div>}
+                      <td className="px-4 py-3 text-foreground font-medium">
+                        {log.user?.name || <span className="text-dark-muted italic">System</span>}
+                        {log.user?.email && <div className="text-xs text-dark-muted">{log.user.email}</div>}
                       </td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getAuditActionClass(log.action)}`}>
                           {log.action}
                         </span>
                       </td>
-                      <td className="px-4 py-3 dark:text-gray-300 text-slate-700 capitalize">{log.entityType}</td>
-                      <td className="px-4 py-3 text-slate-400 font-mono text-xs truncate max-w-24">{log.entityId || '—'}</td>
+                      <td className="px-4 py-3 text-neutral-md capitalize">{log.entityType}</td>
+                      <td className="px-4 py-3 text-dark-muted font-mono text-xs truncate max-w-24">{log.entityId || '—'}</td>
                     </tr>
                     {expandedRow === log.id && (
-                      <tr key={`${log.id}-expand`} className="dark:bg-white/3 bg-slate-50 border-b dark:border-white/5 border-slate-100">
+                      <tr key={`${log.id}-expand`} className="bg-neutral-subtle border-b border-border">
                         <td colSpan={6} className="px-8 py-4">
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <p className="text-xs text-slate-500 uppercase tracking-wide mb-1 font-semibold">Old Value</p>
-                              <pre className="text-xs dark:text-gray-300 text-slate-800 dark:bg-black/20 bg-slate-100 rounded p-2 overflow-auto max-h-32 border border-slate-200 dark:border-transparent">
+                              <p className="text-xs text-neutral-sm uppercase tracking-wide mb-1 font-semibold">Old Value</p>
+                              <pre className="text-xs text-foreground bg-neutral-subtle rounded p-2 overflow-auto max-h-32 border border-border">
                                 {log.oldValue ? JSON.stringify(log.oldValue, null, 2) : 'null'}
                               </pre>
                             </div>
                             <div>
-                              <p className="text-xs text-slate-500 uppercase tracking-wide mb-1 font-semibold">New Value</p>
-                              <pre className="text-xs dark:text-gray-300 text-slate-800 dark:bg-black/20 bg-slate-100 rounded p-2 overflow-auto max-h-32 border border-slate-200 dark:border-transparent">
+                              <p className="text-xs text-neutral-sm uppercase tracking-wide mb-1 font-semibold">New Value</p>
+                              <pre className="text-xs text-foreground bg-neutral-subtle rounded p-2 overflow-auto max-h-32 border border-border">
                                 {log.newValue ? JSON.stringify(log.newValue, null, 2) : 'null'}
                               </pre>
                             </div>
@@ -169,8 +169,8 @@ export default function AuditLogPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t dark:border-white/10 border-slate-200">
-            <p className="text-xs text-slate-500">Page {filters.page} of {totalPages}</p>
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+            <p className="text-xs text-neutral-sm">Page {filters.page} of {totalPages}</p>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled={filters.page <= 1} onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))}>Previous</Button>
               <Button variant="outline" size="sm" disabled={filters.page >= totalPages} onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))}>Next</Button>

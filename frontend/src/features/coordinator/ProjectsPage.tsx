@@ -37,7 +37,7 @@ export default function ProjectsPage() {
       accessorKey: 'domain',
       header: 'Domain',
       cell: ({ row }: any) => (
-        <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold">
+        <span className="px-2.5 py-0.5 rounded-md bg-brand-subtle text-brand border border-brand text-xs font-semibold">
           {row.original.domain || 'General'}
         </span>
       ),
@@ -58,8 +58,8 @@ export default function ProjectsPage() {
       cell: ({ row }: any) => {
         const guideUser = row.original.guideAssignment?.facultyProfile?.user;
         return guideUser ? (
-          <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-semibold text-xs">
-            <GraduationCap className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <div className="flex items-center gap-1.5 text-success-md font-semibold text-xs">
+            <GraduationCap className="w-4 h-4 text-success" />
             <span>{guideUser.name}</span>
           </div>
         ) : (
@@ -80,7 +80,7 @@ export default function ProjectsPage() {
           variant="ghost"
           size="sm"
           onClick={() => navigate(`/coordinator/projects/${row.original.id}`)}
-          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 hover:bg-indigo-50 font-semibold text-xs"
+          className="text-brand hover:text-brand hover:bg-brand-subtle font-semibold text-xs"
         >
           <Eye className="w-4 h-4 mr-1.5" /> View Details
         </Button>
@@ -116,7 +116,7 @@ export default function ProjectsPage() {
               onClick={() => setStatusFilter(tab.value)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 statusFilter === tab.value
-                  ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30'
+                  ? 'bg-brand-subtle text-brand border border-brand'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
               }`}
             >

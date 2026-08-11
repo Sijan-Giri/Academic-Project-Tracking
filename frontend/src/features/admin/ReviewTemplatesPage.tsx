@@ -94,13 +94,13 @@ export default function ReviewTemplatesPage() {
 
   const columns = [
     { accessorKey: 'order', header: 'Order' },
-    { accessorKey: 'name', header: 'Name', cell: ({ row }: any) => <span className="font-semibold dark:text-white text-slate-900">{row.original.name}</span> },
-    { accessorKey: 'type', header: 'Type', cell: ({ row }: any) => <Badge variant="outline" className="dark:border-indigo-500/30 dark:text-indigo-400 dark:bg-indigo-500/10 border-indigo-200 text-indigo-700 bg-indigo-50">{row.original.type.replace('_', ' ')}</Badge> },
+    { accessorKey: 'name', header: 'Name', cell: ({ row }: any) => <span className="font-semibold text-foreground">{row.original.name}</span> },
+    { accessorKey: 'type', header: 'Type', cell: ({ row }: any) => <Badge variant="outline" className="border-brand text-brand bg-brand-subtle">{row.original.type.replace('_', ' ')}</Badge> },
     { accessorKey: 'description', header: 'Description' },
     {
       accessorKey: 'isDefault',
       header: 'Default',
-      cell: ({ row }: any) => row.original.isDefault ? <CheckCircle className="w-5 h-5 text-emerald-500" /> : <XCircle className="w-5 h-5 text-slate-400" />,
+      cell: ({ row }: any) => row.original.isDefault ? <CheckCircle className="w-5 h-5 text-success" /> : <XCircle className="w-5 h-5 text-dark-muted" />,
     },
     {
       id: 'actions',
@@ -108,10 +108,10 @@ export default function ReviewTemplatesPage() {
       cell: ({ row }: any) => (
         <div className="flex gap-2">
           <Button variant="ghost" size="icon" onClick={() => handleEdit(row.original)}>
-            <Edit className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <Edit className="w-4 h-4 text-brand" />
           </Button>
           <Button variant="ghost" size="icon" onClick={() => setDeleteItem(row.original)}>
-            <Trash2 className="w-4 h-4 text-rose-600 dark:text-red-400" />
+            <Trash2 className="w-4 h-4 text-danger" />
           </Button>
         </div>
       ),
@@ -124,12 +124,12 @@ export default function ReviewTemplatesPage() {
         title="Review Stage Templates"
         subtitle="Manage global templates for project review stages"
         actions={
-          <Button onClick={() => { form.reset(); setCreateOpen(true); }} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+          <Button onClick={() => { form.reset(); setCreateOpen(true); }} className="btn-primary">
             <Plus className="w-4 h-4 mr-2" /> Add Template
           </Button>
         }
       />
-      <div className="dark:bg-[#1a1d27] bg-white rounded-xl border dark:border-white/10 border-slate-200 p-4 shadow-sm">
+      <div className="bg-card rounded-xl border border-border p-4 shadow-sm">
         <DataTable columns={columns} data={templates || []} isLoading={isLoading} />
       </div>
 
@@ -177,14 +177,14 @@ export default function ReviewTemplatesPage() {
                 <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="isDefault" render={({ field }) => (
-                <FormItem className="flex items-center justify-between p-3 rounded-lg border dark:border-white/10 border-slate-200 mt-4">
+                <FormItem className="flex items-center justify-between p-3 rounded-lg border border-border mt-4">
                   <FormLabel>Is Default Template?</FormLabel>
                   <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                 </FormItem>
               )} />
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={() => { setCreateOpen(false); setEditItem(null); }}>Cancel</Button>
-                <Button type="submit" isLoading={isSubmitting} loadingText={editItem ? 'Updating...' : 'Creating...'} className="bg-indigo-600 hover:bg-indigo-700 text-white">{editItem ? 'Update' : 'Create'}</Button>
+                <Button type="submit" isLoading={isSubmitting} loadingText={editItem ? 'Updating...' : 'Creating...'} className="btn-primary">{editItem ? 'Update' : 'Create'}</Button>
               </div>
             </form>
           </Form>

@@ -90,12 +90,12 @@ export default function CoordinatorDashboard() {
 
       {/* Row 1: Key Performance Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard title="Total Projects" value={totalProjects} icon={<Book className="text-indigo-600 dark:text-indigo-400 h-4 w-4" />} />
+        <StatsCard title="Total Projects" value={totalProjects} icon={<Book className="text-brand h-4 w-4" />} />
         <div onClick={() => navigate(ROUTES.COORDINATOR_TEAMS)} className="block cursor-pointer">
-          <StatsCard title="Pending Team Approvals" value={pendingTeams} icon={<Users className="text-amber-600 dark:text-amber-400 h-4 w-4" />} subtitle={`${teamsList.length} total teams · Review →`} />
+          <StatsCard title="Pending Team Approvals" value={pendingTeams} icon={<Users className="text-warning h-4 w-4" />} subtitle={`${teamsList.length} total teams · Review →`} />
         </div>
-        <StatsCard title="Guide Assigned Rate" value={`${guideAssignedPercent}%`} icon={<Percent className="text-indigo-600 dark:text-indigo-400 h-4 w-4" />} subtitle={`${guidedProjects} assigned`} />
-        <StatsCard title="Completed Projects" value={completedProjects} icon={<CheckCircle className="text-emerald-600 dark:text-emerald-400 h-4 w-4" />} />
+        <StatsCard title="Guide Assigned Rate" value={`${guideAssignedPercent}%`} icon={<Percent className="text-brand h-4 w-4" />} subtitle={`${guidedProjects} assigned`} />
+        <StatsCard title="Completed Projects" value={completedProjects} icon={<CheckCircle className="text-success h-4 w-4" />} />
       </div>
 
       {/* Row 2: Charts */}
@@ -158,9 +158,9 @@ export default function CoordinatorDashboard() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-3">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-500" /> Recent Projects
+              <AlertTriangle className="h-4 w-4 text-warning" /> Recent Projects
             </CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.COORDINATOR_PROJECTS)} className="text-indigo-600 dark:text-indigo-400 font-medium text-xs">
+            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.COORDINATOR_PROJECTS)} className="text-brand font-medium text-xs">
               Manage All
             </Button>
           </CardHeader>
@@ -206,9 +206,9 @@ export default function CoordinatorDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-3">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Megaphone className="h-4 w-4 text-indigo-600 dark:text-indigo-400" /> Announcements
+              <Megaphone className="h-4 w-4 text-brand" /> Announcements
             </CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.COORDINATOR_ANNOUNCEMENTS)} className="text-indigo-600 dark:text-indigo-400 font-medium text-xs">
+            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.COORDINATOR_ANNOUNCEMENTS)} className="text-brand font-medium text-xs">
               Post Announcement
             </Button>
           </CardHeader>
@@ -219,7 +219,7 @@ export default function CoordinatorDashboard() {
                 const dateStr = format(new Date(dateVal), 'MMM d, yyyy');
                 return (
                   <div key={a.id} className="border-b border-border pb-3 last:border-0 last:pb-0 space-y-1">
-                    <p className="font-semibold text-indigo-600 dark:text-indigo-400 line-clamp-1 text-xs">{a.title}</p>
+                    <p className="font-semibold text-brand line-clamp-1 text-xs">{a.title}</p>
                     <p className="text-xs text-foreground line-clamp-2 font-normal">{a.content}</p>
                     <p className="text-[10px] text-muted-foreground">{dateStr}</p>
                   </div>

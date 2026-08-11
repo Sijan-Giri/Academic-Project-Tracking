@@ -51,10 +51,10 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-600">
+          <h1 className="text-3xl font-bold gradient-text-brand">
             Admin Dashboard
           </h1>
-          <p className="text-sm dark:text-slate-400 text-slate-500 mt-1">Overview of institutional academic projects, users, and activity</p>
+          <p className="text-sm text-neutral-sm mt-1">Overview of institutional academic projects, users, and activity</p>
         </div>
       </div>
 
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
                   ))}
                 </Pie>
                 <Tooltip contentStyle={getChartTooltipStyle(isDark)} />
-                <Legend formatter={(value) => <span className="dark:text-gray-300 text-slate-700 text-xs font-medium">{value}</span>} />
+                <Legend formatter={(value) => <span className="text-neutral-md text-xs font-medium">{value}</span>} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base font-semibold">Recent Audit Logs</CardTitle>
-          <Button variant="ghost" size="sm" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700" onClick={() => navigate(ROUTES.ADMIN_AUDIT)} id="view-audit-btn">
+          <Button variant="ghost" size="sm" className="text-brand hover:text-indigo-700" onClick={() => navigate(ROUTES.ADMIN_AUDIT)} id="view-audit-btn">
             View All Audit Logs <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </CardHeader>
@@ -124,15 +124,15 @@ export default function AdminDashboard() {
             <TableBody>
               {logs.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center py-6 text-slate-400">No recent audit log activity</TableCell>
+                  <TableCell colSpan={4} className="text-center py-6 text-dark-muted">No recent audit log activity</TableCell>
                 </TableRow>
               ) : (
                 logs.slice(0, 5).map((log: any) => (
                   <TableRow key={log.id}>
-                    <TableCell className="dark:text-gray-400 text-slate-500 text-xs">{formatDate(log.createdAt)}</TableCell>
-                    <TableCell className="font-medium text-indigo-600 dark:text-indigo-300">{log.user?.name || log.userId || 'System'}</TableCell>
+                    <TableCell className="text-neutral-sm text-xs">{formatDate(log.createdAt)}</TableCell>
+                    <TableCell className="font-medium text-brand">{log.user?.name || log.userId || 'System'}</TableCell>
                     <TableCell>
-                      <span className="px-2 py-0.5 rounded text-xs dark:bg-indigo-500/20 dark:text-indigo-400 bg-indigo-50 text-indigo-700 border border-indigo-200 dark:border-transparent font-mono font-semibold">{log.action}</span>
+                      <span className="px-2 py-0.5 rounded text-xs badge-brand font-mono font-semibold">{log.action}</span>
                     </TableCell>
                     <TableCell className="capitalize text-xs">{log.entityType}</TableCell>
                   </TableRow>

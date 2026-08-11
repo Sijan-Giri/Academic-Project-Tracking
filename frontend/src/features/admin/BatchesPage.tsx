@@ -56,14 +56,14 @@ export default function BatchesPage() {
   });
 
   const columns = [
-    { accessorKey: 'name', header: 'Batch Name', cell: ({ row }: any) => <span className="font-semibold dark:text-white text-slate-900">{row.original.name}</span> },
+    { accessorKey: 'name', header: 'Batch Name', cell: ({ row }: any) => <span className="font-semibold text-foreground">{row.original.name}</span> },
     { accessorKey: 'department.code', header: 'Department', cell: ({ row }: any) => row.original.department?.code || 'N/A' },
     { accessorKey: 'academicYear.label', header: 'Academic Year', cell: ({ row }: any) => row.original.academicYear?.label || 'N/A' },
     {
       accessorKey: 'isActive',
       header: 'Status',
       cell: ({ row }: any) => (
-        <Badge variant={row.original.isActive ? 'default' : 'secondary'} className={row.original.isActive ? 'bg-indigo-600 dark:bg-indigo-500 text-white' : ''}>
+        <Badge variant={row.original.isActive ? 'default' : 'secondary'} className={row.original.isActive ? 'btn-primary' : ''}>
           {row.original.isActive ? 'Active' : 'Inactive'}
         </Badge>
       ),
@@ -73,7 +73,7 @@ export default function BatchesPage() {
       header: 'Actions',
       cell: ({ row }: any) => (
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon" onClick={() => setDeleteItem(row.original)}><Trash2 className="w-4 h-4 text-rose-600 dark:text-red-400" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => setDeleteItem(row.original)}><Trash2 className="w-4 h-4 text-danger" /></Button>
         </div>
       ),
     },
@@ -87,12 +87,12 @@ export default function BatchesPage() {
         title="Batches"
         subtitle="Manage student batches"
         actions={
-          <Button onClick={() => setCreateOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+          <Button onClick={() => setCreateOpen(true)} className="btn-primary">
             <Plus className="w-4 h-4 mr-2" /> Add Batch
           </Button>
         }
       />
-      <div className="dark:bg-[#1a1d27] bg-white rounded-xl border dark:border-white/10 border-slate-200 p-4 shadow-sm">
+      <div className="bg-card rounded-xl border border-border p-4 shadow-sm">
         <DataTable columns={columns} data={batchList} isLoading={isLoading} />
       </div>
 
@@ -110,7 +110,7 @@ export default function BatchesPage() {
               )} />
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-                <Button type="submit" isLoading={isSubmitting} loadingText="Creating Batch..." className="bg-indigo-600 hover:bg-indigo-700 text-white">Create Batch</Button>
+                <Button type="submit" isLoading={isSubmitting} loadingText="Creating Batch..." className="btn-primary">Create Batch</Button>
               </div>
             </form>
           </Form>

@@ -91,14 +91,14 @@ export default function CreateProjectPage() {
 
       {/* Team Validation Status Banner */}
       {!isTeamApproved ? (
-        <div className="rounded-xl border border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-6 space-y-3 shadow-xs">
+        <div className="rounded-xl border border-warning bg-warning-subtle p-6 space-y-3 shadow-xs">
           <div className="flex items-center gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
-            <h3 className="text-base font-semibold text-amber-900 dark:text-amber-300">
+            <AlertTriangle className="w-5 h-5 text-warning shrink-0" />
+            <h3 className="text-base font-semibold text-amber-900 dark:text-warning">
               Approved Team Required
             </h3>
           </div>
-          <p className="text-xs text-amber-800 dark:text-amber-300/90 leading-relaxed font-normal">
+          <p className="text-xs text-warning-md/90 leading-relaxed font-normal">
             {!team
               ? 'You are not part of any team. Please create or join a team first.'
               : `Your team "${team.name}" is currently ${team.status.toLowerCase()}. Wait for coordinator approval before proposing a project.`}
@@ -112,7 +112,7 @@ export default function CreateProjectPage() {
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-5">
             <div className="border-b border-border pb-3">
               <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                <FolderPlus className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <FolderPlus className="w-5 h-5 text-brand" />
                 Project Details
               </h3>
             </div>
@@ -120,7 +120,7 @@ export default function CreateProjectPage() {
             <div className="space-y-1.5">
               <Label htmlFor="title" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">Project Title *</Label>
               <Input id="title" placeholder="e.g. AI-Based Academic Project Tracking System" {...register('title')} />
-              {errors.title && <p className="text-xs text-rose-600 font-medium">{String(errors.title.message)}</p>}
+              {errors.title && <p className="text-xs text-danger font-medium">{String(errors.title.message)}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -133,7 +133,7 @@ export default function CreateProjectPage() {
                 <option value="">Select a domain</option>
                 {DOMAINS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
-              {errors.domain && <p className="text-xs text-rose-600 font-medium">{String(errors.domain.message)}</p>}
+              {errors.domain && <p className="text-xs text-danger font-medium">{String(errors.domain.message)}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -144,13 +144,13 @@ export default function CreateProjectPage() {
                 placeholder="Provide a comprehensive summary of problem statement, proposed methodology, and expected outcomes (min 50 characters)..."
                 {...register('abstract')}
               />
-              {errors.abstract && <p className="text-xs text-rose-600 font-medium">{String(errors.abstract.message)}</p>}
+              {errors.abstract && <p className="text-xs text-danger font-medium">{String(errors.abstract.message)}</p>}
             </div>
 
             <div className="space-y-1.5">
               <Label htmlFor="githubUrl" className="font-medium text-xs text-muted-foreground uppercase tracking-wider">GitHub / Repository URL (Optional)</Label>
               <Input id="githubUrl" placeholder="https://github.com/username/repository" {...register('githubUrl')} />
-              {errors.githubUrl && <p className="text-xs text-rose-600 font-medium">{String(errors.githubUrl.message)}</p>}
+              {errors.githubUrl && <p className="text-xs text-danger font-medium">{String(errors.githubUrl.message)}</p>}
             </div>
 
             <div className="space-y-2">
@@ -170,7 +170,7 @@ export default function CreateProjectPage() {
                 {keywords.map(kw => (
                   <span key={kw} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary text-foreground text-xs font-medium border border-border">
                     #{kw}
-                    <Button variant="ghost" size="icon" type="button" onClick={() => removeKeyword(kw)} className="h-4 w-4 p-0 text-muted-foreground hover:text-rose-600">
+                    <Button variant="ghost" size="icon" type="button" onClick={() => removeKeyword(kw)} className="h-4 w-4 p-0 text-muted-foreground hover:text-danger">
                       <X className="w-3.5 h-3.5" />
                     </Button>
                   </span>

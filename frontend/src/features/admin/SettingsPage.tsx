@@ -56,18 +56,18 @@ export default function SettingsPage() {
         subtitle="Configure global parameters for the tracking system"
       />
 
-      <div className="dark:bg-[#1a1d27] bg-white rounded-xl border dark:border-white/10 border-slate-200 p-6 shadow-sm">
+      <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               
               <FormField control={form.control} name="max_team_size" render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-base font-semibold dark:text-white text-slate-900">Maximum Team Size</FormLabel>
+                  <FormLabel className="text-base font-semibold text-foreground">Maximum Team Size</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
-                  <FormDescription className="dark:text-gray-400 text-slate-500">
+                  <FormDescription className="text-neutral-sm">
                     Maximum number of students allowed in a single project team.
                   </FormDescription>
                   <FormMessage />
@@ -76,11 +76,11 @@ export default function SettingsPage() {
 
               <FormField control={form.control} name="min_team_size" render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-base font-semibold dark:text-white text-slate-900">Minimum Team Size</FormLabel>
+                  <FormLabel className="text-base font-semibold text-foreground">Minimum Team Size</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
-                  <FormDescription className="dark:text-gray-400 text-slate-500">
+                  <FormDescription className="text-neutral-sm">
                     Minimum number of students required to form a project team.
                   </FormDescription>
                   <FormMessage />
@@ -89,11 +89,11 @@ export default function SettingsPage() {
 
               <FormField control={form.control} name="abstract_max_words" render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-base font-semibold dark:text-white text-slate-900">Abstract Max Words</FormLabel>
+                  <FormLabel className="text-base font-semibold text-foreground">Abstract Max Words</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
-                  <FormDescription className="dark:text-gray-400 text-slate-500">
+                  <FormDescription className="text-neutral-sm">
                     Maximum word limit for project abstract submissions.
                   </FormDescription>
                   <FormMessage />
@@ -102,11 +102,11 @@ export default function SettingsPage() {
 
               <FormField control={form.control} name="plagiarism_threshold" render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-base font-semibold dark:text-white text-slate-900">Plagiarism Threshold (%)</FormLabel>
+                  <FormLabel className="text-base font-semibold text-foreground">Plagiarism Threshold (%)</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
-                  <FormDescription className="dark:text-gray-400 text-slate-500">
+                  <FormDescription className="text-neutral-sm">
                     Percentage threshold for flagging similarity in submitted documents.
                   </FormDescription>
                   <FormMessage />
@@ -115,8 +115,8 @@ export default function SettingsPage() {
 
             </div>
 
-            <div className="flex justify-end pt-4 border-t dark:border-white/10 border-slate-200">
-              <Button type="submit" isLoading={isSubmitting} loadingText="Saving All Settings..." className="bg-indigo-600 hover:bg-indigo-700 text-white h-11 px-8">
+            <div className="flex justify-end pt-4 border-t border-border">
+              <Button type="submit" isLoading={isSubmitting} loadingText="Saving All Settings..." className="btn-primary h-11 px-8">
                 <Save className="w-4 h-4 mr-2" /> 
                 Save All Settings
               </Button>

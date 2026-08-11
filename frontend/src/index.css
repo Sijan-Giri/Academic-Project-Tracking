@@ -199,41 +199,107 @@
     animation: shimmer 1.6s infinite ease-in-out;
   }
 
-  /* Centralized Semantic Status & Color Tokens */
+  /* ─── Centralized Semantic Status & Color Tokens ──────────────────────────
+     All color information lives here. Components use only these class names.
+  ──────────────────────────────────────────────────────────────────────────── */
+
+  /* Brand / Accent (indigo) */
+  .text-brand          { @apply text-indigo-600 dark:text-indigo-400; }
+  .bg-brand-subtle     { @apply bg-indigo-50 dark:bg-indigo-500/15; }
+  .border-brand        { @apply border-indigo-200 dark:border-indigo-500/30; }
+  .border-brand-strong { @apply border-indigo-600 dark:border-indigo-500; }
+  .ring-brand          { @apply ring-indigo-500; }
+
+  /* Success (emerald) */
+  .text-success        { @apply text-emerald-600 dark:text-emerald-400; }
+  .text-success-md     { @apply text-emerald-700 dark:text-emerald-400; }
+  .bg-success-subtle   { @apply bg-emerald-50 dark:bg-emerald-500/15; }
+  .border-success      { @apply border-emerald-200 dark:border-emerald-500/30; }
+  .bg-success-solid    { @apply bg-emerald-600; }
+
+  /* Warning (amber) */
+  .text-warning        { @apply text-amber-600 dark:text-amber-400; }
+  .text-warning-md     { @apply text-amber-700 dark:text-amber-400; }
+  .bg-warning-subtle   { @apply bg-amber-50 dark:bg-amber-500/15; }
+  .border-warning      { @apply border-amber-200 dark:border-amber-500/30; }
+
+  /* Danger / Destructive (rose) */
+  .text-danger         { @apply text-rose-600 dark:text-rose-400; }
+  .text-danger-md      { @apply text-rose-700 dark:text-rose-400; }
+  .bg-danger-subtle    { @apply bg-rose-50 dark:bg-rose-500/15; }
+  .border-danger       { @apply border-rose-200 dark:border-rose-500/30; }
+  .bg-danger-solid     { @apply bg-rose-600 hover:bg-rose-700; }
+
+  /* Info (blue) */
+  .text-info           { @apply text-blue-600 dark:text-blue-400; }
+  .text-info-md        { @apply text-blue-700 dark:text-blue-400; }
+  .bg-info-subtle      { @apply bg-blue-50 dark:bg-blue-500/15; }
+  .border-info         { @apply border-blue-200 dark:border-blue-500/30; }
+
+  /* Neutral (slate) */
+  .text-neutral        { @apply text-slate-600 dark:text-slate-300; }
+  .text-neutral-md     { @apply text-slate-700 dark:text-slate-300; }
+  .text-neutral-sm     { @apply text-slate-500 dark:text-slate-400; }
+  .bg-neutral-subtle   { @apply bg-slate-100 dark:bg-slate-500/20; }
+  .border-neutral      { @apply border-slate-200 dark:border-slate-500/30; }
+
+  /* Purple / Violet accent */
+  .text-purple         { @apply text-violet-600 dark:text-violet-400; }
+  .bg-purple-subtle    { @apply bg-violet-50 dark:bg-violet-500/15; }
+  .border-purple       { @apply border-violet-200 dark:border-violet-500/30; }
+
+  /* Warning solid (amber button) */
+  .bg-warning-solid    { @apply bg-amber-600 hover:bg-amber-700; }
+
+  /* Gradient brand */
+  .gradient-brand      { @apply bg-gradient-to-r from-indigo-500 to-violet-600; }
+  .gradient-brand-br   { @apply bg-gradient-to-br from-indigo-500 to-violet-600; }
+  .gradient-text-brand { @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-600; }
+  .gradient-brand-hover { @apply hover:from-indigo-600 hover:to-violet-700; }
+
+  /* Layout Surfaces */
+  .surface-dark        { @apply bg-[#0f1117]; }
+  .overlay-dark        { @apply bg-black/80 backdrop-blur-sm; }
+  .header-bg           { @apply bg-white/85 dark:bg-[#0f1117]/80; }
+  .header-border       { @apply border-slate-200 dark:border-white/10; }
+
+  /* Auth page surface (right panel) */
+  .auth-surface        { @apply bg-white dark:bg-[#0f1117]; }
+  /* Dropdown/popover dark surface */
+  .popover-dark        { @apply dark:bg-[#14161f] dark:border-white/10; }
+  /* Input on dark backgrounds */
+  .input-dark          { @apply bg-white/5 border-white/10 text-white placeholder:text-gray-500; }
+  /* Label on dark backgrounds */
+  .label-dark          { @apply text-gray-300; }
+  /* Muted text on dark backgrounds */
+  .text-dark-muted     { @apply text-gray-400; }
+
+  /* ─── Semantic Badge Composites ──────────────────────────── */
   .badge-success {
-    @apply bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30;
+    @apply bg-success-subtle text-success-md border border-success;
   }
   .badge-warning {
-    @apply bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30;
+    @apply bg-warning-subtle text-warning-md border border-warning;
   }
   .badge-danger {
-    @apply bg-rose-50 dark:bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30;
+    @apply bg-danger-subtle text-danger-md border border-danger;
   }
   .badge-info {
-    @apply bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30;
+    @apply bg-info-subtle text-info-md border border-info;
   }
   .badge-brand {
-    @apply bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30;
+    @apply bg-brand-subtle text-brand border border-brand;
   }
   .badge-muted {
-    @apply bg-slate-100 dark:bg-slate-500/20 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-500/30;
+    @apply bg-neutral-subtle text-neutral-md border border-neutral;
   }
 
-  .text-accent-brand {
-    @apply text-indigo-600 dark:text-indigo-400;
-  }
-  .text-accent-success {
-    @apply text-emerald-600 dark:text-emerald-400;
-  }
-  .text-accent-danger {
-    @apply text-rose-600 dark:text-rose-400;
-  }
-  .text-accent-warning {
-    @apply text-amber-600 dark:text-amber-400;
-  }
-  .bg-accent-subtle {
-    @apply bg-indigo-50 dark:bg-indigo-500/15;
-  }
+  /* ─── Legacy accent helpers (kept for compatibility) ──────── */
+  .text-accent-brand    { @apply text-brand; }
+  .text-accent-success  { @apply text-success; }
+  .text-accent-danger   { @apply text-danger; }
+  .text-accent-warning  { @apply text-warning; }
+  .bg-accent-subtle     { @apply bg-brand-subtle; }
 }
 
 @layer utilities {

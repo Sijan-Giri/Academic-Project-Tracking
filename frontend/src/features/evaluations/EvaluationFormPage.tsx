@@ -48,11 +48,11 @@ export default function EvaluationFormPage() {
   const percentage = maxTotal > 0 ? (totalMarks / maxTotal) * 100 : 0;
 
   let grade = 'F';
-  let gradeColor = 'text-rose-600 dark:text-rose-400';
-  if (percentage >= 90) { grade = 'A+'; gradeColor = 'text-emerald-600 dark:text-emerald-400'; }
-  else if (percentage >= 80) { grade = 'A'; gradeColor = 'text-emerald-600 dark:text-emerald-400'; }
-  else if (percentage >= 70) { grade = 'B'; gradeColor = 'text-indigo-600 dark:text-indigo-400'; }
-  else if (percentage >= 60) { grade = 'C'; gradeColor = 'text-amber-600 dark:text-amber-400'; }
+  let gradeColor = 'text-danger';
+  if (percentage >= 90) { grade = 'A+'; gradeColor = 'text-success'; }
+  else if (percentage >= 80) { grade = 'A'; gradeColor = 'text-success'; }
+  else if (percentage >= 70) { grade = 'B'; gradeColor = 'text-brand'; }
+  else if (percentage >= 60) { grade = 'C'; gradeColor = 'text-warning'; }
   else if (percentage >= 50) { grade = 'D'; gradeColor = 'text-orange-600 dark:text-orange-400'; }
 
   const handleSave = async () => {
@@ -87,14 +87,14 @@ export default function EvaluationFormPage() {
           <p className="text-xs text-muted-foreground font-normal">Score student performance based on established rubrics.</p>
         </div>
         {isLocked && (
-          <div className="ml-auto flex items-center gap-2 text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/15 px-3 py-1 rounded-md border border-rose-200 dark:border-rose-500/30 text-xs font-semibold">
+          <div className="ml-auto flex items-center gap-2 text-rose-700 dark:text-danger bg-danger-subtle px-3 py-1 rounded-md border border-danger text-xs font-semibold">
             <Lock className="w-3.5 h-3.5" /> Locked Record
           </div>
         )}
       </div>
 
       {isLocked && (
-        <div className="bg-rose-50 dark:bg-rose-500/15 border border-rose-200 dark:border-rose-500/30 text-rose-800 dark:text-rose-300 p-4 rounded-xl flex items-start gap-3 text-xs font-medium">
+        <div className="bg-danger-subtle border border-danger text-danger-md p-4 rounded-xl flex items-start gap-3 text-xs font-medium">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <p>This evaluation form has been finalized and locked. Edits are disabled. Contact your coordinator to modify scores.</p>
         </div>
@@ -104,7 +104,7 @@ export default function EvaluationFormPage() {
       <Card>
         <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold inline-block mb-2">
+            <span className="px-2.5 py-0.5 rounded-md bg-brand-subtle text-brand border border-brand text-xs font-semibold inline-block mb-2">
               {schedule.reviewStage?.name || 'Review Stage'}
             </span>
             <h2 className="text-xl font-bold text-foreground mb-1 tracking-tight">{schedule.project?.title || 'Project Title'}</h2>
@@ -203,7 +203,7 @@ export default function EvaluationFormPage() {
         {existingEval && canLock && !isLocked && (
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 text-xs font-semibold">
+              <Button variant="outline" className="bg-danger-subtle text-rose-700 dark:text-danger border-danger text-xs font-semibold">
                 <Lock className="w-3.5 h-3.5 mr-1.5" /> Lock Evaluation
               </Button>
             </DialogTrigger>
@@ -217,7 +217,7 @@ export default function EvaluationFormPage() {
                   <Button variant="ghost">Cancel</Button>
                 </DialogClose>
                 <Button 
-                  className="bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs"
+                  className="bg-danger-solid text-white font-semibold text-xs"
                 >
                   Confirm & Lock
                 </Button>

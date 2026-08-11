@@ -88,14 +88,14 @@ export default function AcademicYearsPage() {
   };
 
   const columns = [
-    { accessorKey: 'label', header: 'Label', cell: ({ row }: any) => <span className="font-semibold dark:text-white text-slate-900">{row.original.label}</span> },
+    { accessorKey: 'label', header: 'Label', cell: ({ row }: any) => <span className="font-semibold text-foreground">{row.original.label}</span> },
     { accessorKey: 'startYear', header: 'Start Year' },
     { accessorKey: 'endYear', header: 'End Year' },
     {
       accessorKey: 'isActive',
       header: 'Status',
       cell: ({ row }: any) => (
-        <Badge variant={row.original.isActive ? 'default' : 'secondary'} className={row.original.isActive ? 'bg-indigo-600 dark:bg-indigo-500 text-white' : ''}>
+        <Badge variant={row.original.isActive ? 'default' : 'secondary'} className={row.original.isActive ? 'btn-primary' : ''}>
           {row.original.isActive ? 'Active' : 'Inactive'}
         </Badge>
       ),
@@ -106,10 +106,10 @@ export default function AcademicYearsPage() {
       cell: ({ row }: any) => (
         <div className="flex gap-2">
           <Button variant="ghost" size="icon" onClick={() => handleEdit(row.original)}>
-            <Edit className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <Edit className="w-4 h-4 text-brand" />
           </Button>
           <Button variant="ghost" size="icon" onClick={() => setDeleteItem(row.original)}>
-            <Trash2 className="w-4 h-4 text-rose-600 dark:text-red-400" />
+            <Trash2 className="w-4 h-4 text-danger" />
           </Button>
         </div>
       ),
@@ -122,12 +122,12 @@ export default function AcademicYearsPage() {
         title="Academic Years"
         subtitle="Manage academic years for batches"
         actions={
-          <Button onClick={() => { form.reset(); setCreateOpen(true); }} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+          <Button onClick={() => { form.reset(); setCreateOpen(true); }} className="btn-primary">
             <Plus className="w-4 h-4 mr-2" /> Add Year
           </Button>
         }
       />
-      <div className="dark:bg-[#1a1d27] bg-white rounded-xl border dark:border-white/10 border-slate-200 p-4 shadow-sm">
+      <div className="bg-card rounded-xl border border-border p-4 shadow-sm">
         <DataTable columns={columns} data={yearList} isLoading={isLoading} />
       </div>
 
@@ -147,14 +147,14 @@ export default function AcademicYearsPage() {
                 )} />
               </div>
               <FormField control={form.control} name="isActive" render={({ field }) => (
-                <FormItem className="flex items-center justify-between p-3 rounded-lg border dark:border-white/10 border-slate-200 mt-4">
+                <FormItem className="flex items-center justify-between p-3 rounded-lg border border-border mt-4">
                   <FormLabel>Active Status</FormLabel>
                   <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                 </FormItem>
               )} />
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={() => { setCreateOpen(false); setEditItem(null); }}>Cancel</Button>
-                <Button type="submit" isLoading={isSubmitting} loadingText={editItem ? 'Updating...' : 'Creating...'} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                <Button type="submit" isLoading={isSubmitting} loadingText={editItem ? 'Updating...' : 'Creating...'} className="btn-primary">
                   {editItem ? 'Update' : 'Create'}
                 </Button>
               </div>

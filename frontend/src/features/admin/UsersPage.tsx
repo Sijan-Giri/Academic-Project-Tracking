@@ -68,7 +68,7 @@ export default function UsersPage() {
       accessorKey: 'role',
       header: 'Role',
       cell: ({ row }: any) => (
-        <Badge variant="outline" className="text-indigo-300 border-indigo-500/30 bg-indigo-500/10">
+        <Badge variant="outline" className="text-brand border-brand bg-brand-subtle">
           {row.original.role}
         </Badge>
       ),
@@ -77,7 +77,7 @@ export default function UsersPage() {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }: any) => (
-        <Badge variant={row.original.isActive ? 'default' : 'secondary'} className={row.original.isActive ? 'bg-emerald-500' : ''}>
+        <Badge variant={row.original.isActive ? 'default' : 'secondary'} className={row.original.isActive ? 'bg-success-solid' : ''}>
           {row.original.isActive ? 'Active' : 'Inactive'}
         </Badge>
       ),
@@ -89,7 +89,7 @@ export default function UsersPage() {
       cell: ({ row }: any) => (
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => toggleUserStatus({ id: row.original.id, isActive: row.original.isActive })}>
-            {row.original.isActive ? <PowerOff className="w-4 h-4 text-orange-400" /> : <Power className="w-4 h-4 text-emerald-400" />}
+            {row.original.isActive ? <PowerOff className="w-4 h-4 text-warning" /> : <Power className="w-4 h-4 text-success" />}
           </Button>
         </div>
       ),
@@ -108,7 +108,7 @@ export default function UsersPage() {
             <Button variant="outline" onClick={() => setImportOpen(true)} className="border-white/10">
               <Upload className="w-4 h-4 mr-2" /> Bulk Import
             </Button>
-            <Button onClick={() => setCreateOpen(true)} className="bg-indigo-600 hover:bg-indigo-700">
+            <Button onClick={() => setCreateOpen(true)} className="btn-primary">
               <Plus className="w-4 h-4 mr-2" /> Add User
             </Button>
           </div>
@@ -117,7 +117,7 @@ export default function UsersPage() {
 
       <div className="flex gap-4 items-center">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-sm" />
           <Input 
             placeholder="Search users..." 
             value={search}
@@ -137,7 +137,7 @@ export default function UsersPage() {
         </Select>
       </div>
 
-      <div className="dark:bg-[#1a1d27] bg-white rounded-xl border dark:border-white/10 border-slate-200 p-4 shadow-sm">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
         <DataTable columns={columns} data={userList} isLoading={isLoading} />
       </div>
 
@@ -170,9 +170,9 @@ export default function UsersPage() {
                   <FormLabel>Role</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger className="bg-[#1a1d27] border-white/10"><SelectValue placeholder="Select role" /></SelectTrigger>
+                      <SelectTrigger className="bg-card border-border"><SelectValue placeholder="Select role" /></SelectTrigger>
                     </FormControl>
-                    <SelectContent className="bg-[#1a1d27] border-white/10">
+                    <SelectContent className="bg-card border-border">
                       <SelectItem value="STUDENT">Student</SelectItem>
                       <SelectItem value="FACULTY">Faculty</SelectItem>
                       <SelectItem value="COORDINATOR">Coordinator</SelectItem>
@@ -188,7 +188,7 @@ export default function UsersPage() {
                   <FormField control={form.control} name="studentId" render={({ field }) => (
                     <FormItem>
                       <FormLabel>Student ID (Roll No)</FormLabel>
-                      <FormControl><Input className="bg-[#1a1d27] border-white/10" {...field} /></FormControl>
+                      <FormControl><Input className="bg-card border-border" {...field} /></FormControl>
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="batchId" render={({ field }) => (
@@ -196,9 +196,9 @@ export default function UsersPage() {
                       <FormLabel>Batch</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#1a1d27] border-white/10"><SelectValue placeholder="Select batch" /></SelectTrigger>
+                          <SelectTrigger className="bg-card border-border"><SelectValue placeholder="Select batch" /></SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#1a1d27] border-white/10">
+                        <SelectContent className="bg-card border-border">
                           {batches?.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
                         </SelectContent>
                       </Select>
@@ -214,9 +214,9 @@ export default function UsersPage() {
                       <FormLabel>Department</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#1a1d27] border-white/10"><SelectValue placeholder="Select department" /></SelectTrigger>
+                          <SelectTrigger className="bg-card border-border"><SelectValue placeholder="Select department" /></SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#1a1d27] border-white/10">
+                        <SelectContent className="bg-card border-border">
                           {departments?.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
                         </SelectContent>
                       </Select>
@@ -225,15 +225,15 @@ export default function UsersPage() {
                   <FormField control={form.control} name="designation" render={({ field }) => (
                     <FormItem>
                       <FormLabel>Designation</FormLabel>
-                      <FormControl><Input className="bg-[#1a1d27] border-white/10" {...field} /></FormControl>
+                      <FormControl><Input className="bg-card border-border" {...field} /></FormControl>
                     </FormItem>
                   )} />
                 </div>
               )}
 
               <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-white/10">Cancel</Button>
-                <Button type="submit" isLoading={isSubmitting} loadingText="Creating User..." className="bg-indigo-600 hover:bg-indigo-700">Create User</Button>
+                <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-border">Cancel</Button>
+                <Button type="submit" isLoading={isSubmitting} loadingText="Creating User..." className="btn-primary">Create User</Button>
               </div>
             </form>
           </Form>

@@ -89,10 +89,10 @@ export default function GuidedProjectsPage() {
           ))
         ) : filteredProjects.length > 0 ? (
           filteredProjects.map((p: any) => (
-            <Card key={p.id} className="flex flex-col justify-between hover:border-indigo-500/50 transition-colors">
+            <Card key={p.id} className="flex flex-col justify-between hover:border-brand transition-colors">
               <CardHeader className="border-b border-border pb-3">
                 <div className="flex justify-between items-center gap-2 mb-2">
-                  <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold">
+                  <span className="px-2.5 py-0.5 rounded-md bg-brand-subtle text-brand border border-brand text-xs font-semibold">
                     {p.domain || 'General'}
                   </span>
                   <StatusBadge status={p.status || 'IN_PROGRESS'} type="project" />
@@ -104,7 +104,7 @@ export default function GuidedProjectsPage() {
                 <div>
                   <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Mentored Team</p>
                   <p className="font-semibold text-sm text-foreground flex items-center gap-1.5 mt-0.5">
-                    <Users className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                    <Users className="w-3.5 h-3.5 text-brand" />
                     {p.team?.name || 'Unassigned'}
                     <span className="text-xs text-muted-foreground font-normal">({p.team?.members?.length || 0} members)</span>
                   </p>
@@ -128,9 +128,9 @@ export default function GuidedProjectsPage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => navigate(`/coordinator/projects/${p.id}`)}
-                  className="flex flex-col items-center gap-1 h-auto py-2 text-muted-foreground hover:text-indigo-600 hover:bg-secondary text-xs font-semibold"
+                  className="flex flex-col items-center gap-1 h-auto py-2 text-muted-foreground hover:text-brand hover:bg-secondary text-xs font-semibold"
                 >
-                  <Eye className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <Eye className="w-4 h-4 text-brand" />
                   <span>Details</span>
                 </Button>
 
@@ -139,9 +139,9 @@ export default function GuidedProjectsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="flex flex-col items-center gap-1 h-auto py-2 text-muted-foreground hover:text-indigo-600 hover:bg-secondary text-xs font-semibold"
+                      className="flex flex-col items-center gap-1 h-auto py-2 text-muted-foreground hover:text-brand hover:bg-secondary text-xs font-semibold"
                     >
-                      <MessageSquare className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      <MessageSquare className="w-4 h-4 text-brand" />
                       <span>Feedback</span>
                     </Button>
                   </DialogTrigger>
@@ -175,9 +175,9 @@ export default function GuidedProjectsPage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => navigate(`/coordinator/projects/${p.id}`)}
-                  className="flex flex-col items-center gap-1 h-auto py-2 text-muted-foreground hover:text-emerald-600 hover:bg-secondary text-xs font-semibold"
+                  className="flex flex-col items-center gap-1 h-auto py-2 text-muted-foreground hover:text-success hover:bg-secondary text-xs font-semibold"
                 >
-                  <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <FileText className="w-4 h-4 text-success" />
                   <span>Submissions</span>
                 </Button>
               </CardFooter>

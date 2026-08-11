@@ -88,7 +88,7 @@ export default function TeamApprovalsPage() {
       header: 'Members',
       cell: ({ row }: any) => (
         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-secondary border border-border text-foreground text-xs font-semibold">
-          <Users className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+          <Users className="w-3.5 h-3.5 text-brand" />
           {row.original.members?.length || row.original._count?.members || 0}
         </span>
       ),
@@ -104,7 +104,7 @@ export default function TeamApprovalsPage() {
       cell: ({ row }: any) => (
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => setViewTeam(row.original)} title="View Details" className="h-8 w-8">
-            <Eye className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <Eye className="w-4 h-4 text-brand" />
           </Button>
           {row.original.status !== 'APPROVED' && (
             <Button
@@ -113,7 +113,7 @@ export default function TeamApprovalsPage() {
               onClick={() => handleApprove(row.original.id)}
               isLoading={actionTeamId === row.original.id && isSubmitting}
               loadingText="Approving..."
-              className="bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 border border-emerald-200 dark:border-emerald-500/20 text-xs font-semibold"
+              className="bg-success-subtle text-success-md hover:bg-emerald-100 border border-success text-xs font-semibold"
             >
               <CheckCircle className="w-3.5 h-3.5 mr-1" /> Approve
             </Button>
@@ -123,7 +123,7 @@ export default function TeamApprovalsPage() {
               variant="ghost"
               size="sm"
               onClick={() => setRejectItem(row.original)}
-              className="bg-rose-50 dark:bg-rose-500/15 text-rose-700 dark:text-rose-400 hover:bg-rose-100 border border-rose-200 dark:border-rose-500/20 text-xs font-semibold"
+              className="bg-danger-subtle text-danger-md hover:bg-rose-100 border border-danger text-xs font-semibold"
             >
               <XCircle className="w-3.5 h-3.5 mr-1" /> Reject
             </Button>
@@ -152,7 +152,7 @@ export default function TeamApprovalsPage() {
               onClick={() => setStatusFilter(tab.value)}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 isActive
-                  ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30'
+                  ? 'bg-brand-subtle text-brand border border-brand'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
               }`}
             >
@@ -207,18 +207,18 @@ export default function TeamApprovalsPage() {
                   return (
                     <div key={member.id} className="p-3 bg-secondary/50 rounded-lg border border-border flex justify-between items-center">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">
+                        <div className="w-8 h-8 rounded-lg bg-brand-subtle text-brand flex items-center justify-center font-bold text-xs">
                           {user?.name?.charAt(0) || 'U'}
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-foreground flex items-center gap-2">
                             {user?.name || 'Unknown'}
-                            {member.isLeader && <span className="text-[10px] bg-amber-50 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2 py-0.5 rounded-md font-bold">Leader</span>}
+                            {member.isLeader && <span className="text-[10px] bg-warning-subtle text-warning-md border border-warning px-2 py-0.5 rounded-md font-bold">Leader</span>}
                           </p>
                           <p className="text-xs text-muted-foreground">{user?.email}</p>
                         </div>
                       </div>
-                      <span className="text-xs text-indigo-600 dark:text-indigo-400 font-mono font-semibold">{rollNo}</span>
+                      <span className="text-xs text-brand font-mono font-semibold">{rollNo}</span>
                     </div>
                   );
                 })}
@@ -233,7 +233,7 @@ export default function TeamApprovalsPage() {
                     setRejectItem(viewTeam);
                     setViewTeam(null);
                   }}
-                  className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200"
+                  className="bg-danger-subtle text-danger-md border-danger"
                 >
                   Reject
                 </Button>

@@ -18,31 +18,31 @@ const getIcon = (type: string) => {
   switch (type) {
     case 'DEADLINE_REMINDER':
       return (
-        <div className="w-8 h-8 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+        <div className="w-8 h-8 rounded-full bg-warning-subtle text-warning flex items-center justify-center shrink-0 border border-warning">
           <AlertCircle className="w-4 h-4" />
         </div>
       );
     case 'STATUS_CHANGE':
       return (
-        <div className="w-8 h-8 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/30">
+        <div className="w-8 h-8 rounded-full bg-brand-subtle text-brand flex items-center justify-center shrink-0 border border-brand">
           <Bell className="w-4 h-4" />
         </div>
       );
     case 'FEEDBACK':
       return (
-        <div className="w-8 h-8 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+        <div className="w-8 h-8 rounded-full bg-success-subtle text-success flex items-center justify-center shrink-0 border border-success">
           <MessageSquare className="w-4 h-4" />
         </div>
       );
     case 'ANNOUNCEMENT':
       return (
-        <div className="w-8 h-8 rounded-full bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/30">
+        <div className="w-8 h-8 rounded-full bg-purple-subtle text-purple flex items-center justify-center shrink-0 border border-purple">
           <Megaphone className="w-4 h-4" />
         </div>
       );
     default:
       return (
-        <div className="w-8 h-8 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30">
+        <div className="w-8 h-8 rounded-full bg-info-subtle text-info flex items-center justify-center shrink-0 border border-info">
           <Bell className="w-4 h-4" />
         </div>
       );
@@ -56,13 +56,13 @@ export default function NotificationPanel({ notifications, unreadCount, isLoadin
         <div className="flex items-center gap-2">
           <h4 className="font-bold text-foreground text-base">Notifications</h4>
           {unreadCount > 0 && (
-            <span className="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold">
+            <span className="px-2 py-0.5 rounded-full bg-brand-subtle text-brand border border-brand text-xs font-semibold">
               {unreadCount} new
             </span>
           )}
         </div>
         {unreadCount > 0 && (
-          <Button variant="ghost" size="sm" onClick={onMarkAllRead} className="h-7 px-2 text-xs text-indigo-600 dark:text-indigo-400 hover:bg-secondary">
+          <Button variant="ghost" size="sm" onClick={onMarkAllRead} className="h-7 px-2 text-xs text-brand hover:bg-secondary">
             <CheckCheck className="w-3.5 h-3.5 mr-1" /> Mark all read
           </Button>
         )}
@@ -98,7 +98,7 @@ export default function NotificationPanel({ notifications, unreadCount, isLoadin
                 key={notif.id}
                 className={cn(
                   'flex items-start gap-3.5 p-4 transition-all hover:bg-secondary/50 cursor-pointer relative group',
-                  !notif.isRead && 'bg-indigo-50/40 dark:bg-indigo-500/10'
+                  !notif.isRead && 'bg-brand-subtle'
                 )}
                 onClick={() => !notif.isRead && onMarkRead(notif.id)}
               >
@@ -115,7 +115,7 @@ export default function NotificationPanel({ notifications, unreadCount, isLoadin
                   </span>
                 </div>
                 {!notif.isRead && (
-                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 dark:bg-indigo-400 shrink-0 mt-1.5 ring-4 ring-indigo-500/20" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-brand shrink-0 mt-1.5 ring-4 ring-indigo-500/20" />
                 )}
               </div>
             ))}

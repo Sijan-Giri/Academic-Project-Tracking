@@ -59,7 +59,7 @@ export default function Header({ className }: HeaderProps) {
           {theme === 'dark' ? (
             <Sun className="h-5 w-5 text-amber-400 hover:text-amber-300 transition-transform duration-300 hover:rotate-45" />
           ) : (
-            <Moon className="h-5 w-5 text-indigo-600 hover:text-indigo-700 transition-transform duration-300 hover:-rotate-12" />
+            <Moon className="h-5 w-5 text-brand hover:text-indigo-700 transition-transform duration-300 hover:-rotate-12" />
           )}
         </Button>
 
@@ -70,14 +70,14 @@ export default function Header({ className }: HeaderProps) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 border border-slate-200 dark:border-white/10">
               <Avatar className="h-9 w-9">
-                <AvatarFallback className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-bold text-xs">
+                <AvatarFallback className="gradient-brand-br text-white font-bold text-xs">
                   {user?.name?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="w-56 p-1.5 rounded-2xl dark:bg-[#14161f] dark:border-white/10 dark:text-white bg-white border-slate-200 text-slate-900 shadow-2xl" align="end" forceMount>
+          <DropdownMenuContent className="w-56 p-1.5 rounded-2xl popover-dark dark:text-white bg-white border-slate-200 text-slate-900 shadow-2xl" align="end" forceMount>
             <DropdownMenuLabel className="font-normal px-3 py-2.5">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-bold leading-none dark:text-white text-slate-900">{user?.name}</p>
@@ -88,13 +88,13 @@ export default function Header({ className }: HeaderProps) {
             <DropdownMenuSeparator className="dark:bg-white/10 bg-slate-100" />
             
             <DropdownMenuItem onClick={() => navigate(ROUTES.PROFILE)} className="cursor-pointer font-bold">
-              <UserIcon className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
+              <UserIcon className="w-4 h-4 mr-2 text-brand" />
               View Profile
             </DropdownMenuItem>
 
             {user?.role === 'ADMIN' && (
               <DropdownMenuItem onClick={() => navigate(ROUTES.ADMIN_SETTINGS)} className="cursor-pointer font-bold">
-                <SettingsIcon className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
+                <SettingsIcon className="w-4 h-4 mr-2 text-brand" />
                 System Settings
               </DropdownMenuItem>
             )}
@@ -107,9 +107,9 @@ export default function Header({ className }: HeaderProps) {
                 clearAuth();
                 navigate(ROUTES.LOGIN);
               }}
-              className="text-rose-600 dark:text-rose-400 focus:bg-rose-50 dark:focus:bg-rose-500/10 focus:text-rose-700 dark:focus:text-rose-300 font-bold cursor-pointer"
+              className="text-danger focus:bg-rose-50 dark:focus:bg-rose-500/10 focus:text-rose-700 dark:focus:text-rose-300 font-bold cursor-pointer"
             >
-              <LogOutIcon className="w-4 h-4 mr-2 text-rose-600 dark:text-rose-400" />
+              <LogOutIcon className="w-4 h-4 mr-2 text-danger" />
               Log Out
             </DropdownMenuItem>
           </DropdownMenuContent>

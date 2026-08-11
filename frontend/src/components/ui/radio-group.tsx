@@ -76,13 +76,13 @@ const RadioGroupItem = React.forwardRef<HTMLButtonElement, RadioGroupItemProps>(
         disabled={disabled}
         onClick={handleClick}
         className={cn(
-          'aspect-square h-4 w-4 rounded-full border border-white/20 text-indigo-500 ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center transition-colors',
+          'aspect-square h-4 w-4 rounded-full border border-border text-brand ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center transition-colors',
           checked && 'border-indigo-500 bg-indigo-500/20',
           className
         )}
         {...props}
       >
-        {checked && <Circle className="h-2.5 w-2.5 fill-current text-indigo-400" />}
+        {checked && <Circle className="h-2.5 w-2.5 fill-current text-brand" />}
       </button>
     );
   }

@@ -123,17 +123,17 @@ export default function SchedulesPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4 mb-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+                      <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-brand-subtle text-brand border border-brand">
                         {sch.reviewStage?.name || 'Review Stage'}
                       </span>
                       <span className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
-                        sch.mode === 'ONLINE' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-secondary border-border text-foreground'
+                        sch.mode === 'ONLINE' ? 'bg-brand-subtle text-brand border-brand' : 'bg-secondary border-border text-foreground'
                       }`}>
                         {sch.mode === 'ONLINE' ? <Wifi className="w-3 h-3 inline mr-1" /> : <WifiOff className="w-3 h-3 inline mr-1" />}
                         {sch.mode}
                       </span>
                       {isCompleted && (
-                        <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                        <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-success-subtle text-success-md border border-success">
                           Completed
                         </span>
                       )}
@@ -148,24 +148,24 @@ export default function SchedulesPage() {
                       </Button>
                     )}
                     <Button size="sm" variant="ghost" onClick={() => setDeleteId(sch.id)} id={`delete-sch-${sch.id}`}>
-                      <Trash2 className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                      <Trash2 className="h-4 w-4 text-danger" />
                     </Button>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                   <div className="flex items-center gap-2 text-muted-foreground font-normal">
-                    <Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                    <Calendar className="w-4 h-4 text-brand shrink-0" />
                     <span>Time: <strong className="text-foreground font-semibold">{scheduledDate ? format(scheduledDate, 'MMM d, yyyy · h:mm a') : 'Unscheduled'}</strong></span>
                   </div>
 
                   <div className="flex items-center gap-2 text-muted-foreground font-normal">
-                    <MapPin className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                    <MapPin className="w-4 h-4 text-brand shrink-0" />
                     <span>Venue: <strong className="text-foreground font-semibold">{sch.venue || 'TBD'}</strong></span>
                   </div>
 
                   <div className="flex items-center gap-2 text-muted-foreground font-normal">
-                    <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                    <Users className="w-4 h-4 text-brand shrink-0" />
                     <span>Panel: <strong className="text-foreground font-semibold">{panelMembers.length} Evaluators</strong></span>
                   </div>
                 </div>

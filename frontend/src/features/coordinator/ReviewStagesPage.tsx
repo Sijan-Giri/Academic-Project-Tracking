@@ -43,12 +43,12 @@ type StageForm = z.infer<typeof stageSchema>;
 type CriteriaForm = z.infer<typeof criteriaSchema>;
 
 const STAGE_TYPE_CLASSES: Record<string, string> = {
-  ABSTRACT_REVIEW: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
-  REVIEW_1: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
-  REVIEW_2: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
-  REVIEW_3: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
-  PRE_SUBMISSION: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
-  FINAL_SUBMISSION: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30',
+  ABSTRACT_REVIEW: 'bg-brand-subtle text-brand border-brand',
+  REVIEW_1: 'bg-brand-subtle text-brand border-brand',
+  REVIEW_2: 'bg-brand-subtle text-brand border-brand',
+  REVIEW_3: 'bg-brand-subtle text-brand border-brand',
+  PRE_SUBMISSION: 'bg-brand-subtle text-brand border-brand',
+  FINAL_SUBMISSION: 'bg-brand-subtle text-brand border-brand',
 };
 
 export default function ReviewStagesPage() {
@@ -204,7 +204,7 @@ export default function ReviewStagesPage() {
                       <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1 font-medium">
                         {stg.deadline && (
                           <span className="flex items-center gap-1">
-                            <Calendar className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                            <Calendar className="h-3.5 w-3.5 text-brand" />
                             Deadline: {format(new Date(stg.deadline), 'MMM d, yyyy')}
                           </span>
                         )}
@@ -223,11 +223,11 @@ export default function ReviewStagesPage() {
                       {isExpanded ? <ChevronUp className="h-4 w-4 mr-1" /> : <ChevronDown className="h-4 w-4 mr-1" />}
                       {isExpanded ? 'Hide Criteria' : 'View Criteria'}
                     </Button>
-                    <Button size="sm" variant="ghost" onClick={() => setCriteriaModal(stg.id)} id={`add-criteria-btn-${stg.id}`} className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+                    <Button size="sm" variant="ghost" onClick={() => setCriteriaModal(stg.id)} id={`add-criteria-btn-${stg.id}`} className="text-xs font-semibold text-brand">
                       <PlusCircle className="h-3.5 w-3.5 mr-1" /> Add Criteria
                     </Button>
                     <Button size="sm" variant="ghost" onClick={() => setDeleteStageId(stg.id)} id={`delete-stage-btn-${stg.id}`}>
-                      <Trash2 className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                      <Trash2 className="h-4 w-4 text-danger" />
                     </Button>
                   </div>
                 </div>
@@ -251,14 +251,14 @@ export default function ReviewStagesPage() {
                               {c.description && <p className="text-xs text-muted-foreground font-normal">{c.description}</p>}
                             </div>
                             <div className="flex items-center gap-3">
-                              <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold">
+                              <span className="px-2.5 py-0.5 rounded-md bg-brand-subtle text-brand border border-brand text-xs font-semibold">
                                 {c.maxMarks} Marks
                               </span>
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => handleDeleteCriteria(stg.id, c.id)}
-                                className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-600"
+                                className="h-7 w-7 p-0 text-muted-foreground hover:text-danger"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </Button>

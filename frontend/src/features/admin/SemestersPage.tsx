@@ -55,13 +55,13 @@ export default function SemestersPage() {
 
   const columns = [
     { accessorKey: 'batch.name', header: 'Batch', cell: ({ row }: any) => row.original.batch?.name || 'N/A' },
-    { accessorKey: 'name', header: 'Name', cell: ({ row }: any) => <span className="font-semibold dark:text-white text-slate-900">{row.original.name}</span> },
+    { accessorKey: 'name', header: 'Name', cell: ({ row }: any) => <span className="font-semibold text-foreground">{row.original.name}</span> },
     { accessorKey: 'number', header: 'Sem Number' },
     { 
       accessorKey: 'isCurrent', 
       header: 'Current',
       cell: ({ row }: any) => (
-        row.original.isCurrent ? <Badge className="dark:bg-emerald-500/20 dark:text-emerald-400 bg-emerald-100 text-emerald-700 border border-emerald-300">Current</Badge> : null
+        row.original.isCurrent ? <Badge className="bg-success-subtle text-success border border-success">Current</Badge> : null
       )
     },
     {
@@ -73,7 +73,7 @@ export default function SemestersPage() {
           size="sm" 
           disabled={row.original.isCurrent}
           onClick={() => handleSetCurrent(row.original.id)}
-          className="dark:border-white/10 dark:hover:bg-white/5 border-slate-300 hover:bg-slate-100"
+          className="border-border hover:bg-neutral-subtle"
         >
           Set as Current
         </Button>
@@ -89,12 +89,12 @@ export default function SemestersPage() {
         title="Semesters"
         subtitle="Manage academic semesters"
         actions={
-          <Button onClick={() => setCreateOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+          <Button onClick={() => setCreateOpen(true)} className="btn-primary">
             <Plus className="w-4 h-4 mr-2" /> Add Semester
           </Button>
         }
       />
-      <div className="dark:bg-[#1a1d27] bg-white rounded-xl border dark:border-white/10 border-slate-200 p-4 shadow-sm">
+      <div className="bg-card rounded-xl border border-border p-4 shadow-sm">
         <DataTable columns={columns} data={semesterList} isLoading={isLoading} />
       </div>
 
@@ -119,7 +119,7 @@ export default function SemestersPage() {
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-                <Button type="submit" isLoading={isSubmitting} loadingText="Creating Semester..." className="bg-indigo-600 hover:bg-indigo-700 text-white">Create Semester</Button>
+                <Button type="submit" isLoading={isSubmitting} loadingText="Creating Semester..." className="btn-primary">Create Semester</Button>
               </div>
             </form>
           </Form>

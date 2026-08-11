@@ -8,7 +8,7 @@ export function FormatSelector({ format, setFormat }: { format: string; setForma
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="pdf" id="pdf" className="border-indigo-500 text-indigo-600" />
         <Label htmlFor="pdf" className="flex items-center gap-1 cursor-pointer">
-          <FileText className="w-4 h-4 text-red-500" /> PDF
+          <FileText className="w-4 h-4 text-danger" /> PDF
         </Label>
       </div>
       <div className="flex items-center space-x-2">

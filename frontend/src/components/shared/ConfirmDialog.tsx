@@ -47,16 +47,16 @@ export default function ConfirmDialog({
         <div className="px-7 pt-6 pb-7 space-y-6">
           <div className="flex items-start gap-4">
             <div className={cn(
-              'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
+              'w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border',
               isDanger
-                ? 'bg-rose-50 dark:bg-rose-500/15 border border-rose-200 dark:border-rose-500/30'
-                : 'bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-200 dark:border-indigo-500/30'
+                ? 'bg-danger-subtle border-danger'
+                : 'bg-brand-subtle border-brand'
             )}>
               <AlertTriangle className={cn(
                 'w-6 h-6',
                 isDanger
-                  ? 'text-yellow-600 dark:text-rose-400'
-                  : 'text-indigo-600 dark:text-indigo-400'
+                  ? 'text-danger'
+                  : 'text-brand'
               )} />
             </div>
 
@@ -88,10 +88,10 @@ export default function ConfirmDialog({
               isLoading={isLoading}
               loadingText={activeLabel}
               className={cn(
-                'min-w-[120px] font-bold text-white',
+                'min-w-[120px] font-bold text-white border-0',
                 isDanger
-                  ? 'bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 border-0'
-                  : 'bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 border-0'
+                  ? 'bg-danger-solid'
+                  : 'gradient-brand gradient-brand-hover'
               )}
             >
               {isDanger && <Trash2 className="w-3.5 h-3.5 mr-1.5" />}

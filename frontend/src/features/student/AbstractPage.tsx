@@ -65,7 +65,7 @@ export default function AbstractPage() {
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-2">
               {project.domain && (
-                <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+                <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-brand-subtle text-brand border border-brand">
                   {project.domain}
                 </span>
               )}
@@ -81,7 +81,7 @@ export default function AbstractPage() {
             onClick={handleCopy}
             className="btn-outline shrink-0 gap-1.5"
           >
-            {copied ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />}
+            {copied ? <Check className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4 text-brand" />}
             {copied ? 'Copied' : 'Copy Abstract'}
           </Button>
         </div>
@@ -100,9 +100,9 @@ export default function AbstractPage() {
 
       {/* Review Status Banners */}
       {isRejectedOrRevision && (
-        <div className="rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-900 dark:text-amber-300 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
+        <div className="rounded-lg bg-warning-subtle border border-warning text-amber-900 dark:text-warning p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+            <AlertCircle className="w-5 h-5 text-warning mt-0.5 shrink-0" />
             <div>
               <h4 className="font-semibold text-sm">Revision Requested</h4>
               <p className="text-xs mt-0.5 opacity-90 leading-relaxed max-w-xl font-normal">
@@ -112,7 +112,7 @@ export default function AbstractPage() {
           </div>
           <Button
             onClick={() => navigate('/my-project')}
-            className="bg-amber-600 hover:bg-amber-700 text-white font-medium shrink-0 rounded-lg text-xs"
+            className="bg-warning-solid text-white font-medium shrink-0 rounded-lg text-xs"
           >
             <RefreshCw className="w-4 h-4 mr-2" /> Revise Proposal
           </Button>
@@ -120,8 +120,8 @@ export default function AbstractPage() {
       )}
 
       {project.status === 'ABSTRACT_SUBMITTED' && (
-        <div className="rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-900 dark:text-indigo-300 p-4 flex items-center gap-3 shadow-xs">
-          <FileText className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+        <div className="rounded-lg bg-indigo-50 dark:bg-brand-subtle border border-indigo-200 dark:border-brand text-indigo-900 dark:text-brand p-4 flex items-center gap-3 shadow-xs">
+          <FileText className="w-5 h-5 text-brand shrink-0" />
           <div>
             <h4 className="font-semibold text-sm">Under Coordinator Review</h4>
             <p className="text-xs mt-0.5 opacity-90 font-normal">
@@ -132,8 +132,8 @@ export default function AbstractPage() {
       )}
 
       {(project.status === 'ABSTRACT_APPROVED' || project.status === 'IN_PROGRESS' || project.status === 'COMPLETED') && (
-        <div className="rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-900 dark:text-emerald-300 p-4 flex items-center gap-3 shadow-xs">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+        <div className="rounded-lg bg-success-subtle border border-success text-success-md p-4 flex items-center gap-3 shadow-xs">
+          <CheckCircle2 className="w-5 h-5 text-success shrink-0" />
           <div>
             <h4 className="font-semibold text-sm">Abstract Approved Officially</h4>
             <p className="text-xs mt-0.5 opacity-90 font-normal">
@@ -147,7 +147,7 @@ export default function AbstractPage() {
       <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
         <div className="flex items-center justify-between border-b border-border pb-4 mb-4">
           <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-            <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <FileText className="w-4 h-4 text-brand" />
             Abstract Document Body
           </h3>
           <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-secondary text-muted-foreground border border-border">

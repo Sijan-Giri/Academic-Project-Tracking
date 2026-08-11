@@ -106,7 +106,7 @@ export default function MyTeamPage() {
         {myInvitations.length > 0 && (
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="flex items-center gap-2 border-b border-border pb-3">
-              <Mail className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <Mail className="w-5 h-5 text-brand" />
               <h3 className="text-base font-semibold text-foreground">
                 Pending Team Invitations ({myInvitations.length})
               </h3>
@@ -158,7 +158,7 @@ export default function MyTeamPage() {
               className={cn(
                 'flex-1 py-4 h-auto rounded-none text-center font-semibold text-sm transition-colors border-b-2',
                 activeTab === 'CREATE'
-                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-secondary/50'
+                  ? 'border-indigo-600 text-brand bg-secondary/50'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               )}
             >
@@ -170,7 +170,7 @@ export default function MyTeamPage() {
               className={cn(
                 'flex-1 py-4 h-auto rounded-none text-center font-semibold text-sm transition-colors border-b-2',
                 activeTab === 'JOIN'
-                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-secondary/50'
+                  ? 'border-indigo-600 text-brand bg-secondary/50'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               )}
             >
@@ -182,7 +182,7 @@ export default function MyTeamPage() {
             {activeTab === 'CREATE' ? (
               <div className="max-w-md mx-auto space-y-6">
                 <div className="text-center space-y-1">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center mx-auto mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-brand-subtle text-brand border border-brand flex items-center justify-center mx-auto mb-3">
                     <Users className="w-6 h-6" />
                   </div>
                   <h3 className="text-lg font-semibold text-foreground">Form a Project Team</h3>
@@ -243,7 +243,7 @@ export default function MyTeamPage() {
             <Button
               variant="outline"
               onClick={() => setDeleteModalOpen(true)}
-              className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 text-xs font-semibold"
+              className="bg-danger-subtle text-danger border-danger text-xs font-semibold"
             >
               <Trash2 className="w-4 h-4 mr-1.5" /> Disband Team
             </Button>
@@ -251,7 +251,7 @@ export default function MyTeamPage() {
             <Button
               variant="outline"
               onClick={handleLeave}
-              className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 text-xs font-semibold"
+              className="bg-danger-subtle text-danger border-danger text-xs font-semibold"
               isLoading={isLeaving}
               loadingText="Leaving Team..."
             >
@@ -274,7 +274,7 @@ export default function MyTeamPage() {
         </div>
 
         {team.status === 'PENDING' && (
-          <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/15 px-3 py-1.5 rounded-md border border-amber-200 dark:border-amber-500/30 text-xs font-semibold">
+          <div className="flex items-center gap-2 text-warning bg-warning-subtle px-3 py-1.5 rounded-md border border-warning text-xs font-semibold">
             <AlertTriangle className="w-4 h-4 text-amber-600" /> Pending Coordinator Approval
           </div>
         )}
@@ -286,7 +286,7 @@ export default function MyTeamPage() {
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="flex justify-between items-center border-b border-border pb-3">
               <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <Users className="w-5 h-5 text-brand" />
                 Team Members ({team.members?.length || 0})
               </h3>
             </div>
@@ -311,7 +311,7 @@ export default function MyTeamPage() {
                           <span className="font-semibold text-foreground text-sm">{user?.name || 'Unknown Student'}</span>
                           {isMe && <span className="text-[10px] bg-secondary text-muted-foreground px-2 py-0.5 rounded-md font-semibold border border-border">You</span>}
                           {m.isLeader && (
-                            <span className="text-[10px] bg-amber-50 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2 py-0.5 rounded-md font-bold">
+                            <span className="text-[10px] bg-warning-subtle text-warning border border-warning px-2 py-0.5 rounded-md font-bold">
                               Leader
                             </span>
                           )}
@@ -321,13 +321,13 @@ export default function MyTeamPage() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      {studentId && <span className="text-xs text-indigo-600 dark:text-indigo-400 font-mono font-semibold">{studentId}</span>}
+                      {studentId && <span className="text-xs text-brand font-mono font-semibold">{studentId}</span>}
                       {isLeader && !m.isLeader && (
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleRemove(m.id)}
-                          className="text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 h-8 text-xs font-semibold"
+                          className="text-danger hover:text-rose-700 hover:bg-rose-50 h-8 text-xs font-semibold"
                           isLoading={isRemoving}
                           loadingText="Removing..."
                         >
@@ -347,7 +347,7 @@ export default function MyTeamPage() {
           {isLeader && (
             <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
               <div className="flex items-center gap-2 border-b border-border pb-3">
-                <UserPlus className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <UserPlus className="w-5 h-5 text-brand" />
                 <h3 className="text-base font-semibold text-foreground">Invite Team Member</h3>
               </div>
 
@@ -389,7 +389,7 @@ export default function MyTeamPage() {
                       <p className="font-semibold text-foreground">{inv.studentProfile?.user?.name || inv.studentProfileId}</p>
                       <p className="text-[11px] text-muted-foreground">Status: Pending</p>
                     </div>
-                    <span className="px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 font-semibold text-[10px]">
+                    <span className="px-2 py-0.5 rounded bg-warning-subtle text-warning border border-warning font-semibold text-[10px]">
                       Sent
                     </span>
                   </div>

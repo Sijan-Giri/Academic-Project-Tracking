@@ -84,7 +84,7 @@ export default function MilestonesPage() {
                 className={cn(
                   'rounded-xl border bg-card p-6 shadow-xs transition-all',
                   isOverdue
-                    ? 'border-rose-200 dark:border-rose-500/30'
+                    ? 'border-danger'
                     : 'border-border'
                 )}
               >
@@ -96,7 +96,7 @@ export default function MilestonesPage() {
                       </span>
                       <StatusBadge status={m.status || 'NOT_STARTED'} type="milestone" />
                       {isOverdue && (
-                        <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-rose-50 dark:bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30">
+                        <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-danger-subtle text-danger-md border border-danger">
                           Overdue Deadline
                         </span>
                       )}
@@ -128,7 +128,7 @@ export default function MilestonesPage() {
                 {/* Requirements & Deadline Info */}
                 <div className="mt-4 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2 text-muted-foreground font-normal">
-                    <Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    <Calendar className="w-4 h-4 text-brand" />
                     <span>
                       Deadline:{' '}
                       <strong className="text-foreground font-semibold">
@@ -160,7 +160,7 @@ export default function MilestonesPage() {
           <div className="w-full max-w-lg rounded-xl border border-border bg-card p-6 shadow-xl space-y-5 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-2">
-                <FolderUp className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <FolderUp className="w-5 h-5 text-brand" />
                 <h3 className="text-base font-semibold text-foreground">Upload Milestone Files</h3>
               </div>
               <Button

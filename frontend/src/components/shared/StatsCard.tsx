@@ -44,7 +44,7 @@ function renderIcon(iconItem: unknown) {
     return iconItem;
   }
   const IconComp = iconItem as React.ComponentType<{ className?: string }>;
-  return <IconComp className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />;
+  return <IconComp className="h-4 w-4 text-brand" />;
 }
 
 export default function StatsCard({
@@ -89,8 +89,8 @@ export default function StatsCard({
               className={cn(
                 'font-semibold',
                 trend === 'up'
-                  ? 'dark:text-emerald-400 text-emerald-600'
-                  : 'dark:text-red-400 text-rose-600'
+                  ? 'text-success'
+                  : 'text-danger'
               )}
             >
               {trend === 'up' ? '↑' : '↓'} {trendLabel}

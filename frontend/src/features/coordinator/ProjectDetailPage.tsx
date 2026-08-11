@@ -27,7 +27,7 @@ export default function ProjectDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const user = useAuthStore(s => s.user);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, useStateTab] = useState('overview');
 
   const { project, isLoading, reviewAbstract, updateProjectStatus, isReviewing, isUpdatingStatus } = useProjectDetail(id || '');
   const isStatusChanging = isReviewing || isUpdatingStatus;
@@ -64,13 +64,13 @@ export default function ProjectDetailPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-6 rounded-xl border border-border shadow-xs">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold">
+            <span className="px-2.5 py-0.5 rounded-md bg-brand-subtle text-brand border border-brand text-xs font-semibold">
               {project.domain || 'General'}
             </span>
             <StatusBadge status={project.status} type="project" />
             {isStatusChanging && (
-              <span className="px-2.5 py-0.5 rounded-md bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 text-xs font-semibold flex items-center gap-1.5 animate-pulse">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-600 dark:text-amber-400" />
+              <span className="px-2.5 py-0.5 rounded-md bg-warning-subtle text-warning-md border border-warning text-xs font-semibold flex items-center gap-1.5 animate-pulse">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-warning" />
                 Pending Status Update...
               </span>
             )}
@@ -92,7 +92,7 @@ export default function ProjectDetailPage() {
               >
                 <SelectTrigger className="w-[190px] bg-card border-input text-foreground font-semibold text-xs h-9 disabled:opacity-75">
                   {isStatusChanging ? (
-                    <span className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold">
+                    <span className="flex items-center gap-2 text-brand font-semibold">
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       Updating Status...
                     </span>
@@ -114,14 +114,14 @@ export default function ProjectDetailPage() {
           {project.githubLink && (
             <Button variant="outline" className="btn-outline shrink-0 gap-2" asChild>
               <a href={project.githubLink} target="_blank" rel="noopener noreferrer">
-                <Github className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Repository
+                <Github className="w-4 h-4 text-brand" /> Repository
               </a>
             </Button>
           )}
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={useStateTab} className="w-full">
         <TabsList className="bg-card border border-border w-full justify-start rounded-xl p-1 h-auto mb-6">
           <TabsTrigger value="overview" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-2 px-5 rounded-lg text-xs font-semibold">Overview</TabsTrigger>
           <TabsTrigger value="milestones" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-2 px-5 rounded-lg text-xs font-semibold">Milestones</TabsTrigger>
@@ -154,7 +154,7 @@ export default function ProjectDetailPage() {
               <Card>
                 <CardHeader className="border-b border-border pb-3">
                   <CardTitle className="text-base font-semibold flex items-center gap-2">
-                    <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Team Roster
+                    <Users className="w-4 h-4 text-brand" /> Team Roster
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4 space-y-3">
@@ -167,7 +167,7 @@ export default function ProjectDetailPage() {
                     return (
                       <div key={m.id} className="flex justify-between items-center text-xs">
                         <span className="text-foreground font-semibold">{memberUser?.name || 'Unknown'}</span>
-                        {m.isLeader && <span className="text-[10px] bg-amber-50 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2 py-0.5 rounded-md font-bold">Leader</span>}
+                        {m.isLeader && <span className="text-[10px] bg-warning-subtle text-warning-md border border-warning px-2 py-0.5 rounded-md font-bold">Leader</span>}
                       </div>
                     );
                   })}
@@ -178,7 +178,7 @@ export default function ProjectDetailPage() {
               <Card>
                 <CardHeader className="border-b border-border pb-3">
                   <CardTitle className="text-base font-semibold flex items-center gap-2">
-                    <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Assigned Mentor
+                    <GraduationCap className="w-4 h-4 text-brand" /> Assigned Mentor
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
@@ -190,7 +190,7 @@ export default function ProjectDetailPage() {
                       <div>
                         <p className="font-semibold text-foreground text-sm">{guideUser.name}</p>
                         <p className="text-xs text-muted-foreground font-normal">{guideInfo?.designation || 'Faculty Guide'}</p>
-                        <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs font-semibold">
+                        <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-md bg-success-subtle text-success-md border border-success text-xs font-semibold">
                           <CheckCircle2 className="w-3.5 h-3.5" /> Assigned
                         </span>
                       </div>
@@ -233,7 +233,7 @@ export default function ProjectDetailPage() {
                 {(project as any).submissions?.length ? (project as any).submissions.map((sub: any) => (
                   <div key={sub.id} className="flex justify-between items-center p-4 bg-secondary/50 rounded-lg border border-border">
                     <div className="flex items-center gap-3">
-                      <FileText className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                      <FileText className="w-6 h-6 text-brand" />
                       <div>
                         <p className="font-semibold text-sm text-foreground">{sub.title}</p>
                         <p className="text-xs text-muted-foreground font-normal">Submitted on {new Date(sub.submittedAt).toLocaleDateString()}</p>

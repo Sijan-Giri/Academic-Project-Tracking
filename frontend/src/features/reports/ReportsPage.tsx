@@ -21,18 +21,18 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-600">
+        <h1 className="text-3xl font-bold gradient-text-brand">
           Reports & Exports
         </h1>
-        <p className="dark:text-slate-400 text-slate-500 mt-2">Generate and download reports for accreditation and compliance.</p>
+        <p className="dark:text-dark-muted text-slate-500 mt-2">Generate and download reports for accreditation and compliance.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Card 1 */}
         <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle className="text-xl text-indigo-600 dark:text-indigo-300">Department Summary</CardTitle>
-            <CardDescription className="dark:text-slate-400 text-slate-500">Overview of project status, completion rate, and guide allocation per department.</CardDescription>
+            <CardTitle className="text-xl text-indigo-600 dark:text-brand">Department Summary</CardTitle>
+            <CardDescription className="dark:text-dark-muted text-slate-500">Overview of project status, completion rate, and guide allocation per department.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 flex-1 flex flex-col">
             <div className="grid grid-cols-2 gap-4">
@@ -53,7 +53,7 @@ export default function ReportsPage() {
             </div>
             <div className="pt-4 mt-auto">
               <FormatSelector format={format} setFormat={setFormat} />
-              <Button onClick={() => handleDownload('dept-summary', {})} className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white">
+              <Button onClick={() => handleDownload('dept-summary', {})} className="w-full mt-4 gradient-brand gradient-brand-hover text-white">
                 <Download className="w-4 h-4 mr-2" /> Download Report
               </Button>
             </div>
@@ -63,8 +63,8 @@ export default function ReportsPage() {
         {/* Card 2 */}
         <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle className="text-xl text-indigo-600 dark:text-indigo-300">Project Status Report</CardTitle>
-            <CardDescription className="dark:text-slate-400 text-slate-500">Detailed list of all projects with their current status and progress.</CardDescription>
+            <CardTitle className="text-xl text-indigo-600 dark:text-brand">Project Status Report</CardTitle>
+            <CardDescription className="dark:text-dark-muted text-slate-500">Detailed list of all projects with their current status and progress.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 flex-1 flex flex-col">
             <div className="grid grid-cols-2 gap-4">
@@ -85,7 +85,7 @@ export default function ReportsPage() {
             </div>
             <div className="pt-4 mt-auto">
               <FormatSelector format={format} setFormat={setFormat} />
-              <Button onClick={() => handleDownload('project-status', {})} className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white">
+              <Button onClick={() => handleDownload('project-status', {})} className="w-full mt-4 gradient-brand gradient-brand-hover text-white">
                 <Download className="w-4 h-4 mr-2" /> Download Report
               </Button>
             </div>
@@ -93,13 +93,13 @@ export default function ReportsPage() {
         </Card>
 
         {/* Card 3 */}
-        <Card className="dark:bg-red-500/5 dark:border-red-500/20 bg-rose-50/50 border-rose-200 flex flex-col">
+        <Card className="dark:bg-red-500/5 dark:border-red-500/20 bg-danger-subtle border-danger flex flex-col">
           <CardHeader>
             <div className="flex items-center gap-2 mb-1">
-              <ShieldAlert className="w-5 h-5 text-red-500 dark:text-red-400" />
-              <CardTitle className="text-xl text-red-600 dark:text-red-400">Defaulters Report</CardTitle>
+              <ShieldAlert className="w-5 h-5 text-danger dark:text-red-400" />
+              <CardTitle className="text-xl text-danger">Defaulters Report</CardTitle>
             </div>
-            <CardDescription className="dark:text-slate-400 text-slate-600">List of projects with overdue milestones for immediate action.</CardDescription>
+            <CardDescription className="dark:text-dark-muted text-slate-600">List of projects with overdue milestones for immediate action.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 flex-1 flex flex-col">
             <div className="grid grid-cols-2 gap-4">
@@ -129,8 +129,8 @@ export default function ReportsPage() {
         {/* Card 4 */}
         <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle className="text-xl text-indigo-600 dark:text-indigo-300">Evaluation Marks</CardTitle>
-            <CardDescription className="dark:text-slate-400 text-slate-500">Marks per project per review stage with full criterion breakdown.</CardDescription>
+            <CardTitle className="text-xl text-indigo-600 dark:text-brand">Evaluation Marks</CardTitle>
+            <CardDescription className="dark:text-dark-muted text-slate-500">Marks per project per review stage with full criterion breakdown.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 flex-1 flex flex-col">
             <div className="grid grid-cols-2 gap-4">
@@ -151,7 +151,7 @@ export default function ReportsPage() {
             </div>
             <div className="pt-4 mt-auto">
               <FormatSelector format={format} setFormat={setFormat} />
-              <Button onClick={() => handleDownload('evaluations', {})} className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white">
+              <Button onClick={() => handleDownload('evaluations', {})} className="w-full mt-4 gradient-brand gradient-brand-hover text-white">
                 <Download className="w-4 h-4 mr-2" /> Download Report
               </Button>
             </div>
@@ -161,8 +161,8 @@ export default function ReportsPage() {
         {/* Card 5 */}
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-xl dark:text-slate-300 text-slate-800">Audit Log Export</CardTitle>
-            <CardDescription className="dark:text-slate-400 text-slate-500">Full system activity log for compliance and auditing purposes.</CardDescription>
+            <CardTitle className="text-xl text-neutral-md">Audit Log Export</CardTitle>
+            <CardDescription className="dark:text-dark-muted text-slate-500">Full system activity log for compliance and auditing purposes.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col md:flex-row items-end gap-4">
             <div className="space-y-2 flex-1">

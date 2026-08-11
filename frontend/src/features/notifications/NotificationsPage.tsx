@@ -54,7 +54,7 @@ export default function NotificationsPage() {
             onClick={() => markAllRead()}
             className="btn-outline"
           >
-            <Check className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" /> Mark All as Read
+            <Check className="w-4 h-4 mr-2 text-brand" /> Mark All as Read
           </Button>
         }
       />
@@ -125,7 +125,7 @@ export default function NotificationsPage() {
               className={cn(
                 'rounded-xl border p-4 shadow-xs hover:shadow-md transition-all cursor-pointer flex gap-3.5 items-start group',
                 !n.isRead
-                  ? 'bg-indigo-50/50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/30 border-l-4 border-l-indigo-600 dark:border-l-indigo-500'
+                  ? 'bg-brand-subtle border-brand border-l-4 border-l-brand-strong'
                   : 'bg-card border-border hover:bg-secondary/50'
               )}
             >
@@ -153,7 +153,7 @@ export default function NotificationsPage() {
               </div>
 
               {!n.isRead && (
-                <div className="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-500 shrink-0 self-center" />
+                <div className="w-2 h-2 rounded-full bg-brand shrink-0 self-center" />
               )}
             </div>
           ))

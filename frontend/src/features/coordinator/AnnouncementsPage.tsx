@@ -101,7 +101,7 @@ export default function CoordinatorAnnouncementsPage() {
               <Card key={item.id} className="flex flex-col justify-between">
                 <CardHeader className="border-b border-border pb-3">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-brand-subtle text-brand border border-brand flex items-center justify-center shrink-0">
                       <Megaphone className="w-4 h-4" />
                     </div>
                     <span className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
@@ -122,7 +122,7 @@ export default function CoordinatorAnnouncementsPage() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setDeleteItem(item)}
-                    className="text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-500/10 h-7 text-xs font-semibold"
+                    className="text-danger hover:text-danger hover:bg-danger-subtle h-7 text-xs font-semibold"
                   >
                     <Trash2 className="w-3.5 h-3.5 mr-1" /> Delete
                   </Button>
@@ -151,7 +151,7 @@ export default function CoordinatorAnnouncementsPage() {
             <div className="space-y-1.5">
               <Label htmlFor="title" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Title</Label>
               <Input id="title" placeholder="e.g. Milestone 1 Defense Schedule Published" {...register('title')} />
-              {errors.title && <p className="text-xs text-rose-600 font-medium">{errors.title.message}</p>}
+              {errors.title && <p className="text-xs text-danger font-medium">{errors.title.message}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -163,7 +163,7 @@ export default function CoordinatorAnnouncementsPage() {
                 {...register('content')}
                 className="input-field"
               />
-              {errors.content && <p className="text-xs text-rose-600 font-medium">{errors.content.message}</p>}
+              {errors.content && <p className="text-xs text-danger font-medium">{errors.content.message}</p>}
             </div>
 
             {/* Target Filters */}
@@ -179,7 +179,7 @@ export default function CoordinatorAnnouncementsPage() {
                     onClick={() => toggleTarget('departmentIds', d.id)}
                     className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition-all ${
                       selectedDepts.includes(d.id)
-                        ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30'
+                        ? 'bg-brand-subtle text-brand border-brand'
                         : 'bg-secondary text-muted-foreground border-border'
                     }`}
                   >

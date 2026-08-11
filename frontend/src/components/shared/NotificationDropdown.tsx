@@ -51,7 +51,7 @@ export default function NotificationDropdown() {
         <Button variant="ghost" size="icon" className="relative text-foreground hover:bg-secondary/60 transition-colors rounded-lg">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex min-w-[18px] h-[18px] px-1 items-center justify-center rounded-full bg-rose-600 text-[10px] font-extrabold text-white shadow-xs ring-2 ring-background animate-pulse">
+            <span className="absolute -top-1 -right-1 flex min-w-[18px] h-[18px] px-1 items-center justify-center rounded-full bg-danger-solid text-[10px] font-extrabold text-white shadow-xs ring-2 ring-background animate-pulse">
               {unreadCount > 99 ? '99+' : unreadCount}
             </span>
           )}
@@ -64,7 +64,7 @@ export default function NotificationDropdown() {
           <div className="flex items-center gap-2">
             <h3 className="font-bold text-foreground text-base">Notifications</h3>
             {unreadCount > 0 && (
-              <span className="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-semibold">
+              <span className="px-2 py-0.5 rounded-full bg-brand-subtle text-brand border border-brand text-xs font-semibold">
                 {unreadCount} new
               </span>
             )}
@@ -74,7 +74,7 @@ export default function NotificationDropdown() {
               variant="ghost"
               size="sm"
               onClick={() => markAllReadMut()}
-              className="text-xs text-indigo-600 dark:text-indigo-400 hover:bg-secondary h-8 px-2"
+              className="text-xs text-brand hover:bg-secondary h-8 px-2"
             >
               <CheckCheck className="w-3.5 h-3.5 mr-1" /> Mark all read
             </Button>
@@ -90,7 +90,7 @@ export default function NotificationDropdown() {
             className={cn(
               'px-3 py-1 rounded-lg text-xs font-semibold transition-colors',
               filter === 'ALL'
-                ? 'bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30'
+                ? 'bg-brand-subtle text-brand border border-brand'
                 : 'text-muted-foreground hover:text-foreground'
             )}
           >
@@ -103,7 +103,7 @@ export default function NotificationDropdown() {
             className={cn(
               'px-3 py-1 rounded-lg text-xs font-semibold transition-colors',
               filter === 'UNREAD'
-                ? 'bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30'
+                ? 'bg-brand-subtle text-brand border border-brand'
                 : 'text-muted-foreground hover:text-foreground'
             )}
           >
@@ -129,7 +129,7 @@ export default function NotificationDropdown() {
                   onClick={() => handleItemClick(notif)}
                   className={cn(
                     'flex items-start gap-3.5 p-4 transition-all hover:bg-secondary/50 cursor-pointer relative group',
-                    !notif.isRead && 'bg-indigo-50/40 dark:bg-indigo-500/10'
+                    !notif.isRead && 'bg-brand-subtle'
                   )}
                 >
                   {getNotificationIcon(notif.type)}
@@ -146,7 +146,7 @@ export default function NotificationDropdown() {
                   </div>
 
                   {!notif.isRead && (
-                    <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 dark:bg-indigo-400 shrink-0 mt-1.5 ring-4 ring-indigo-500/20" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand shrink-0 mt-1.5 ring-4 ring-indigo-500/20" />
                   )}
                 </div>
               ))}
@@ -163,7 +163,7 @@ export default function NotificationDropdown() {
               setOpen(false);
               navigate('/notifications');
             }}
-            className="w-full text-xs text-indigo-600 dark:text-indigo-400 hover:bg-secondary"
+            className="w-full text-xs text-brand hover:bg-secondary"
           >
             See all notifications <ChevronRight className="w-3.5 h-3.5 ml-1" />
           </Button>

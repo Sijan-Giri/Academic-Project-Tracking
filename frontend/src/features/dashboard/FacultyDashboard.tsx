@@ -54,10 +54,10 @@ export default function FacultyDashboard() {
 
       {/* Row 1 — Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard title="Guided Projects" value={stats.guided} icon={<BookOpen className="text-indigo-600 dark:text-indigo-400 h-4 w-4" />} />
-        <StatsCard title="Upcoming Schedules" value={stats.schedules} icon={<Calendar className="text-indigo-600 dark:text-indigo-400 h-4 w-4" />} />
-        <StatsCard title="Evaluations Completed" value={stats.completedEvals} icon={<CheckSquare className="text-emerald-600 dark:text-emerald-400 h-4 w-4" />} />
-        <StatsCard title="Pending Reviews" value={stats.pendingReviews} icon={<Clock className="text-amber-600 dark:text-amber-400 h-4 w-4" />} />
+        <StatsCard title="Guided Projects" value={stats.guided} icon={<BookOpen className="text-brand h-4 w-4" />} />
+        <StatsCard title="Upcoming Schedules" value={stats.schedules} icon={<Calendar className="text-brand h-4 w-4" />} />
+        <StatsCard title="Evaluations Completed" value={stats.completedEvals} icon={<CheckSquare className="text-success h-4 w-4" />} />
+        <StatsCard title="Pending Reviews" value={stats.pendingReviews} icon={<Clock className="text-warning h-4 w-4" />} />
       </div>
 
       {/* Row 2 — Charts + Schedules */}
@@ -84,7 +84,7 @@ export default function FacultyDashboard() {
         <Card className="flex flex-col">
           <CardHeader className="border-b border-border pb-3 flex flex-row items-center justify-between">
             <CardTitle className="text-base font-semibold">Upcoming Schedules</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.MY_SCHEDULES)} className="text-indigo-600 dark:text-indigo-400 font-semibold text-xs">
+            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.MY_SCHEDULES)} className="text-brand font-semibold text-xs">
               View All
             </Button>
           </CardHeader>
@@ -94,7 +94,7 @@ export default function FacultyDashboard() {
                 <div className="flex justify-between items-start">
                   <span className="font-semibold text-xs text-foreground line-clamp-1">{s.project?.title || 'Presentation Slot'}</span>
                   <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
-                    s.mode === 'ONLINE' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-secondary text-foreground border-border'
+                    s.mode === 'ONLINE' ? 'bg-brand-subtle text-brand border-brand' : 'bg-secondary text-foreground border-border'
                   }`}>
                     {s.mode}
                   </span>
@@ -114,7 +114,7 @@ export default function FacultyDashboard() {
       <Card>
         <CardHeader className="border-b border-border pb-3 flex flex-row items-center justify-between">
           <CardTitle className="text-base font-semibold">Guided Projects Roster</CardTitle>
-          <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.FACULTY_PROJECTS)} className="text-indigo-600 dark:text-indigo-400 font-semibold text-xs">
+          <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.FACULTY_PROJECTS)} className="text-brand font-semibold text-xs">
             Manage Projects
           </Button>
         </CardHeader>

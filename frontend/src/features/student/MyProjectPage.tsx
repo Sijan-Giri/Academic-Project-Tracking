@@ -108,9 +108,9 @@ export default function MyProjectPage() {
 
       {/* Cancelled / Rejected Banner */}
       {(project.status === 'CANCELLED' || project.status === 'ABSTRACT_REJECTED') && (
-        <div className="rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-900 dark:text-rose-300 p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
+        <div className="rounded-xl bg-danger-subtle border border-danger text-danger-md p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 mt-0.5 shrink-0" />
+            <AlertTriangle className="w-5 h-5 text-danger mt-0.5 shrink-0" />
             <div>
               <h4 className="font-bold text-sm">Project Proposal {project.status === 'CANCELLED' ? 'Cancelled' : 'Rejected'}</h4>
               <p className="text-xs mt-1 opacity-90 leading-relaxed max-w-xl font-normal">
@@ -120,7 +120,7 @@ export default function MyProjectPage() {
           </div>
           <Button
             onClick={() => navigate('/my-project/create')}
-            className="bg-rose-600 hover:bg-rose-700 text-white font-semibold shrink-0 rounded-lg text-xs px-4 h-9"
+            className="bg-danger-solid text-white font-semibold shrink-0 rounded-lg text-xs px-4 h-9"
           >
             <FolderPlus className="w-4 h-4 mr-2" /> Propose New Project
           </Button>
@@ -129,14 +129,14 @@ export default function MyProjectPage() {
 
       {/* Pending Status Banners */}
       {project.status === 'ABSTRACT_SUBMITTED' && (
-        <div className="rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 text-blue-900 dark:text-blue-300 p-5 flex items-center gap-3 shadow-xs">
-          <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+        <div className="rounded-xl bg-info-subtle border border-info text-info-md p-5 flex items-center gap-3 shadow-xs">
+          <div className="w-10 h-10 rounded-lg bg-info-subtle flex items-center justify-center text-info shrink-0">
             <Clock className="w-5 h-5 animate-pulse" />
           </div>
           <div>
             <h4 className="font-bold text-sm flex items-center gap-2">
               Status Pending Coordinator Review
-              <span className="px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-700 dark:text-blue-300 text-[11px] font-bold uppercase tracking-wider">
+              <span className="px-2 py-0.5 rounded-md bg-info-subtle text-info-md text-[11px] font-bold uppercase tracking-wider">
                 Pending Approval
               </span>
             </h4>
@@ -148,14 +148,14 @@ export default function MyProjectPage() {
       )}
 
       {project.status === 'UNDER_REVIEW' && (
-        <div className="rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-900 dark:text-amber-300 p-5 flex items-center gap-3 shadow-xs">
-          <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+        <div className="rounded-xl bg-warning-subtle border border-warning text-warning-md p-5 flex items-center gap-3 shadow-xs">
+          <div className="w-10 h-10 rounded-lg bg-warning-subtle flex items-center justify-center text-warning shrink-0">
             <Clock className="w-5 h-5 animate-pulse" />
           </div>
           <div>
             <h4 className="font-bold text-sm flex items-center gap-2">
               Evaluation & Review Pending
-              <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[11px] font-bold uppercase tracking-wider">
+              <span className="px-2 py-0.5 rounded-md bg-warning-subtle text-warning-md text-[11px] font-bold uppercase tracking-wider">
                 In Evaluation
               </span>
             </h4>
@@ -172,7 +172,7 @@ export default function MyProjectPage() {
           <div className="space-y-2 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
               {project.domain && (
-                <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+                <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-brand-subtle text-brand border border-brand">
                   {project.domain}
                 </span>
               )}
@@ -181,8 +181,8 @@ export default function MyProjectPage() {
                 <span className={cn(
                   'px-2.5 py-0.5 rounded-md text-xs font-semibold border flex items-center gap-1',
                   project.plagiarismScore <= 20
-                    ? 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30'
-                    : 'bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-500/30'
+                    ? 'bg-success-subtle text-success-md border-success'
+                    : 'bg-warning-subtle text-warning-md border-warning'
                 )}>
                   <ShieldAlert className="w-3.5 h-3.5" /> Plagiarism: {project.plagiarismScore}%
                 </span>
@@ -200,7 +200,7 @@ export default function MyProjectPage() {
               rel="noreferrer"
               className="btn-outline shrink-0 gap-2"
             >
-              <Github className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <Github className="w-4 h-4 text-brand" />
               <span>Repository</span>
               <ExternalLink className="w-3.5 h-3.5 opacity-60 ml-0.5" />
             </a>
@@ -221,7 +221,7 @@ export default function MyProjectPage() {
         {/* Abstract Box */}
         <div className="rounded-lg bg-secondary/50 p-4 border border-border border-l-4 border-l-indigo-600 dark:border-l-indigo-500">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 flex items-center gap-1.5">
-            <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Abstract & Summary
+            <FileText className="w-4 h-4 text-brand" /> Abstract & Summary
           </h3>
           <p className="text-foreground leading-relaxed text-sm">
             {showFullAbstract ? project.abstract : `${project.abstract?.substring(0, 180) || ''}${(project.abstract?.length ?? 0) > 180 ? '...' : ''}`}
@@ -230,7 +230,7 @@ export default function MyProjectPage() {
             <Button
               variant="link"
               onClick={() => setShowFullAbstract(!showFullAbstract)}
-              className="text-indigo-600 dark:text-indigo-400 hover:underline text-xs font-semibold mt-2 p-0 h-auto inline-flex items-center gap-1 focus:outline-none"
+              className="text-brand hover:underline text-xs font-semibold mt-2 p-0 h-auto inline-flex items-center gap-1 focus:outline-none"
             >
               {showFullAbstract ? 'Show less' : 'Read full abstract →'}
             </Button>
@@ -245,15 +245,15 @@ export default function MyProjectPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <GraduationCap className="w-5 h-5 text-brand" />
                 Project Guide
               </h3>
               {guideUser ? (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs font-semibold">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-success-subtle text-success-md border border-success text-xs font-semibold">
                   <UserCheck className="w-3.5 h-3.5" /> Assigned
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 text-xs font-semibold">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-warning-subtle text-warning-md border border-warning text-xs font-semibold">
                   <Clock className="w-3.5 h-3.5" /> Allocation Pending
                 </span>
               )}
@@ -261,7 +261,7 @@ export default function MyProjectPage() {
 
             {guideUser ? (
               <div className="flex items-start gap-4 p-4 rounded-lg bg-secondary/50 border border-border">
-                <div className="w-11 h-11 rounded-lg bg-indigo-600 text-white font-bold text-base flex items-center justify-center shrink-0">
+                <div className="w-11 h-11 rounded-lg bg-brand-subtle text-brand font-bold text-base flex items-center justify-center shrink-0">
                   {guideUser.name?.charAt(0) ?? 'G'}
                 </div>
                 <div className="space-y-0.5">
@@ -271,7 +271,7 @@ export default function MyProjectPage() {
                     {guide.department?.name ? ` • ${guide.department.name}` : ''}
                   </p>
                   {guideUser.email && (
-                    <p className="text-indigo-600 dark:text-indigo-400 text-xs font-medium pt-0.5">{guideUser.email}</p>
+                    <p className="text-brand text-xs font-medium pt-0.5">{guideUser.email}</p>
                   )}
                 </div>
               </div>
@@ -291,8 +291,8 @@ export default function MyProjectPage() {
         <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-              <Crown className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-              Team: <span className="text-indigo-600 dark:text-indigo-400">{project.team?.name || 'My Team'}</span>
+              <Crown className="w-5 h-5 text-brand" />
+              Team: <span className="text-brand">{project.team?.name || 'My Team'}</span>
             </h3>
             {project.team && <StatusBadge status={project.team.status} type="team" />}
           </div>
@@ -311,7 +311,7 @@ export default function MyProjectPage() {
                       <p className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                         {u?.name ?? 'Team Member'}
                         {isLeader && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+                          <span className="text-[10px] font-bold bg-brand-subtle text-brand border border-brand px-2 py-0.5 rounded-md">
                             Leader
                           </span>
                         )}
@@ -339,14 +339,14 @@ export default function MyProjectPage() {
                 className={cn(
                   'p-3 rounded-lg border text-center flex flex-col items-center justify-between space-y-2 transition-all',
                   isPassed
-                    ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300'
+                    ? 'bg-success-subtle border-success text-success-md'
                     : isCurrent
-                    ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/30 text-indigo-800 dark:text-indigo-300'
+                    ? 'bg-brand-subtle border-brand text-brand'
                     : 'bg-secondary/40 border-border text-muted-foreground'
                 )}
               >
                 <div className="w-6 h-6 rounded-md flex items-center justify-center font-bold text-xs">
-                  {isPassed ? <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : idx + 1}
+                  {isPassed ? <CheckCircle2 className="w-4 h-4 text-success" /> : idx + 1}
                 </div>
                 <p className="text-xs font-semibold line-clamp-2">{stg.name}</p>
                 <span className="text-[10px] uppercase tracking-wider font-bold">
@@ -368,7 +368,7 @@ export default function MyProjectPage() {
             <div>
               <h3 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
                 Evaluation Results & Panel Feedback
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs font-bold">
+                <span className="px-2.5 py-0.5 rounded-full bg-success-subtle text-success-md border border-success text-xs font-bold">
                   {evaluations.length} {evaluations.length === 1 ? 'Record' : 'Records'}
                 </span>
               </h3>
@@ -393,10 +393,10 @@ export default function MyProjectPage() {
               const scoresList: any[] = ev.scores || [];
 
               return (
-                <div key={ev.id} className="rounded-xl border border-border bg-secondary/20 p-5 space-y-4 hover:border-indigo-500/30 transition-all">
+                <div key={ev.id} className="rounded-xl border border-border bg-secondary/20 p-5 space-y-4 hover:border-brand transition-all">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <span className="px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 text-xs font-bold uppercase tracking-wider">
+                      <span className="px-3 py-1 rounded-full bg-brand-subtle text-brand border border-brand text-xs font-bold uppercase tracking-wider">
                         {stageName}
                       </span>
                       <span className="text-xs text-muted-foreground font-normal">
@@ -429,16 +429,16 @@ export default function MyProjectPage() {
                       <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">Rubric Score Breakdown</span>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                         {scoresList.map((s: any) => (
-                          <div key={s.id} className="p-2.5 rounded-lg bg-card/80 border border-border text-xs flex justify-between items-start gap-2">
-                            <div>
-                              <p className="font-semibold text-foreground">{s.criteria?.name || 'Criterion'}</p>
-                              {s.remarks && <p className="text-[10px] text-muted-foreground italic mt-0.5">{s.remarks}</p>}
-                            </div>
-                            <span className="font-bold text-indigo-400 shrink-0 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">
-                              {s.marks} marks
-                            </span>
-                          </div>
-                        ))}
+                           <div key={s.id} className="p-2.5 rounded-lg bg-card/80 border border-border text-xs flex justify-between items-start gap-2">
+                             <div>
+                               <p className="font-semibold text-foreground">{s.criteria?.name || 'Criterion'}</p>
+                               {s.remarks && <p className="text-[10px] text-muted-foreground italic mt-0.5">{s.remarks}</p>}
+                             </div>
+                             <span className="font-bold text-indigo-400 shrink-0 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">
+                               {s.marks} marks
+                             </span>
+                           </div>
+                         ))}
                       </div>
                     </div>
                   )}
@@ -457,7 +457,7 @@ export default function MyProjectPage() {
           className="p-5 h-auto rounded-xl border border-border bg-card hover:bg-secondary text-left transition-all group flex flex-col justify-between space-y-4 shadow-xs"
         >
           <div className="flex items-center justify-between w-full">
-            <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+            <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-brand">
               <FileCode2 className="w-5 h-5" />
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-transform group-hover:translate-x-0.5" />
@@ -474,7 +474,7 @@ export default function MyProjectPage() {
           className="p-5 h-auto rounded-xl border border-border bg-card hover:bg-secondary text-left transition-all group flex flex-col justify-between space-y-4 shadow-xs"
         >
           <div className="flex items-center justify-between w-full">
-            <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+            <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-brand">
               <Clock className="w-5 h-5" />
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-transform group-hover:translate-x-0.5" />
@@ -491,7 +491,7 @@ export default function MyProjectPage() {
           className="p-5 h-auto rounded-xl border border-border bg-card hover:bg-secondary text-left transition-all group flex flex-col justify-between space-y-4 shadow-xs"
         >
           <div className="flex items-center justify-between w-full">
-            <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+            <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-brand">
               <FileText className="w-5 h-5" />
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-transform group-hover:translate-x-0.5" />
