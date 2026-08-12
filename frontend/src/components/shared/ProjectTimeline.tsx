@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 import { Check, Circle, Clock } from 'lucide-react';
 
 interface Stage {

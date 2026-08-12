@@ -1,6 +1,5 @@
 import { api } from './client';
-import type { AcademicYear } from '@/types/system.types';
-import type { ApiResponse } from '@/types/api.types';
+import type { AcademicYear, ApiResponse } from '@/types';
 
 export const getAcademicYears = async () => (await api.get<ApiResponse<AcademicYear[]>>('/academic-years')).data;
 export const getAcademicYear = async (id: string) => (await api.get<ApiResponse<AcademicYear>>(`/academic-years/${id}`)).data;

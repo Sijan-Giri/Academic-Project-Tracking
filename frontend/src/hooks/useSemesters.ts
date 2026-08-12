@@ -1,15 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import {
-  getSemesters,
-  createSemester,
-  updateSemester,
-  deleteSemester,
-  setCurrentSemester,
-} from '@/api/semesters.api';
-import { getBatches } from '@/api/batches.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { Semester, Batch } from '@/types/system.types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; import toast from 'react-hot-toast'; 
+
+import { unwrapList } from '@/utils';
+import type { Batch, Semester } from '@/types';
+import { getSemesters, createSemester, updateSemester, deleteSemester, setCurrentSemester, getBatches } from '@/api';
 
 export function useSemesters() {
   const queryClient = useQueryClient();

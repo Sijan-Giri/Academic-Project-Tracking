@@ -5,7 +5,7 @@ import * as z from 'zod';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 import { PageHeader, DataTable, ConfirmDialog, Button, Badge, Dialog, DialogContent, DialogHeader, DialogTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Textarea, Switch } from '@/components';
-import type { Department } from '@/types/system.types';
+import type { Department } from '@/types';
 
 const departmentSchema = z.object({
   name: z.string().min(2, 'Name is required'),

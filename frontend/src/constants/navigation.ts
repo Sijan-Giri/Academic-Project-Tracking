@@ -17,7 +17,7 @@ import {
   UserCircle2,
   Megaphone,
 } from 'lucide-react';
-import type { Role } from '@/types/user.types';
+import type { Role } from '@/types';
 
 export interface NavItem {
   label: string;

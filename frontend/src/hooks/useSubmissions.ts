@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { getSubmissions } from '@/api/submissions.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { Submission } from '@/types/project.types';
+import { useQuery } from '@tanstack/react-query'; 
+import { unwrapList } from '@/utils';
+import type { Submission } from '@/types';
+import { getSubmissions } from '@/api';
 
 export function useSubmissions(params?: Record<string, unknown>) {
   const { data: rawSubmissions, isLoading, isError } = useQuery({

@@ -4,10 +4,10 @@ import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, Button, StatusBadge, StatsCard, PageHeader, DashboardSkeleton } from '@/components';
 import { useAuthStore } from '@/store';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 import { useMyProjects, useMyTeam, useAnnouncements, useReviewStages } from '@/hooks';
 import { ROUTES, LIFECYCLE_STAGES, PROJECT_LIFECYCLE_STAGE_MAP } from '@/constants';
-import { getDaysUntil } from '@/utils/formatUtils';
+import { getDaysUntil } from '@/utils';
 
 export default function StudentDashboard() {
   const navigate = useNavigate();

@@ -1,6 +1,5 @@
 import { api } from './client';
-import type { GuideAssignment } from '@/types/project.types';
-import type { ApiResponse } from '@/types/api.types';
+import type { ApiResponse, GuideAssignment } from '@/types';
 
 export const getGuideAssignments = async () => (await api.get<ApiResponse<GuideAssignment[]>>('/guides/assignments')).data;
 export const assignGuide = async (data: any) => (await api.post<ApiResponse<GuideAssignment>>('/guides/assign', data)).data;

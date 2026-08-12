@@ -6,7 +6,7 @@ import { Plus, Edit, Trash2 } from 'lucide-react';
 
 import { useAcademicYears } from '@/hooks';
 import { PageHeader, DataTable, ConfirmDialog, Button, Badge, Dialog, DialogContent, DialogHeader, DialogTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Switch } from '@/components';
-import { AcademicYear } from '@/types/system.types';
+import type { AcademicYear } from '@/types';
 
 const academicYearSchema = z.object({
   startYear: z.coerce.number().int().min(2000).max(2100),

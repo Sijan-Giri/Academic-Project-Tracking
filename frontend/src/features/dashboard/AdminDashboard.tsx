@@ -4,8 +4,7 @@ import { Users, GraduationCap, Briefcase, Building, ChevronRight } from 'lucide-
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Button, StatsCard, DashboardSkeleton } from '@/components';
 import { useTheme, useAdminDashboardData } from '@/hooks';
-import { getChartTooltipStyle, getAxisStroke, getChartCursorFill } from '@/utils/chartUtils';
-import { formatDate } from '@/utils/formatUtils';
+import { getChartTooltipStyle, getAxisStroke, getChartCursorFill, formatDate } from '@/utils';
 import { ROUTES } from '@/constants';
 
 const PIE_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316'];

@@ -1,9 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import { getProject, reviewAbstract, updateProjectStatus, updateProject } from '@/api/projects.api';
-import { assignGuide } from '@/api/guides.api';
-import { unwrapData } from '@/utils/apiUtils';
-import type { Project } from '@/types/project.types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; import toast from 'react-hot-toast'; 
+
+import { unwrapData } from '@/utils';
+import type { Project } from '@/types';
+import { getProject, reviewAbstract, updateProjectStatus, updateProject, assignGuide } from '@/api';
 
 export function useProjectDetail(id: string) {
   const queryClient = useQueryClient();

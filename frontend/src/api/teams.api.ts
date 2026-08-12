@@ -1,6 +1,5 @@
 import { api } from './client';
-import type { Team } from '@/types/project.types';
-import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
+import type { ApiResponse, PaginatedResponse, Team } from '@/types';
 
 export const createTeam = async (data: Partial<Team>) =>
   (await api.post<ApiResponse<Team>>('/teams', data)).data;

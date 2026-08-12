@@ -1,16 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import {
-  getAnnouncements,
-  createAnnouncement,
-  deleteAnnouncement,
-} from '@/api/announcements.api';
-import { getDepartments } from '@/api/departments.api';
-import { getBatches } from '@/api/batches.api';
-import { getSemesters } from '@/api/semesters.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { Announcement } from '@/types/notification.types';
-import type { Department, Batch, Semester } from '@/types/system.types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; import toast from 'react-hot-toast'; 
+
+import { unwrapList } from '@/utils';
+import type { Announcement, Batch, Department, Semester } from '@/types';
+import { getAnnouncements, createAnnouncement, deleteAnnouncement, getDepartments, getBatches, getSemesters } from '@/api';
 
 export function useAnnouncementsManage(params?: Record<string, unknown>) {
   const queryClient = useQueryClient();

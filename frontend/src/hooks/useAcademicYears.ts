@@ -1,13 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import {
-  getAcademicYears,
-  createAcademicYear,
-  updateAcademicYear,
-  deleteAcademicYear,
-} from '@/api/academic-years.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { AcademicYear } from '@/types/system.types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; import toast from 'react-hot-toast'; 
+import { unwrapList } from '@/utils';
+import type { AcademicYear } from '@/types';
+import { getAcademicYears, createAcademicYear, updateAcademicYear, deleteAcademicYear } from '@/api';
 
 export function useAcademicYears() {
   const queryClient = useQueryClient();

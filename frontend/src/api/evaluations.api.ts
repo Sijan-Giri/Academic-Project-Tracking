@@ -1,6 +1,5 @@
 import { api } from './client';
-import type { Evaluation } from '@/types/review.types';
-import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
+import type { ApiResponse, Evaluation, PaginatedResponse } from '@/types';
 import { getSchedule } from './schedules.api';
 import { getStageCriteria } from './reviews.api';
 

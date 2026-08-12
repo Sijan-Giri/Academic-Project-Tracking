@@ -3,7 +3,7 @@ import { Calendar, Upload, FileText, Clock, X, FolderUp } from 'lucide-react';
 import { Button, StatusBadge, PageHeader, FileUploadZone, MilestonesSkeleton } from '@/components';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 import { useMilestones } from '@/hooks';
 
 

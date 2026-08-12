@@ -1,12 +1,10 @@
-import { NavLink } from 'react-router-dom';
-import { GraduationCap, LogOut } from 'lucide-react';
-import { useAuthStore } from '@/store';
-import { logout as logoutApi } from '@/api/auth.api';
-import { cn } from '@/lib/utils';
+import { NavLink } from 'react-router-dom'; import { GraduationCap, LogOut } from 'lucide-react'; import { useAuthStore } from '@/store'; 
+import { cn } from '@/lib';
 import { Button } from '@/components/ui/button';
 import { NAV_ITEMS } from '@/constants';
-import type { Role } from '@/types/user.types';
+import type { Role } from '@/types';
 import { useSidebar } from '@/layouts/DashboardLayout';
+import { logout as logoutApi } from '@/api';
 
 interface SidebarProps { className?: string; }
 

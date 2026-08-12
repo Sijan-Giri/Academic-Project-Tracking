@@ -1,5 +1,5 @@
 import { ROUTES } from '@/constants';
-import type { User } from '@/types/user.types';
+import type { User } from '@/types';
 
 export function getPageTitle(
   pathname: string,

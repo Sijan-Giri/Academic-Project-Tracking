@@ -1,9 +1,4 @@
-import { Menu, Sun, Moon, User as UserIcon, Settings as SettingsIcon, LogOut as LogOutIcon } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import NotificationDropdown from '@/components/shared/NotificationDropdown';
-import { useAuthStore } from '@/store';
-import { useTheme, useMyProjects, useMyTeam } from '@/hooks';
-import { logout as logoutApi } from '@/api/auth.api';
+import { Menu, Sun, Moon, User as UserIcon, Settings as SettingsIcon, LogOut as LogOutIcon } from 'lucide-react'; import { useLocation, useNavigate } from 'react-router-dom'; import NotificationDropdown from '@/components/shared/NotificationDropdown'; import { useAuthStore } from '@/store'; import { useTheme, useMyProjects, useMyTeam } from '@/hooks'; 
 import { useSidebar } from '@/layouts/DashboardLayout';
 import {
   DropdownMenu,
@@ -15,9 +10,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 import { ROUTES } from '@/constants';
-import { getPageTitle } from '@/utils/navigationUtils';
+import { getPageTitle } from '@/utils';
+import { logout as logoutApi } from '@/api';
 
 interface HeaderProps { className?: string; }
 

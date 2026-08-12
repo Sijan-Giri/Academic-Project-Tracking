@@ -3,10 +3,10 @@
 // Custom hook to fetch announcements for dashboards and notification views.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useQuery } from '@tanstack/react-query';
-import { getAnnouncements } from '@/api/announcements.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { Announcement } from '@/types/notification.types';
+import { useQuery } from '@tanstack/react-query'; 
+import { unwrapList } from '@/utils';
+import type { Announcement } from '@/types';
+import { getAnnouncements } from '@/api';
 
 export const ANNOUNCEMENTS_QUERY_KEY = ['announcements'] as const;
 

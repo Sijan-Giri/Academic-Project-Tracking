@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { Plus, Calendar, Trash2, PlusCircle, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, PageHeader, ConfirmDialog, EmptyState, ReviewStagesSkeleton } from '@/components';
-import { REVIEW_STAGE_LABELS } from '@/lib/constants';
+import { REVIEW_STAGE_LABELS } from '@/lib';
 import { useReviewStages, useSemesters, useDepartments, useReviewTemplates } from '@/hooks';
 import toast from 'react-hot-toast';
 

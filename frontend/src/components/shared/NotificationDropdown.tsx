@@ -6,10 +6,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { NotificationDropdownSkeleton } from '@/components/shared/Skeletons';
-import { cn } from '@/lib/utils';
-import type { Notification } from '@/types/notification.types';
+import { cn } from '@/lib';
+import type { Notification } from '@/types';
 import { useNotifications } from '@/hooks';
-import { getNotificationIcon } from '@/utils/iconUtils';
+import { getNotificationIcon } from '@/utils';
 
 export default function NotificationDropdown() {
   const [open, setOpen] = useState(false);

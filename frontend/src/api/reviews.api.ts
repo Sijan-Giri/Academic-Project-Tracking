@@ -1,6 +1,5 @@
 import {api} from './client';
-import type { ReviewStageTemplate, ReviewStage, EvaluationCriteria } from '@/types/review.types';
-import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
+import type { ApiResponse, EvaluationCriteria, PaginatedResponse, ReviewStage, ReviewStageTemplate } from '@/types';
 
 export const getTemplates = async () => (await api.get<ApiResponse<ReviewStageTemplate[]>>('/reviews/templates')).data;
 export const createTemplate = async (data: Partial<ReviewStageTemplate>) => (await api.post<ApiResponse<ReviewStageTemplate>>('/reviews/templates', data)).data;

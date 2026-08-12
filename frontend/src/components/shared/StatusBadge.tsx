@@ -1,5 +1,4 @@
-import { PROJECT_STATUS_CONFIG, MILESTONE_STATUS_CONFIG, TEAM_STATUS_CONFIG } from '@/lib/constants';
-import { cn } from '@/lib/utils';
+import { PROJECT_STATUS_CONFIG, MILESTONE_STATUS_CONFIG, TEAM_STATUS_CONFIG, cn } from '@/lib';
 import { Badge } from '@/components/ui/badge';
 
 interface StatusBadgeProps {

@@ -1,12 +1,9 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import { signup } from '@/api/auth.api';
-import { getDepartments } from '@/api/departments.api';
-import { getBatches } from '@/api/batches.api';
+import { useQuery, useMutation } from '@tanstack/react-query'; import { useNavigate } from 'react-router-dom'; import toast from 'react-hot-toast'; 
+
 import { useAuthStore } from '@/store/auth.store';
-import { unwrapList } from '@/utils/apiUtils';
+import { unwrapList } from '@/utils';
 import { ROUTES } from '@/constants';
+import { signup, getDepartments, getBatches } from '@/api';
 
 export function useRegister() {
   const navigate = useNavigate();

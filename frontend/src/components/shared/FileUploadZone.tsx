@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useDropzone, Accept } from 'react-dropzone';
 import { UploadCloud, X, File as FileIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 import { Button } from '@/components/ui/button';
 
 interface FileUploadZoneProps {

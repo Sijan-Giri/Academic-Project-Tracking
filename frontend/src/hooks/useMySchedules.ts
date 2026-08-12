@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { getMySchedules } from '@/api/schedules.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { ReviewSchedule } from '@/types/review.types';
+import { useQuery } from '@tanstack/react-query'; 
+import { unwrapList } from '@/utils';
+import type { ReviewSchedule } from '@/types';
+import { getMySchedules } from '@/api';
 
 export function useMySchedules(params?: Record<string, unknown>) {
   const { data: rawSchedules, isLoading, isError } = useQuery({

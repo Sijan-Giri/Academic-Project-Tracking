@@ -1,7 +1,7 @@
 import { useState, createContext, useContext } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar, Header } from '@/components';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 
 interface SidebarContextType {
   isOpen: boolean;

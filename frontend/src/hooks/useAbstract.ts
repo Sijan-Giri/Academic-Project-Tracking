@@ -1,8 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import { getMyProjects, submitAbstract } from '@/api/projects.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { Project } from '@/types/project.types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; import toast from 'react-hot-toast'; 
+import { unwrapList } from '@/utils';
+import type { Project } from '@/types';
+import { getMyProjects, submitAbstract } from '@/api';
 
 export function useAbstract() {
   const queryClient = useQueryClient();

@@ -1,30 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import {
-  FileText,
-  CheckCircle2,
-  Clock,
-  ExternalLink,
-  ShieldAlert,
-  GraduationCap,
-  ChevronRight,
-  UserCheck,
-  FolderGit2,
-  Crown,
-  FileCode2,
-  Github,
-  AlertTriangle,
-  FolderPlus,
-  Award,
-  MessageSquare,
-  Star
-} from 'lucide-react';
-import { Button, StatusBadge, PageHeader, ProjectDetailSkeleton } from '@/components';
-import { cn } from '@/lib/utils';
-import { useMyProjects } from '@/hooks';
-import { getEvaluations } from '@/api/evaluations.api';
-import { unwrapList } from '@/utils/apiUtils';
+import { useState } from 'react'; import { useNavigate } from 'react-router-dom'; import { useQuery } from '@tanstack/react-query'; import { FileText, CheckCircle2, Clock, ExternalLink, ShieldAlert, GraduationCap, ChevronRight, UserCheck, FolderGit2, Crown, FileCode2, Github, AlertTriangle, FolderPlus, Award, MessageSquare, Star } from 'lucide-react'; import { Button, StatusBadge, PageHeader, ProjectDetailSkeleton } from '@/components'; import { cn } from '@/lib';
+ import { useMyProjects } from '@/hooks'; 
+import { unwrapList } from '@/utils';
+import { getEvaluations } from '@/api';
 
 const STAGES = [
   { id: 'DRAFT', name: 'Draft Proposal' },
@@ -34,7 +11,6 @@ const STAGES = [
   { id: 'UNDER_REVIEW', name: 'Under Review' },
   { id: 'COMPLETED', name: 'Completed' },
 ];
-
 
 export default function MyProjectPage() {
   const navigate = useNavigate();

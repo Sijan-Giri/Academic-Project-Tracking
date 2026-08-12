@@ -5,14 +5,9 @@
 // Used in: NotificationDropdown, NotificationsPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  getMyNotifications,
-  getUnreadCount,
-  markRead,
-  markAllRead,
-} from '@/api/notifications.api';
-import type { Notification } from '@/types/notification.types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; 
+import type { Notification } from '@/types';
+import { getMyNotifications, getUnreadCount, markRead, markAllRead } from '@/api';
 
 export const NOTIFICATIONS_QUERY_KEY = ['notifications'] as const;
 export const UNREAD_COUNT_QUERY_KEY = ['notifications-unread-count'] as const;

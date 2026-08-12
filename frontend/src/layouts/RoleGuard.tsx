@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '@/store';
-import type { Role } from '@/types/user.types';
+import type { Role } from '@/types';
 import { refreshToken, getMe } from '@/api/auth.api';
 import { handleSessionExpired } from '@/api/client';
 

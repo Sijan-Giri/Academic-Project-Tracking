@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Users, UserPlus, LogOut, Info, AlertTriangle, Mail, Check, X, Trash2 } from 'lucide-react';
 import { Button, Input, Label, PageHeader, StatusBadge, ConfirmDialog, MyTeamSkeleton } from '@/components';
 import { useAuthStore } from '@/store';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 import { useMyTeam } from '@/hooks';
 
 export default function MyTeamPage() {

@@ -5,7 +5,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useAuthStore } from '@/store/auth.store';
-import type { User } from '@/types/user.types';
+import type { User } from '@/types';
 
 export interface UseAuthReturn {
   user: User | null;

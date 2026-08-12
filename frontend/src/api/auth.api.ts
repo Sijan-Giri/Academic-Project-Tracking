@@ -1,7 +1,7 @@
 import { api } from './client';
 import { loginSchema } from '../lib/validators';
 import { z } from 'zod';
-import type { User } from '@/types/user.types';
+import type { User } from '@/types';
 
 export const login = async (data: z.infer<typeof loginSchema>) => {
   const res = await api.post<{ user: User; accessToken: string; refreshToken: string }>('/auth/login', data);

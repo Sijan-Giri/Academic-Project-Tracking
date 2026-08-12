@@ -1,10 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import { getMilestones, updateMilestoneStatus } from '@/api/milestones.api';
-import { createSubmission } from '@/api/submissions.api';
-import { unwrapList } from '@/utils/apiUtils';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; import toast from 'react-hot-toast'; 
+
+import { unwrapList } from '@/utils';
 import { useMyProjects } from '@/hooks/useMyProjects';
-import type { Milestone } from '@/types/project.types';
+import type { Milestone } from '@/types';
+import { getMilestones, updateMilestoneStatus, createSubmission } from '@/api';
 
 export function useMilestones(params?: Record<string, unknown>) {
   const queryClient = useQueryClient();

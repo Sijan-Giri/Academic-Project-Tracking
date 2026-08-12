@@ -1,11 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { getUsers } from '@/api/users.api';
-import { getProjects, getGuidedProjects } from '@/api/projects.api';
-import { getDepartments } from '@/api/departments.api';
-import { getTeams } from '@/api/teams.api';
-import { getMySchedules } from '@/api/schedules.api';
-import { api } from '@/api/client';
-import { unwrapList } from '@/utils/apiUtils';
+import { useQuery } from '@tanstack/react-query'; 
+
+import { unwrapList } from '@/utils';
+import { getUsers, getProjects, getGuidedProjects, getDepartments, getTeams, getMySchedules, api } from '@/api';
 
 export function useAdminDashboardData() {
   const { data: usersResponse, isLoading: loadingUsers } = useQuery({

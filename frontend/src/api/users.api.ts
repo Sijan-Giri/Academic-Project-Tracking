@@ -1,7 +1,5 @@
 import { api } from './client';
-import type { User } from '@/types/user.types';
-import type { AuditLog } from '@/types/system.types';
-import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
+import type { ApiResponse, AuditLog, PaginatedResponse, User } from '@/types';
 
 export const getUsers = async (params?: any) => (await api.get<ApiResponse<PaginatedResponse<User>>>('/users', { params })).data;
 export const getUser = async (id: string) => (await api.get<ApiResponse<User>>(`/users/${id}`)).data;

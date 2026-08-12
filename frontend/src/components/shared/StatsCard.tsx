@@ -15,7 +15,7 @@
 import React from 'react';
 import { type LucideIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 
 interface StatsCardProps {
   /** Card label — shown above the value in uppercase tracking. */

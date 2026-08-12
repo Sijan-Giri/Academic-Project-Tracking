@@ -1,8 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import { getTeams, approveTeam, rejectTeam } from '@/api/teams.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { Team } from '@/types/project.types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; import toast from 'react-hot-toast'; 
+import { unwrapList } from '@/utils';
+import type { Team } from '@/types';
+import { getTeams, approveTeam, rejectTeam } from '@/api';
 
 export function useTeamApprovals(params?: Record<string, unknown>) {
   const queryClient = useQueryClient();

@@ -1,15 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { useLogin } from '@/hooks';
-import toast from 'react-hot-toast';
-import { z } from 'zod';
-import { Button, Input, Label } from '@/components';
-import { loginSchema } from '@/lib/validators';
-import { refreshToken, getMe } from '@/api/auth.api';
+import { useState, useEffect } from 'react'; import { useForm } from 'react-hook-form'; import { zodResolver } from '@hookform/resolvers/zod'; import { useNavigate, useSearchParams, Link } from 'react-router-dom'; import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'; import { useLogin } from '@/hooks'; import toast from 'react-hot-toast'; import { z } from 'zod'; import { Button, Input, Label } from '@/components'; import { loginSchema } from '@/lib';
+ 
 import { useAuthStore } from '@/store';
+import { refreshToken, getMe } from '@/api';
 
 type LoginForm = z.infer<typeof loginSchema>;
 

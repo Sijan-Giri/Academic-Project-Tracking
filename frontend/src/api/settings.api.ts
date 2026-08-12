@@ -1,6 +1,5 @@
 import { api } from './client';
-import type { Settings } from '@/types/system.types';
-import type { ApiResponse } from '@/types/api.types';
+import type { ApiResponse, Settings } from '@/types';
 
 export const getSettings = async () => (await api.get<ApiResponse<Settings[]>>('/settings')).data;
 export const updateSetting = async (key: string, value: string) => (await api.put<ApiResponse<Settings>>(`/settings/${key}`, { value })).data;

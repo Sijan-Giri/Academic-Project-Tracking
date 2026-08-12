@@ -1,10 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import { getBatches, createBatch, updateBatch, deleteBatch } from '@/api/batches.api';
-import { getDepartments } from '@/api/departments.api';
-import { getAcademicYears } from '@/api/academic-years.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { Batch, Department, AcademicYear } from '@/types/system.types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; import toast from 'react-hot-toast'; 
+
+import { unwrapList } from '@/utils';
+import type { AcademicYear, Batch, Department } from '@/types';
+import { getBatches, createBatch, updateBatch, deleteBatch, getDepartments, getAcademicYears } from '@/api';
 
 export function useBatches() {
   const queryClient = useQueryClient();

@@ -4,8 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recha
 import { BookOpen, Calendar, CheckSquare, Clock, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, PageHeader, StatsCard, StatusBadge, Button, DashboardSkeleton } from '@/components';
 import { useTheme, useFacultyDashboardData } from '@/hooks';
-import { getChartTooltipStyle, getAxisStroke, getChartCursorFill } from '@/utils/chartUtils';
-import { formatDate } from '@/utils/formatUtils';
+import { getChartTooltipStyle, getAxisStroke, getChartCursorFill, formatDate } from '@/utils';
 import { ROUTES } from '@/constants';
 
 export default function FacultyDashboard() {

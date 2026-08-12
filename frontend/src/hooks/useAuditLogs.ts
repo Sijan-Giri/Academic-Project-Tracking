@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/api/client';
-import { unwrapList } from '@/utils/apiUtils';
-import type { AuditLog } from '@/types/system.types';
+import { useQuery } from '@tanstack/react-query'; 
+import { unwrapList } from '@/utils';
+import type { AuditLog } from '@/types';
+import { api } from '@/api';
 
 export function useAuditLogs(params?: Record<string, unknown>) {
   const { data: rawLogs, isLoading } = useQuery({

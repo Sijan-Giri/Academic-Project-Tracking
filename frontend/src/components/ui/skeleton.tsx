@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 
 export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   shimmer?: boolean;

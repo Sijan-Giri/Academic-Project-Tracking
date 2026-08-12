@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { getProjects } from '@/api/projects.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { Project } from '@/types/project.types';
+import { useQuery } from '@tanstack/react-query'; 
+import { unwrapList } from '@/utils';
+import type { Project } from '@/types';
+import { getProjects } from '@/api';
 
 export function useProjects(params?: Record<string, unknown>) {
   const { data: rawProjects, isLoading, isError } = useQuery({

@@ -1,18 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import {
-  getUsers,
-  createUser,
-  updateUser,
-  deleteUser,
-  activateUser,
-  deactivateUser,
-} from '@/api/users.api';
-import { getDepartments } from '@/api/departments.api';
-import { getBatches } from '@/api/batches.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { User } from '@/types/user.types';
-import type { Department, Batch } from '@/types/system.types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; import toast from 'react-hot-toast'; 
+
+import { unwrapList } from '@/utils';
+import type { Batch, Department, User } from '@/types';
+import { getUsers, createUser, updateUser, deleteUser, activateUser, deactivateUser, getDepartments, getBatches } from '@/api';
 
 export function useUsers(params?: Record<string, unknown>) {
   const queryClient = useQueryClient();

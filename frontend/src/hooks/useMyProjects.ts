@@ -5,10 +5,10 @@
 // Used in: StudentDashboard, Header
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useQuery } from '@tanstack/react-query';
-import { getMyProjects } from '@/api/projects.api';
-import { unwrapList } from '@/utils/apiUtils';
-import type { Project } from '@/types/project.types';
+import { useQuery } from '@tanstack/react-query'; 
+import { unwrapList } from '@/utils';
+import type { Project } from '@/types';
+import { getMyProjects } from '@/api';
 
 export const MY_PROJECTS_QUERY_KEY = ['my-projects'] as const;
 

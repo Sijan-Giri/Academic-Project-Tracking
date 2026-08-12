@@ -1,7 +1,6 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import { getMe, updateProfile, changePassword } from '@/api/auth.api';
+import { useQuery, useMutation } from '@tanstack/react-query'; import toast from 'react-hot-toast'; 
 import { useAuthStore } from '@/store/auth.store';
+import { getMe, updateProfile, changePassword } from '@/api';
 
 export function useProfile() {
   const authUser = useAuthStore((s) => s.user);

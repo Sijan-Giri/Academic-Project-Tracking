@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, PageHeader, StatsCard, StatusBadge, Button, DashboardSkeleton } from '@/components';
 import { useTheme, useAnnouncements, useCoordinatorDashboardData } from '@/hooks';
-import { getChartTooltipStyle, getAxisStroke, getChartCursorFill } from '@/utils/chartUtils';
+import { getChartTooltipStyle, getAxisStroke, getChartCursorFill } from '@/utils';
 import { ROUTES } from '@/constants';
 
 const COLORS: Record<string, string> = {

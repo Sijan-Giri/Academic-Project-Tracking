@@ -3,9 +3,9 @@ import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, 
 import { Clock, Check, Inbox } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 import { useNotifications } from '@/hooks';
-import { getNotificationIconSmall } from '@/utils/iconUtils';
+import { getNotificationIconSmall } from '@/utils';
 import { NOTIFICATION_TYPE_FILTERS } from '@/constants';
 
 export default function NotificationsPage() {
