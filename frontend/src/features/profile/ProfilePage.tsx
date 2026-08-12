@@ -2,13 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfile } from '@/hooks';
 import { User, Lock, Save, Eye, EyeOff, BookOpen, GraduationCap, Building2, BadgeCheck, Hash, ShieldCheck, Phone } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import PageHeader from '@/components/shared/PageHeader';
-import { FormSkeleton } from '@/components/shared/Skeletons';
+import { Button, Input, Label, PageHeader, FormSkeleton } from '@/components';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name is required'),

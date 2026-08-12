@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { NotificationDropdownSkeleton } from '@/components/shared/Skeletons';
 import { cn } from '@/lib/utils';
 import type { Notification } from '@/types/notification.types';
-import { useNotifications } from '@/hooks/useNotifications';
+import { useNotifications } from '@/hooks';
 import { getNotificationIcon } from '@/utils/iconUtils';
 
 export default function NotificationDropdown() {

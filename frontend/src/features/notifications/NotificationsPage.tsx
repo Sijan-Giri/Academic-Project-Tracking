@@ -1,16 +1,12 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Checkbox, PageHeader, Skeleton, SkeletonCircle } from '@/components';
 import { Clock, Check, Inbox } from 'lucide-react';
-import PageHeader from '@/components/shared/PageHeader';
-import { Skeleton, SkeletonCircle } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { useNotifications } from '@/hooks/useNotifications';
+import { useNotifications } from '@/hooks';
 import { getNotificationIconSmall } from '@/utils/iconUtils';
-import { NOTIFICATION_TYPE_FILTERS } from '@/constants/options';
+import { NOTIFICATION_TYPE_FILTERS } from '@/constants';
 
 export default function NotificationsPage() {
   const navigate = useNavigate();

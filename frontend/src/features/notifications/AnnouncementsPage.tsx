@@ -1,9 +1,8 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, Badge } from '@/components';
 import { Megaphone, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
-import { useAnnouncements } from '@/hooks/useAnnouncements';
+import { useAnnouncements } from '@/hooks';
 
 export default function AnnouncementsPage() {
   const { announcements: announcementList, isLoading } = useAnnouncements();

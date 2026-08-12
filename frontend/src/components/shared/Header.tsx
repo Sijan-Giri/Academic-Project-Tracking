@@ -1,10 +1,8 @@
 import { Menu, Sun, Moon, User as UserIcon, Settings as SettingsIcon, LogOut as LogOutIcon } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import NotificationDropdown from '@/components/shared/NotificationDropdown';
-import { useAuthStore } from '@/store/auth.store';
-import { useTheme } from '@/hooks/useTheme';
-import { useMyProjects } from '@/hooks/useMyProjects';
-import { useMyTeam } from '@/hooks/useMyTeam';
+import { useAuthStore } from '@/store';
+import { useTheme, useMyProjects, useMyTeam } from '@/hooks';
 import { logout as logoutApi } from '@/api/auth.api';
 import { useSidebar } from '@/layouts/DashboardLayout';
 import {
@@ -18,7 +16,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ROUTES } from '@/constants/routes';
+import { ROUTES } from '@/constants';
 import { getPageTitle } from '@/utils/navigationUtils';
 
 interface HeaderProps { className?: string; }

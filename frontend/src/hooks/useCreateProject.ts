@@ -5,7 +5,7 @@ import { createProject } from '@/api/projects.api';
 import { getMyTeam } from '@/api/teams.api';
 import { getSemesters } from '@/api/semesters.api';
 import { unwrapData, unwrapList } from '@/utils/apiUtils';
-import { ROUTES } from '@/constants/routes';
+import { ROUTES } from '@/constants';
 import type { Team } from '@/types/project.types';
 import type { Semester } from '@/types/system.types';
 

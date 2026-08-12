@@ -1,15 +1,9 @@
 import { useState } from 'react';
 import { CheckCircle, XCircle, Eye, Users } from 'lucide-react';
 
-import PageHeader from '@/components/shared/PageHeader';
-import DataTable from '@/components/shared/DataTable';
-import StatusBadge from '@/components/shared/StatusBadge';
-import ConfirmDialog from '@/components/shared/ConfirmDialog';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { useTeamApprovals } from '@/hooks/useTeamApprovals';
-import { TEAM_STATUS_TABS } from '@/constants/options';
+import { PageHeader, DataTable, StatusBadge, ConfirmDialog, Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from '@/components';
+import { useTeamApprovals } from '@/hooks';
+import { TEAM_STATUS_TABS } from '@/constants';
 
 export default function TeamApprovalsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');

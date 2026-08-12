@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Textarea, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose, FormSkeleton } from '@/components';
 import { ArrowLeft, Lock, Save, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
-import { useAuthStore } from '@/store/auth.store';
-import { useEvaluationForm } from '@/hooks/useEvaluationForm';
+import { useAuthStore } from '@/store';
+import { useEvaluationForm } from '@/hooks';
 
-import { FormSkeleton } from '@/components/shared/Skeletons';
 
 export default function EvaluationFormPage() {
   const { scheduleId } = useParams();

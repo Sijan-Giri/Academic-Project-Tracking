@@ -5,13 +5,9 @@ import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { X, Save, AlertTriangle, FolderPlus, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import PageHeader from '@/components/shared/PageHeader';
-import { useCreateProject } from '@/hooks/useCreateProject';
-import { DOMAINS } from '@/constants/options';
+import { Button, Input, Label, Textarea, PageHeader } from '@/components';
+import { useCreateProject } from '@/hooks';
+import { DOMAINS } from '@/constants';
 
 const projectInfoSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),

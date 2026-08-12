@@ -1,15 +1,9 @@
 import { useState } from 'react';
 import { Users, UserPlus, LogOut, Info, AlertTriangle, Mail, Check, X, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import PageHeader from '@/components/shared/PageHeader';
-import StatusBadge from '@/components/shared/StatusBadge';
-import ConfirmDialog from '@/components/shared/ConfirmDialog';
-import { useAuthStore } from '@/store/auth.store';
+import { Button, Input, Label, PageHeader, StatusBadge, ConfirmDialog, MyTeamSkeleton } from '@/components';
+import { useAuthStore } from '@/store';
 import { cn } from '@/lib/utils';
-import { useMyTeam } from '@/hooks/useMyTeam';
-import { MyTeamSkeleton } from '@/components/shared/Skeletons';
+import { useMyTeam } from '@/hooks';
 
 export default function MyTeamPage() {
   const authUser = useAuthStore(s => s.user);

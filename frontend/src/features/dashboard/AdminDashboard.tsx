@@ -1,17 +1,12 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, PieChart, Pie, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend } from 'recharts';
 import { Users, GraduationCap, Briefcase, Building, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import StatsCard from '@/components/shared/StatsCard';
-import { DashboardSkeleton } from '@/components/shared/Skeletons';
-import { useTheme } from '@/hooks/useTheme';
-import { useAdminDashboardData } from '@/hooks/useDashboard';
+import { Card, CardContent, CardHeader, CardTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Button, StatsCard, DashboardSkeleton } from '@/components';
+import { useTheme, useAdminDashboardData } from '@/hooks';
 import { getChartTooltipStyle, getAxisStroke, getChartCursorFill } from '@/utils/chartUtils';
 import { formatDate } from '@/utils/formatUtils';
-import { ROUTES } from '@/constants/routes';
+import { ROUTES } from '@/constants';
 
 const PIE_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316'];
 

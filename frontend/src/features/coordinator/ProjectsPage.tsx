@@ -2,13 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, Search, Users, GraduationCap } from 'lucide-react';
 
-import PageHeader from '@/components/shared/PageHeader';
-import DataTable from '@/components/shared/DataTable';
-import StatusBadge from '@/components/shared/StatusBadge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useProjects } from '@/hooks/useProjects';
-import { PROJECT_STATUS_TABS } from '@/constants/options';
+import { PageHeader, DataTable, StatusBadge, Button, Input } from '@/components';
+import { useProjects } from '@/hooks';
+import { PROJECT_STATUS_TABS } from '@/constants';
 
 export default function ProjectsPage() {
   const navigate = useNavigate();

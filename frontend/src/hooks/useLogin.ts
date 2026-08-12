@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { login } from '@/api/auth.api';
 import { useAuthStore } from '@/store/auth.store';
-import { ROUTES } from '@/constants/routes';
+import { ROUTES } from '@/constants';
 
 export function useLogin() {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { ROUTES } from '@/constants/routes';
+import { ROUTES } from '@/constants';
 import type { User } from '@/types/user.types';
 
 export function getPageTitle(

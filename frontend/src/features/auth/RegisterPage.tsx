@@ -3,12 +3,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff, Briefcase, Hash, Phone, Info } from 'lucide-react';
-import { useRegister } from '@/hooks/useRegister';
+import { useRegister } from '@/hooks';
 import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),

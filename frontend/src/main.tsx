@@ -5,7 +5,7 @@ import { RouterProvider } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { queryClient } from '@/lib/queryClient';
 import { router } from '@/router';
-import SocketProvider from '@/components/shared/SocketProvider';
+import { SocketProvider } from '@/components';
 // @ts-ignore
 import '@/index.css';
 

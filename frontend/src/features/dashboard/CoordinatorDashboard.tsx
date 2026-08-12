@@ -1,20 +1,12 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, PieChart, Pie, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend } from 'recharts';
 import { Users, Book, Percent, CheckCircle, Megaphone, AlertTriangle, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import PageHeader from '@/components/shared/PageHeader';
-import StatsCard from '@/components/shared/StatsCard';
-import StatusBadge from '@/components/shared/StatusBadge';
-import { Button } from '@/components/ui/button';
-import { DashboardSkeleton } from '@/components/shared/Skeletons';
-import { useTheme } from '@/hooks/useTheme';
-import { useAnnouncements } from '@/hooks/useAnnouncements';
-import { useCoordinatorDashboardData } from '@/hooks/useDashboard';
+import { Card, CardContent, CardHeader, CardTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, PageHeader, StatsCard, StatusBadge, Button, DashboardSkeleton } from '@/components';
+import { useTheme, useAnnouncements, useCoordinatorDashboardData } from '@/hooks';
 import { getChartTooltipStyle, getAxisStroke, getChartCursorFill } from '@/utils/chartUtils';
-import { ROUTES } from '@/constants/routes';
+import { ROUTES } from '@/constants';
 
 const COLORS: Record<string, string> = {
   DRAFT: '#64748b',

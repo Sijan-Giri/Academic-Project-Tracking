@@ -1,15 +1,11 @@
 import { useState } from 'react';
 import { Calendar, Upload, FileText, Clock, X, FolderUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import StatusBadge from '@/components/shared/StatusBadge';
-import PageHeader from '@/components/shared/PageHeader';
-import FileUploadZone from '@/components/shared/FileUploadZone';
+import { Button, StatusBadge, PageHeader, FileUploadZone, MilestonesSkeleton } from '@/components';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { useMilestones } from '@/hooks/useMilestones';
+import { useMilestones } from '@/hooks';
 
-import { MilestonesSkeleton } from '@/components/shared/Skeletons';
 
 export default function MilestonesPage() {
   const navigate = useNavigate();

@@ -4,22 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Plus, Calendar, Trash2, PlusCircle, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import PageHeader from '@/components/shared/PageHeader';
-import ConfirmDialog from '@/components/shared/ConfirmDialog';
-import EmptyState from '@/components/shared/EmptyState';
-import { ReviewStagesSkeleton } from '@/components/shared/Skeletons';
+import { Button, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, PageHeader, ConfirmDialog, EmptyState, ReviewStagesSkeleton } from '@/components';
 import { REVIEW_STAGE_LABELS } from '@/lib/constants';
-import { useReviewStages } from '@/hooks/useReviewStages';
-import { useSemesters } from '@/hooks/useSemesters';
-import { useDepartments } from '@/hooks/useDepartments';
+import { useReviewStages, useSemesters, useDepartments, useReviewTemplates } from '@/hooks';
 import toast from 'react-hot-toast';
-import { useReviewTemplates } from '@/hooks/useReviewTemplates';
 
 const stageSchema = z.object({
   templateId: z.string().optional().or(z.literal('')),

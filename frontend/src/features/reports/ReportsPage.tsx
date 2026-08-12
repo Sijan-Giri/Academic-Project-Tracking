@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label } from '@/components';
 import { Download, FileSpreadsheet, ShieldAlert } from 'lucide-react';
 import { downloadReport } from '@/api/reports.api';
 import { FormatSelector } from './FormatSelector';

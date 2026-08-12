@@ -4,17 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Plus, Calendar, Trash2, CheckCircle, Wifi, WifiOff, MapPin, Users } from 'lucide-react';
 import { format } from 'date-fns';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Checkbox } from '@/components/ui/checkbox';
-import PageHeader from '@/components/shared/PageHeader';
-import ConfirmDialog from '@/components/shared/ConfirmDialog';
-import EmptyState from '@/components/shared/EmptyState';
-import { SchedulesSkeleton } from '@/components/shared/Skeletons';
-import { useSchedules } from '@/hooks/useSchedules';
+import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Checkbox, PageHeader, ConfirmDialog, EmptyState, SchedulesSkeleton } from '@/components';
+import { useSchedules } from '@/hooks';
 
 const scheduleSchema = z.object({
   reviewStageId: z.string().min(1, 'Review stage required'),

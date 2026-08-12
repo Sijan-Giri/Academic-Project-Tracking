@@ -4,21 +4,7 @@ import DashboardLayout from '@/layouts/DashboardLayout';
 import AuthLayout from '@/layouts/AuthLayout';
 import RoleGuard from '@/layouts/RoleGuard';
 
-import {
-  DashboardSkeleton,
-  TableSkeleton,
-  ProjectDetailSkeleton,
-  FormSkeleton,
-  MyTeamSkeleton,
-  AbstractSkeleton,
-  MilestonesSkeleton,
-  SubmissionsSkeleton,
-  SchedulesSkeleton,
-  ReviewStagesSkeleton,
-  SettingsSkeleton,
-  PageSkeleton,
-  CardsGridSkeleton,
-} from '@/components/shared/Skeletons';
+import { DashboardSkeleton, TableSkeleton, ProjectDetailSkeleton, FormSkeleton, MyTeamSkeleton, AbstractSkeleton, MilestonesSkeleton, SubmissionsSkeleton, SchedulesSkeleton, ReviewStagesSkeleton, SettingsSkeleton, PageSkeleton, CardsGridSkeleton } from '@/components';
 
 import LoginPage from '@/features/auth/LoginPage';
 import RegisterPage from '@/features/auth/RegisterPage';

@@ -1,17 +1,11 @@
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-
+import { Card, CardContent, Button, Tabs, TabsList, TabsTrigger, TabsContent, PageHeader, EmptyState, SchedulesSkeleton } from '@/components';
 import { MapPin, Users, ExternalLink, Calendar as CalendarIcon, Video, Copy, Check, UserCheck, ShieldCheck } from 'lucide-react';
 import { format, isPast, isFuture } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import PageHeader from '@/components/shared/PageHeader';
-import EmptyState from '@/components/shared/EmptyState';
-import { SchedulesSkeleton } from '@/components/shared/Skeletons';
-import { useMySchedules } from '@/hooks/useMySchedules';
-import { useAuthStore } from '@/store/auth.store';
+import { useMySchedules } from '@/hooks';
+import { useAuthStore } from '@/store';
 
 export default function MySchedulesPage() {
   const navigate = useNavigate();

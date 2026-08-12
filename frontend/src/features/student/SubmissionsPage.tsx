@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { FileText, FolderGit2, Calendar, Download, Trash2, Loader2 } from 'lucide-react';
 import { downloadFile, deleteFile } from '@/api/submissions.api';
-import PageHeader from '@/components/shared/PageHeader';
-import { ConfirmDialog } from '@/components/shared';
-import { Button } from '@/components/ui/button';
+import { PageHeader, ConfirmDialog, Button, SubmissionsSkeleton } from '@/components';
 import toast from 'react-hot-toast';
-import { useSubmissions } from '@/hooks/useSubmissions';
+import { useSubmissions } from '@/hooks';
 import { useQueryClient } from '@tanstack/react-query';
-import { SubmissionsSkeleton } from '@/components/shared/Skeletons';
 
 export default function SubmissionsPage() {
   const { submissions, isLoading } = useSubmissions();

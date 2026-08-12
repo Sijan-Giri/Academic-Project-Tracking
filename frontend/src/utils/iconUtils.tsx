@@ -1,5 +1,5 @@
 import { AlertTriangle, ShieldCheck, MessageSquare, Megaphone, Info } from 'lucide-react';
-import { ACTION_COLORS } from '@/constants/options';
+import { ACTION_COLORS } from '@/constants';
 
 export function getNotificationIcon(type: string) {
   switch (type) {

@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { FileText, AlertCircle, CheckCircle2, RefreshCw, Copy, Check, BookOpen } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import StatusBadge from '@/components/shared/StatusBadge';
-import PageHeader from '@/components/shared/PageHeader';
+import { Button, StatusBadge, PageHeader, AbstractSkeleton } from '@/components';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { useAbstract } from '@/hooks/useAbstract';
+import { useAbstract } from '@/hooks';
 
-import { AbstractSkeleton } from '@/components/shared/Skeletons';
 
 export default function AbstractPage() {
   const navigate = useNavigate();

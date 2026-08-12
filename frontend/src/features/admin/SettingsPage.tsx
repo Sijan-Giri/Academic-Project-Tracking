@@ -3,12 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Save } from 'lucide-react';
 
-import { useSettings } from '@/hooks/useSettings';
-import PageHeader from '@/components/shared/PageHeader';
-import { Button } from '@/components/ui/button';
-import { SettingsSkeleton } from '@/components/shared/Skeletons';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { useSettings } from '@/hooks';
+import { PageHeader, Button, SettingsSkeleton, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input } from '@/components';
 
 const settingsSchema = z.object({
   max_team_size: z.coerce.number().min(1).max(10),

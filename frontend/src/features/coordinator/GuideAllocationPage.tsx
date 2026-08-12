@@ -1,11 +1,8 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { UserPlus } from 'lucide-react';
 import { format } from 'date-fns';
-import PageHeader from '@/components/shared/PageHeader';
-import { useGuideAllocation } from '@/hooks/useGuideAllocation';
+import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, PageHeader } from '@/components';
+import { useGuideAllocation } from '@/hooks';
 
 export default function GuideAllocationPage() {
   const [assignProjectId, setAssignProjectId] = useState('');

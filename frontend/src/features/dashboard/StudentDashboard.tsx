@@ -1,23 +1,13 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle2, Circle, Clock, Calendar, Users, FileText, ArrowRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import StatusBadge from '@/components/shared/StatusBadge';
-import StatsCard from '@/components/shared/StatsCard';
-import PageHeader from '@/components/shared/PageHeader';
-import { useAuthStore } from '@/store/auth.store';
+import { Card, CardContent, CardHeader, CardTitle, Button, StatusBadge, StatsCard, PageHeader, DashboardSkeleton } from '@/components';
+import { useAuthStore } from '@/store';
 import { cn } from '@/lib/utils';
-import { DashboardSkeleton } from '@/components/shared/Skeletons';
-import { useMyProjects } from '@/hooks/useMyProjects';
-import { useMyTeam } from '@/hooks/useMyTeam';
-import { useAnnouncements } from '@/hooks/useAnnouncements';
-import { ROUTES } from '@/constants/routes';
-import { LIFECYCLE_STAGES, PROJECT_LIFECYCLE_STAGE_MAP } from '@/constants/status';
+import { useMyProjects, useMyTeam, useAnnouncements, useReviewStages } from '@/hooks';
+import { ROUTES, LIFECYCLE_STAGES, PROJECT_LIFECYCLE_STAGE_MAP } from '@/constants';
 import { getDaysUntil } from '@/utils/formatUtils';
-
-import { useReviewStages } from '@/hooks/useReviewStages';
 
 export default function StudentDashboard() {
   const navigate = useNavigate();

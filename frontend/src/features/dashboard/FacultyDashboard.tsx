@@ -1,19 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { BookOpen, Calendar, CheckSquare, Clock, ArrowRight } from 'lucide-react';
-import PageHeader from '@/components/shared/PageHeader';
-import StatsCard from '@/components/shared/StatsCard';
-import StatusBadge from '@/components/shared/StatusBadge';
-import { Button } from '@/components/ui/button';
-import { DashboardSkeleton } from '@/components/shared/Skeletons';
-import { useTheme } from '@/hooks/useTheme';
-import { useFacultyDashboardData } from '@/hooks/useDashboard';
+import { Card, CardContent, CardHeader, CardTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, PageHeader, StatsCard, StatusBadge, Button, DashboardSkeleton } from '@/components';
+import { useTheme, useFacultyDashboardData } from '@/hooks';
 import { getChartTooltipStyle, getAxisStroke, getChartCursorFill } from '@/utils/chartUtils';
 import { formatDate } from '@/utils/formatUtils';
-import { ROUTES } from '@/constants/routes';
+import { ROUTES } from '@/constants';
 
 export default function FacultyDashboard() {
   const { isDark } = useTheme();

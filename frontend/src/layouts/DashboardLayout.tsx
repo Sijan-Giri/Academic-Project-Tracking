@@ -1,7 +1,6 @@
 import { useState, createContext, useContext } from 'react';
 import { Outlet } from 'react-router-dom';
-import Sidebar from '@/components/shared/Sidebar';
-import Header from '@/components/shared/Header';
+import { Sidebar, Header } from '@/components';
 import { cn } from '@/lib/utils';
 
 interface SidebarContextType {

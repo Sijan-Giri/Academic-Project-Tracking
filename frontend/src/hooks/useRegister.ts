@@ -6,7 +6,7 @@ import { getDepartments } from '@/api/departments.api';
 import { getBatches } from '@/api/batches.api';
 import { useAuthStore } from '@/store/auth.store';
 import { unwrapList } from '@/utils/apiUtils';
-import { ROUTES } from '@/constants/routes';
+import { ROUTES } from '@/constants';
 
 export function useRegister() {
   const navigate = useNavigate();

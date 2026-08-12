@@ -5,16 +5,8 @@ import * as z from 'zod';
 import { Plus, Megaphone, Trash2, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 
-import PageHeader from '@/components/shared/PageHeader';
-import ConfirmDialog from '@/components/shared/ConfirmDialog';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
-import { CardsGridSkeleton } from '@/components/shared/Skeletons';
-import { useAnnouncementsManage } from '@/hooks/useAnnouncementsManage';
+import { PageHeader, ConfirmDialog, Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea, Label, Card, CardHeader, CardTitle, CardContent, CardFooter, CardsGridSkeleton } from '@/components';
+import { useAnnouncementsManage } from '@/hooks';
 
 const announcementSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),

@@ -1,19 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Textarea, PageHeader, StatusBadge, EmptyState, CardsGridSkeleton } from '@/components';
 import { Search, Eye, MessageSquare, FileText, Users, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
-import PageHeader from '@/components/shared/PageHeader';
-import StatusBadge from '@/components/shared/StatusBadge';
-import EmptyState from '@/components/shared/EmptyState';
-import { useGuidedProjects } from '@/hooks/useGuidedProjects';
+import { useGuidedProjects } from '@/hooks';
 
-import { CardsGridSkeleton } from '@/components/shared/Skeletons';
 
 export default function GuidedProjectsPage() {
   const navigate = useNavigate();

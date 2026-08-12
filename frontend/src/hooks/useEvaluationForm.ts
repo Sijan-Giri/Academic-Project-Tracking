@@ -5,7 +5,7 @@ import { getSchedule } from '@/api/schedules.api';
 import { getStageCriteria } from '@/api/reviews.api';
 import { submitEvaluation } from '@/api/evaluations.api';
 import { unwrapData, unwrapList } from '@/utils/apiUtils';
-import { ROUTES } from '@/constants/routes';
+import { ROUTES } from '@/constants';
 import type { ReviewSchedule, EvaluationCriteria } from '@/types/review.types';
 
 export function useEvaluationForm(scheduleId: string) {

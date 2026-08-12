@@ -1,15 +1,10 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { FileText, Download, Filter, ChevronDown, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import PageHeader from '@/components/shared/PageHeader';
-import EmptyState from '@/components/shared/EmptyState';
+import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, PageHeader, EmptyState } from '@/components';
 import { downloadAuditLog } from '@/api/reports.api';
-import { useAuditLogs } from '@/hooks/useAuditLogs';
-import { AUDIT_ACTIONS } from '@/constants/options';
+import { useAuditLogs } from '@/hooks';
+import { AUDIT_ACTIONS } from '@/constants';
 import { getAuditActionClass } from '@/utils/iconUtils';
 
 export default function AuditLogPage() {

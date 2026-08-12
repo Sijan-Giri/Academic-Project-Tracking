@@ -20,11 +20,9 @@ import {
   MessageSquare,
   Star
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import StatusBadge from '@/components/shared/StatusBadge';
-import PageHeader from '@/components/shared/PageHeader';
+import { Button, StatusBadge, PageHeader, ProjectDetailSkeleton } from '@/components';
 import { cn } from '@/lib/utils';
-import { useMyProjects } from '@/hooks/useMyProjects';
+import { useMyProjects } from '@/hooks';
 import { getEvaluations } from '@/api/evaluations.api';
 import { unwrapList } from '@/utils/apiUtils';
 
@@ -37,7 +35,6 @@ const STAGES = [
   { id: 'COMPLETED', name: 'Completed' },
 ];
 
-import { ProjectDetailSkeleton } from '@/components/shared/Skeletons';
 
 export default function MyProjectPage() {
   const navigate = useNavigate();

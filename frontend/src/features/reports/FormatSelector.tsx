@@ -1,5 +1,4 @@
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem, Label } from '@/components';
 import { FileText, FileSpreadsheet } from 'lucide-react';
 
 export function FormatSelector({ format, setFormat }: { format: string; setFormat: (v: string) => void }) {

@@ -2,13 +2,9 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, FileText, CheckCircle2, Github, Users, GraduationCap, Loader2 } from 'lucide-react';
 
-import { useProjectDetail } from '@/hooks/useProjectDetail';
-import { Button } from '@/components/ui/button';
-import StatusBadge from '@/components/shared/StatusBadge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useAuthStore } from '@/store/auth.store';
+import { useProjectDetail } from '@/hooks';
+import { useAuthStore } from '@/store';
+import { Button, StatusBadge, Tabs, TabsContent, TabsList, TabsTrigger, Card, CardContent, CardHeader, CardTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components';
 
 const STATUS_OPTIONS = [
   'DRAFT',
@@ -21,7 +17,7 @@ const STATUS_OPTIONS = [
   'CANCELLED',
 ];
 
-import { ProjectDetailSkeleton } from '@/components/shared/Skeletons';
+import { ProjectDetailSkeleton } from '@/components';
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
