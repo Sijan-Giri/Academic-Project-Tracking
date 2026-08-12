@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui';
 
@@ -16,13 +16,13 @@ interface EmptyStateProps {
 export default function EmptyState({ icon: Icon, title, description, actionLabel, onAction, className }: EmptyStateProps) {
   return (
     <div className={cn('relative flex flex-col items-center justify-center p-8 sm:p-12 text-center rounded-2xl border border-dashed border-border bg-slate-50/50 dark:bg-card/40 my-4 transition-all', className)}>
-      {/* Decorative Icon Container */}
+      {}
       <div className="relative mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-brand-subtle border border-brand text-brand shadow-sm shrink-0">
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-indigo-500/10 to-violet-500/10 blur-xl -z-10" />
         <Icon className="h-10 w-10 text-brand" />
       </div>
 
-      {/* Title & Description */}
+      {}
       <h3 className="mb-2 text-lg sm:text-xl font-bold tracking-tight text-foreground">
         {title}
       </h3>
@@ -30,7 +30,7 @@ export default function EmptyState({ icon: Icon, title, description, actionLabel
         {description}
       </p>
 
-      {/* Action Button */}
+      {}
       {actionLabel && onAction && (
         <Button
           onClick={onAction}

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardContent, Badge } from '@/components';
 import { Megaphone, Calendar } from 'lucide-react';
 import { format } from 'date-fns';

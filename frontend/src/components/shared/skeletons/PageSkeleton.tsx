@@ -1,15 +1,13 @@
-import React from 'react';
 import { Card, CardContent, CardHeader, Skeleton, SkeletonCircle, SkeletonRow } from '@/components/ui';
 
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
-/** Generic page skeleton fallback displayed during page transitions and lazy loading. */
 export function PageSkeleton() {
   return (
     <div className="space-y-6 p-4 md:p-6 transition-opacity duration-300 animate-in fade-in-50">
       <PageHeaderSkeleton />
 
-      {/* Top Content Row / Metrics */}
+      {}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <Card key={i} className="p-4 bg-card/60 border-border">
@@ -23,7 +21,7 @@ export function PageSkeleton() {
         ))}
       </div>
 
-      {/* Main Content Area Skeleton */}
+      {}
       <Card className="bg-card/60 border-border">
         <CardHeader className="border-b border-border pb-4 flex flex-row items-center justify-between">
           <Skeleton className="h-5 w-48 rounded-md" />

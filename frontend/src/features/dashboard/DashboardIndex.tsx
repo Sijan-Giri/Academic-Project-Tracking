@@ -1,5 +1,5 @@
 import { useAuthStore } from '@/store';
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { DashboardSkeleton } from '@/components';
 
 const AdminDashboard = lazy(() => import('./AdminDashboard'));

@@ -5,7 +5,6 @@ import { Search, Eye, MessageSquare, FileText, Users, BookOpen } from 'lucide-re
 import toast from 'react-hot-toast';
 import { useGuidedProjects } from '@/hooks';
 
-
 export default function GuidedProjectsPage() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,7 +42,7 @@ export default function GuidedProjectsPage() {
         subtitle="Manage student teams you are actively mentoring, review submissions, and provide guidance."
       />
 
-      {/* Filter / Search Bar */}
+      {}
       <div className="flex flex-col md:flex-row gap-4 items-center bg-card p-4 rounded-xl border border-border shadow-xs">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -69,7 +68,7 @@ export default function GuidedProjectsPage() {
         </Select>
       </div>
 
-      {/* Projects Grid */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (

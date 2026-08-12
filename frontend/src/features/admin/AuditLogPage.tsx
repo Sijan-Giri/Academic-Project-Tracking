@@ -33,7 +33,7 @@ export default function AuditLogPage() {
         }
       />
 
-      {/* Filters */}
+      {}
       <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
         <div className="flex items-center gap-2 mb-3">
           <Filter className="h-4 w-4 text-dark-muted" />
@@ -85,7 +85,7 @@ export default function AuditLogPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {}
       <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
         {isLoading ? (
           <div className="space-y-px">
@@ -159,7 +159,7 @@ export default function AuditLogPage() {
           </div>
         )}
 
-        {/* Pagination */}
+        {}
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-border">
             <p className="text-xs text-neutral-sm">Page {filters.page} of {totalPages}</p>

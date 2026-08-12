@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// hooks/useMyProjects.ts
-// Custom hook to fetch the current student's projects.
-// Encapsulates query key, query function, and data unwrapping.
-// Used in: StudentDashboard, Header
-// ─────────────────────────────────────────────────────────────────────────────
 
 import { useQuery } from '@tanstack/react-query'; 
 import { unwrapList } from '@/utils';
@@ -20,9 +14,6 @@ export interface UseMyProjectsReturn {
   refetch: () => void;
 }
 
-/**
- * Hook to fetch and unwrap the current student's projects.
- */
 export function useMyProjects(enabled = true): UseMyProjectsReturn {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: MY_PROJECTS_QUERY_KEY,

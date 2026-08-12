@@ -71,22 +71,18 @@ export default function MyTeamPage() {
     } catch (_) {}
   };
 
-  // Early return for skeleton rendering AFTER all hooks are declared
   if (teamLoading) {
     return <MyTeamSkeleton />;
   }
 
   const myInvitations = invitations;
 
-  // Check if student is team leader
   const myMemberRecord = team?.members?.find(
     (m: any) => m.studentProfile?.userId === authUser?.id || m.studentProfileId === authUser?.studentProfile?.id
   );
   const isLeader = myMemberRecord?.isLeader ?? false;
 
   const sentInvitations: any[] = (team as any)?.invitations || [];
-
-  // ── No team ───────────────────────────────────────────────────────────────
 
   if (!team || !team.id) {
     return (
@@ -96,7 +92,7 @@ export default function MyTeamPage() {
           subtitle="Create a new capstone project team or accept an invitation from a peer."
         />
 
-        {/* Received Pending Invitations */}
+        {}
         {myInvitations.length > 0 && (
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="flex items-center gap-2 border-b border-border pb-3">
@@ -143,7 +139,7 @@ export default function MyTeamPage() {
           </div>
         )}
 
-        {/* Create / Join Team Tabs */}
+        {}
         <div className="rounded-xl border border-border bg-card shadow-xs overflow-hidden">
           <div className="flex border-b border-border">
             <Button
@@ -225,8 +221,6 @@ export default function MyTeamPage() {
     );
   }
 
-  // ── Existing Team View ───────────────────────────────────────────────────
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -255,7 +249,7 @@ export default function MyTeamPage() {
         }
       />
 
-      {/* Team Header Banner */}
+      {}
       <div className="rounded-xl border border-border bg-card p-6 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-3 mb-1">
@@ -275,7 +269,7 @@ export default function MyTeamPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Members Roster */}
+        {}
         <div className="lg:col-span-2 space-y-4">
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
             <div className="flex justify-between items-center border-b border-border pb-3">
@@ -336,7 +330,7 @@ export default function MyTeamPage() {
           </div>
         </div>
 
-        {/* Invite Sidebar */}
+        {}
         <div className="space-y-6">
           {isLeader && (
             <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-4">
@@ -370,7 +364,7 @@ export default function MyTeamPage() {
             </div>
           )}
 
-          {/* Sent Pending Invitations */}
+          {}
           {sentInvitations.length > 0 && (
             <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-3">
               <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">

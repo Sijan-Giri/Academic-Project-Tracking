@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// hooks/useAnnouncements.ts
-// Custom hook to fetch announcements for dashboards and notification views.
-// ─────────────────────────────────────────────────────────────────────────────
 
 import { useQuery } from '@tanstack/react-query'; 
 import { unwrapList } from '@/utils';
@@ -16,9 +12,6 @@ export interface UseAnnouncementsReturn {
   isError: boolean;
 }
 
-/**
- * Hook to fetch and unwrap announcements list.
- */
 export function useAnnouncements(params?: Record<string, unknown>): UseAnnouncementsReturn {
   const { data, isLoading, isError } = useQuery({
     queryKey: params ? [...ANNOUNCEMENTS_QUERY_KEY, params] : ANNOUNCEMENTS_QUERY_KEY,

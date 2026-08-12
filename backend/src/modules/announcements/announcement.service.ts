@@ -13,12 +13,10 @@ export const createAnnouncement = async (data: any, createdById: string) => {
     include: { createdBy: { select: { name: true, role: true } } },
   });
 
-  // Real-time socket broadcast
   try {
     broadcastEvent('announcement:new', announcement);
   } catch (_) {}
 
-  // Notify all active users concurrently (never block the response on this)
   const users = await prisma.user.findMany({ where: { isActive: true }, select: { id: true } });
   await Promise.all(
     users.map((user) =>
@@ -30,11 +28,11 @@ export const createAnnouncement = async (data: any, createdById: string) => {
 };
 
 export const getAnnouncements = async (
-  userId: string,
-  userRole: Role,
-  departmentId?: string,
-  batchId?: string,
-  semesterId?: string,
+  _userId?: string,
+  _userRole?: Role,
+  _departmentId?: string,
+  _batchId?: string,
+  _semesterId?: string,
   page = 1,
   limit = 20
 ) => {
@@ -67,7 +65,6 @@ export const deleteAnnouncement = async (id: string, userId: string, userRole: R
   }
   const deleted = await prisma.announcement.delete({ where: { id } });
 
-  // Real-time socket broadcast
   try {
     broadcastEvent('announcement:deleted', { id });
   } catch (_) {}

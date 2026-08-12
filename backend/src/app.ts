@@ -9,7 +9,6 @@ import { env } from './config/env';
 import { errorHandler } from './middleware/error.middleware';
 import { globalLimiter, authLimiter, uploadLimiter } from './middleware/rate-limit.middleware';
 
-// Import all routers
 import authRouter from './modules/auth/auth.router';
 import auditRouter from './modules/audit/audit.router';
 import departmentsRouter from './modules/departments/department.router';
@@ -36,7 +35,7 @@ const allowedOrigins = (env.CORSORIGIN || 'http://localhost:5173').split(',').ma
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, Postman)
+    
     if (!origin) return callback(null, true);
     if (
       allowedOrigins.includes(origin) ||
@@ -59,18 +58,15 @@ app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-// ── Rate Limiting ────────────────────────────────────────────────────────────
-// Global baseline: 200 req / 15 min per IP (1000 in dev)
 app.use(globalLimiter);
-// Strict auth limiter: 10 attempts / 15 min per IP (50 in dev)
+
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/signup', authLimiter);
 app.use('/api/auth/refresh', authLimiter);
-// Upload limiter: 20 uploads / hour per IP (200 in dev)
+
 app.use('/api/auth/bulk-import', uploadLimiter);
 app.use('/api/submissions', uploadLimiter);
 
-// Mount routes
 app.use('/api/auth', authRouter);
 app.use('/api/departments', departmentsRouter);
 app.use('/api/academic-years', academicYearsRouter);
@@ -92,7 +88,7 @@ app.use('/api/reports', reportsRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/audit', auditRouter);
 
-app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+app.get('/health', (_req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 import { createServer } from 'http';
 import { initSocket } from './config/socket';

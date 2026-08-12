@@ -48,7 +48,6 @@ export const disconnectSocket = () => {
   }
 };
 
-// Sync socket connection state with auth store changes
 useAuthStore.subscribe((state) => {
   if (state.isAuthenticated && state.accessToken) {
     disconnectSocket();

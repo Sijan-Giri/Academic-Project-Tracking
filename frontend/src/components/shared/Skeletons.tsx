@@ -1,12 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// components/shared/Skeletons.tsx — Backward-compatible re-export shim
-//
-// All skeleton components have been split into individual files under:
-//   components/shared/skeletons/
-//
-// This file remains for backward compatibility with existing imports.
-// Prefer importing directly: import { DashboardSkeleton } from '@/components/shared/skeletons'
-// ─────────────────────────────────────────────────────────────────────────────
 
 export { PageHeaderSkeleton } from './skeletons/PageHeaderSkeleton';
 export { DashboardSkeleton } from './skeletons/DashboardSkeleton';
@@ -23,4 +14,3 @@ export { SchedulesSkeleton } from './skeletons/SchedulesSkeleton';
 export { ReviewStagesSkeleton } from './skeletons/ReviewStagesSkeleton';
 export { SettingsSkeleton } from './skeletons/SettingsSkeleton';
 export { NotificationDropdownSkeleton } from './skeletons/NotificationDropdownSkeleton';
-

@@ -9,10 +9,8 @@ import { DashboardSkeleton, TableSkeleton, ProjectDetailSkeleton, FormSkeleton, 
 import LoginPage from '@/features/auth/LoginPage';
 import RegisterPage from '@/features/auth/RegisterPage';
 
-// Lazy load ALL pages
 const DashboardIndex = lazy(() => import('@/features/dashboard/DashboardIndex'));
 
-// Admin pages
 const DepartmentsPage = lazy(() => import('@/features/admin/DepartmentsPage'));
 const AcademicYearsPage = lazy(() => import('@/features/admin/AcademicYearsPage'));
 const BatchesPage = lazy(() => import('@/features/admin/BatchesPage'));
@@ -22,7 +20,6 @@ const ReviewTemplatesPage = lazy(() => import('@/features/admin/ReviewTemplatesP
 const SettingsPage = lazy(() => import('@/features/admin/SettingsPage'));
 const AuditLogPage = lazy(() => import('@/features/admin/AuditLogPage'));
 
-// Coordinator pages
 const CoordProjectsPage = lazy(() => import('@/features/coordinator/ProjectsPage'));
 const CoordProjectDetailPage = lazy(() => import('@/features/coordinator/ProjectDetailPage'));
 const TeamApprovalsPage = lazy(() => import('@/features/coordinator/TeamApprovalsPage'));
@@ -31,10 +28,8 @@ const ReviewStagesPage = lazy(() => import('@/features/coordinator/ReviewStagesP
 const SchedulesPage = lazy(() => import('@/features/coordinator/SchedulesPage'));
 const CoordAnnouncementsPage = lazy(() => import('@/features/coordinator/AnnouncementsPage'));
 
-// Faculty pages
 const GuidedProjectsPage = lazy(() => import('@/features/faculty/GuidedProjectsPage'));
 
-// Student pages
 const MyProjectPage = lazy(() => import('@/features/student/MyProjectPage'));
 const CreateProjectPage = lazy(() => import('@/features/student/CreateProjectPage'));
 const MyTeamPage = lazy(() => import('@/features/student/MyTeamPage'));
@@ -42,7 +37,6 @@ const AbstractPage = lazy(() => import('@/features/student/AbstractPage'));
 const MilestonesPage = lazy(() => import('@/features/student/MilestonesPage'));
 const StudentSubmissionsPage = lazy(() => import('@/features/student/SubmissionsPage'));
 
-// Shared pages
 const MySchedulesPage = lazy(() => import('@/features/evaluations/MySchedulesPage'));
 const EvaluationFormPage = lazy(() => import('@/features/evaluations/EvaluationFormPage'));
 const NotificationsPage = lazy(() => import('@/features/notifications/NotificationsPage'));
@@ -78,7 +72,7 @@ export const router = createBrowserRouter([
         { path: '/notifications', element: wrap(<NotificationsPage />, <TableSkeleton rows={6} cols={4} />) },
         { path: '/announcements', element: wrap(<AnnouncementsPage />, <CardsGridSkeleton />) },
         { path: '/reports', element: wrap(<ReportsPage />, <CardsGridSkeleton />) },
-        // Admin
+        
         { element: <RoleGuard allowedRoles={['ADMIN']} />, children: [
           { path: '/admin/departments', element: wrap(<DepartmentsPage />, <TableSkeleton rows={5} cols={4} />) },
           { path: '/admin/academic-years', element: wrap(<AcademicYearsPage />, <TableSkeleton rows={5} cols={4} />) },
@@ -89,7 +83,7 @@ export const router = createBrowserRouter([
           { path: '/admin/settings', element: wrap(<SettingsPage />, <SettingsSkeleton />) },
           { path: '/admin/audit', element: wrap(<AuditLogPage />, <TableSkeleton rows={8} cols={6} />) },
         ]},
-        // Coordinator
+        
         { element: <RoleGuard allowedRoles={['COORDINATOR', 'ADMIN']} />, children: [
           { path: '/coordinator/projects', element: wrap(<CoordProjectsPage />, <TableSkeleton rows={6} cols={5} />) },
           { path: '/coordinator/projects/:id', element: wrap(<CoordProjectDetailPage />, <ProjectDetailSkeleton />) },
@@ -99,16 +93,16 @@ export const router = createBrowserRouter([
           { path: '/coordinator/schedules', element: wrap(<SchedulesPage />, <SchedulesSkeleton />) },
           { path: '/coordinator/announcements', element: wrap(<CoordAnnouncementsPage />, <CardsGridSkeleton />) },
         ]},
-        // Faculty
+        
         { element: <RoleGuard allowedRoles={['FACULTY', 'ADMIN']} />, children: [
           { path: '/faculty/projects', element: wrap(<GuidedProjectsPage />, <TableSkeleton rows={6} cols={4} />) },
         ]},
-        // Panel + Faculty + Student + Coordinator schedules
+        
         { element: <RoleGuard allowedRoles={['PANEL', 'FACULTY', 'ADMIN', 'STUDENT', 'COORDINATOR']} />, children: [
           { path: '/my-schedules', element: wrap(<MySchedulesPage />, <SchedulesSkeleton />) },
           { path: '/evaluations/:scheduleId', element: wrap(<EvaluationFormPage />, <FormSkeleton />) },
         ]},
-        // Student
+        
         { element: <RoleGuard allowedRoles={['STUDENT']} />, children: [
           { path: '/my-project', element: wrap(<MyProjectPage />, <ProjectDetailSkeleton />) },
           { path: '/my-project/create', element: wrap(<CreateProjectPage />, <FormSkeleton />) },

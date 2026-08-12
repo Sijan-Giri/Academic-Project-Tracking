@@ -75,8 +75,6 @@ export const userCreateSchema = z.object({
   phone: z.string().optional(),
 });
 
-
-
 export const scheduleSchema = z.object({
   reviewStageId: z.string(),
   projectId: z.string(),

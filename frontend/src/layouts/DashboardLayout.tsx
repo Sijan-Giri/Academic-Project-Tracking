@@ -18,7 +18,7 @@ export default function DashboardLayout() {
   return (
     <SidebarContext.Provider value={{ isOpen, toggle: () => setIsOpen(!isOpen), close: () => setIsOpen(false) }}>
       <div className="min-h-screen dark:bg-[#0f1117] dark:text-white bg-slate-50 text-slate-900 transition-colors duration-200">
-        {/* Mobile Sidebar Overlay */}
+        {}
         {isOpen && (
           <div className="fixed inset-0 z-40 overlay-dark lg:hidden" onClick={() => setIsOpen(false)} />
         )}

@@ -1,6 +1,5 @@
 import { Skeleton, SkeletonBadge, SkeletonCircle } from '@/components/ui';
 
-
 export function NotificationDropdownSkeleton({ count = 4 }: { count?: number }) {
   return (
     <div className="p-4 space-y-4 divide-y divide-border">

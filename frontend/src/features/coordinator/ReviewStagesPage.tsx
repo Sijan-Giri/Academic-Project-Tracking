@@ -61,13 +61,11 @@ export default function ReviewStagesPage() {
   const { departments } = useDepartments();
   const { templates } = useReviewTemplates();
 
-  // Stage form
   const stageForm = useForm<StageForm>({
     resolver: zodResolver(stageSchema),
     defaultValues: { order: 1, isActive: true },
   });
 
-  // Criteria form
   const criteriaForm = useForm<CriteriaForm>({
     resolver: zodResolver(criteriaSchema),
     defaultValues: { order: 1, maxMarks: 20 },
@@ -142,7 +140,7 @@ export default function ReviewStagesPage() {
         }
       />
 
-      {/* Filter Toolbar */}
+      {}
       <div className="flex items-center gap-4 bg-card border border-border p-4 rounded-xl shadow-xs max-w-xs">
         <Select value={semesterFilter} onValueChange={v => setSemesterFilter(v === 'ALL' ? '' : v)}>
           <SelectTrigger className="input-field" id="semester-filter-select">
@@ -157,7 +155,7 @@ export default function ReviewStagesPage() {
         </Select>
       </div>
 
-      {/* Stages List */}
+      {}
       {isLoading ? (
         <ReviewStagesSkeleton />
       ) : stages.length === 0 ? (
@@ -220,7 +218,7 @@ export default function ReviewStagesPage() {
                   </div>
                 </div>
 
-                {/* Expanded Criteria Table */}
+                {}
                 {isExpanded && (
                   <div className="border-t border-border bg-secondary/30 p-5 space-y-3">
                     <div className="flex items-center justify-between">
@@ -263,7 +261,7 @@ export default function ReviewStagesPage() {
         </div>
       )}
 
-      {/* Modal 1: Create Review Stage */}
+      {}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader><DialogTitle className="text-base font-semibold">Create Review Stage</DialogTitle></DialogHeader>
@@ -334,7 +332,7 @@ export default function ReviewStagesPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Modal 2: Add Evaluation Criteria */}
+      {}
       <Dialog open={!!criteriaModal} onOpenChange={o => !o && setCriteriaModal(null)}>
         <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader><DialogTitle className="text-base font-semibold">Add Evaluation Criteria</DialogTitle></DialogHeader>
@@ -367,7 +365,7 @@ export default function ReviewStagesPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Stage Confirm */}
+      {}
       <ConfirmDialog
         open={!!deleteStageId}
         onOpenChange={o => !o && setDeleteStageId(null)}

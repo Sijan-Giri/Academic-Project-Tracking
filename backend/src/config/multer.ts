@@ -5,7 +5,7 @@ import { env } from './env';
 import { ValidationError } from '../shared/errors';
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     let subdir = 'misc';
     if (['.pdf', '.doc', '.docx'].includes(ext)) subdir = 'reports';
@@ -14,13 +14,13 @@ const storage = multer.diskStorage({
     else if (['.csv'].includes(ext)) subdir = 'imports';
     cb(null, path.join(env.UPLOAD_DIR, subdir));
   },
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     const uniqueName = `${uuidv4()}${path.extname(file.originalname)}`;
     cb(null, uniqueName);
   },
 });
 
-const fileFilter: multer.Options['fileFilter'] = (req, file, cb) => {
+const fileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
   const allowed = ['.pdf', '.doc', '.docx', '.ppt', '.pptx', '.zip', '.csv'];
   const ext = path.extname(file.originalname).toLowerCase();
   if (allowed.includes(ext)) cb(null, true);

@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────
-// User & Profile types
-// ─────────────────────────────────────────────
 
 import type { Batch } from './system.types';
 import type { Department } from './system.types';

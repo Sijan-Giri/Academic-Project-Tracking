@@ -1,4 +1,3 @@
-import React from 'react';
 import { BarChart, Bar, PieChart, Pie, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend } from 'recharts';
 import { Users, Book, Percent, CheckCircle, Megaphone, AlertTriangle, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
@@ -31,14 +30,12 @@ export default function CoordinatorDashboard() {
     return <DashboardSkeleton />;
   }
 
-  // Compute live statistics
   const totalProjects = projectsList.length;
   const pendingTeams = teamsList.filter((t: any) => t.status === 'PENDING').length;
   const guidedProjects = projectsList.filter((p: any) => p.guideAssignment?.isActive || p.guideId).length;
   const guideAssignedPercent = totalProjects > 0 ? Math.round((guidedProjects / totalProjects) * 100) : 0;
   const completedProjects = projectsList.filter((p: any) => p.status === 'COMPLETED').length;
 
-  // Build project status chart data
   const statusCounts: Record<string, number> = {};
   projectsList.forEach((p: any) => {
     const status = p.status || 'DRAFT';
@@ -51,7 +48,6 @@ export default function CoordinatorDashboard() {
     fill: COLORS[statusKey]
   })).filter(item => item.count > 0 || projectsList.length === 0);
 
-  // Build domain breakdown chart data
   const domainCounts: Record<string, number> = {};
   projectsList.forEach((p: any) => {
     const domain = p.domain || 'General';
@@ -60,7 +56,6 @@ export default function CoordinatorDashboard() {
 
   const domainData = Object.entries(domainCounts).map(([name, value]) => ({ name, value }));
 
-  // Submission trend activity data
   const activityData = [
     { name: 'Week 1', count: Math.min(5, totalProjects) },
     { name: 'Week 2', count: Math.min(12, totalProjects + 3) },
@@ -80,7 +75,7 @@ export default function CoordinatorDashboard() {
         }
       />
 
-      {/* Row 1: Key Performance Metrics */}
+      {}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard title="Total Projects" value={totalProjects} icon={<Book className="text-brand h-4 w-4" />} />
         <div onClick={() => navigate(ROUTES.COORDINATOR_TEAMS)} className="block cursor-pointer">
@@ -90,7 +85,7 @@ export default function CoordinatorDashboard() {
         <StatsCard title="Completed Projects" value={completedProjects} icon={<CheckCircle className="text-success h-4 w-4" />} />
       </div>
 
-      {/* Row 2: Charts */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="border-b border-border pb-3"><CardTitle className="text-base font-semibold">Projects by Status</CardTitle></CardHeader>
@@ -145,7 +140,7 @@ export default function CoordinatorDashboard() {
         </Card>
       </div>
 
-      {/* Row 3: Recent Projects and Announcements */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-3">
@@ -194,7 +189,7 @@ export default function CoordinatorDashboard() {
           </CardContent>
         </Card>
 
-        {/* Announcements List */}
+        {}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-3">
             <CardTitle className="text-base font-semibold flex items-center gap-2">

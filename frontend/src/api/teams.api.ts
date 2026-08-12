@@ -13,7 +13,6 @@ export const getTeam = async (id: string) =>
 export const updateTeam = async (id: string, data: Partial<Team>) =>
   (await api.put<ApiResponse<Team>>(`/teams/${id}`, data)).data;
 
-// Sends a PENDING invitation — the student must accept it to join
 export const inviteMember = async (teamId: string, studentId: string) =>
   (await api.post<ApiResponse<any>>(`/teams/${teamId}/members/invite`, { studentId })).data;
 
@@ -35,20 +34,14 @@ export const approveTeam = async (id: string) =>
 export const rejectTeam = async (id: string, reason: string) =>
   (await api.post<ApiResponse<Team>>(`/teams/${id}/reject`, { reason })).data;
 
-// ── Invitation management ──────────────────────────────────────────────────
-
-/** Get all pending invitations for the logged-in student */
 export const getMyInvitations = async () =>
   (await api.get<ApiResponse<any[]>>('/teams/my-invitations')).data;
 
-/** Accept a pending invitation by its ID */
 export const acceptInvitation = async (invitationId: string) =>
   (await api.post<ApiResponse<any>>(`/teams/invitations/${invitationId}/accept`)).data;
 
-/** Decline a pending invitation by its ID */
 export const declineInvitation = async (invitationId: string) =>
   (await api.post<ApiResponse<any>>(`/teams/invitations/${invitationId}/decline`)).data;
 
-/** Leader: view all invitations sent for a team */
 export const getTeamInvitations = async (teamId: string) =>
   (await api.get<ApiResponse<any[]>>(`/teams/${teamId}/invitations`)).data;

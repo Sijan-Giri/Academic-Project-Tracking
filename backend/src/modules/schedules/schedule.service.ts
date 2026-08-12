@@ -19,7 +19,6 @@ export const scheduleService = {
 
     await createAuditLog({ action: AuditAction.CREATE, entityType: 'ReviewSchedule', entityId: schedule.id, userId: creatorId, newValue: JSON.stringify({ schedule }) });
 
-    // Notify panel members concurrently
     if (schedule.panelAssignments) {
       await Promise.all(
         schedule.panelAssignments
@@ -35,7 +34,6 @@ export const scheduleService = {
       );
     }
 
-    // Send notifications to student team members
     try {
       const teamMembers = await prisma.teamMember.findMany({
         where: { team: { project: { id: schedule.projectId } } },
@@ -47,7 +45,6 @@ export const scheduleService = {
         timeStyle: 'short',
       });
 
-      // Notify team members concurrently
       await Promise.all(
         teamMembers
           .filter((m) => m.studentProfile?.user?.id)
@@ -195,7 +192,6 @@ export const scheduleService = {
       },
     };
 
-    // 1. Coordinators & Admins view all schedules
     if (user.role === 'ADMIN' || user.role === 'COORDINATOR') {
       return prisma.reviewSchedule.findMany({
         include: scheduleInclude,
@@ -203,7 +199,6 @@ export const scheduleService = {
       });
     }
 
-    // 2. Students view schedules for their team's project
     if (user.role === 'STUDENT' && user.studentProfile) {
       return prisma.reviewSchedule.findMany({
         where: {
@@ -220,7 +215,6 @@ export const scheduleService = {
       });
     }
 
-    // 3. Faculty members view schedules where they are on the panel OR the project guide
     if (user.facultyProfile) {
       return prisma.reviewSchedule.findMany({
         where: {
@@ -234,7 +228,6 @@ export const scheduleService = {
       });
     }
 
-    // 4. Default fallback
     return prisma.reviewSchedule.findMany({
       include: scheduleInclude,
       orderBy: { scheduledAt: 'desc' },

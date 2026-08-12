@@ -1,15 +1,13 @@
-import React from 'react';
 import { Card, Skeleton, SkeletonBadge, SkeletonBlock, SkeletonCircle } from '@/components/ui';
 
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
-/** Milestones page skeleton matching MilestonesPage layout exactly. */
 export function MilestonesSkeleton() {
   return (
     <div className="space-y-6 transition-opacity duration-200 animate-in fade-in-50">
       <PageHeaderSkeleton />
 
-      {/* Milestones Card Container */}
+      {}
       <div className="space-y-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <Card key={i} className="p-6 space-y-4">
@@ -28,7 +26,7 @@ export function MilestonesSkeleton() {
               <SkeletonBlock height="h-9" width="w-32" className="shrink-0" />
             </div>
 
-            {/* Checklist items */}
+            {}
             <div className="p-4 rounded-lg bg-secondary/30 border border-border space-y-2">
               <Skeleton className="h-3 w-36 rounded-xs" />
               <div className="flex flex-wrap gap-4">

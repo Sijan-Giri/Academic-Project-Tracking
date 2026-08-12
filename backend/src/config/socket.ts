@@ -14,13 +14,11 @@ export const initSocket = (httpServer: HttpServer): Server => {
   const allowedOrigins = (env.CORSORIGIN || 'http://localhost:5173').split(',').map(o => o.trim());
 
   io = new Server(httpServer, {
-    // Aggressively reclaim dead connections at scale.
-    // Default pingInterval (25s) + pingTimeout (20s) = 45s before a ghost socket is detected.
-    // At 400+ users this wastes file descriptors. Tighten both:
-    pingInterval: 20_000,   // Send ping every 20s (default: 25s)
-    pingTimeout: 10_000,    // Disconnect if no pong in 10s (default: 20s)
-    // Limit incoming HTTP upgrade payload to prevent memory abuse
-    maxHttpBufferSize: 1e6, // 1 MB (default: 1 MB, explicit for clarity)
+    
+    pingInterval: 20_000,   
+    pingTimeout: 10_000,    
+    
+    maxHttpBufferSize: 1e6, 
     cors: {
       origin: (origin, callback) => {
         if (!origin) return callback(null, true);
@@ -40,7 +38,6 @@ export const initSocket = (httpServer: HttpServer): Server => {
     },
   });
 
-  // JWT authentication middleware for socket connections
   io.use((socket: AuthenticatedSocket, next) => {
     try {
       const token =
@@ -95,25 +92,21 @@ export const getIO = (): Server => {
   return io;
 };
 
-/** Emit event to a specific user by userId */
 export const emitToUser = (userId: string, event: string, data: any) => {
   if (!io) return;
   io.to(`user:${userId}`).emit(event, data);
 };
 
-/** Emit event to all users with a specific role */
 export const emitToRole = (role: string, event: string, data: any) => {
   if (!io) return;
   io.to(`role:${role}`).emit(event, data);
 };
 
-/** Emit event to a specific team room */
 export const emitToTeam = (teamId: string, event: string, data: any) => {
   if (!io) return;
   io.to(`team:${teamId}`).emit(event, data);
 };
 
-/** Broadcast event to all connected clients */
 export const broadcastEvent = (event: string, data: any) => {
   if (!io) return;
   io.emit(event, data);

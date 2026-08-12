@@ -96,7 +96,7 @@ export const authService = {
   },
 
   async signup(data: any, ipAddress?: string, userAgent?: string) {
-    // Students are always created by administrators — self-registration is not permitted.
+    
     if (!data.role || data.role === Role.STUDENT) {
       throw new UnauthorizedError('Student accounts are created by administrators. Please contact your institution.');
     }

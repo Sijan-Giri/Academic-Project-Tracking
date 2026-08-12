@@ -1,15 +1,13 @@
-import React from 'react';
 import { Card, Skeleton, SkeletonBadge, SkeletonBlock, SkeletonText } from '@/components/ui';
 
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
-/** Abstract page skeleton matching AbstractPage layout exactly. */
 export function AbstractSkeleton() {
   return (
     <div className="space-y-6 transition-opacity duration-200 animate-in fade-in-50">
       <PageHeaderSkeleton />
 
-      {/* Status & Actions Banner Card */}
+      {}
       <Card className="p-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-2">
@@ -26,7 +24,7 @@ export function AbstractSkeleton() {
         </div>
       </Card>
 
-      {/* Main Abstract Proposal Card */}
+      {}
       <Card className="p-6 space-y-4">
         <div className="flex justify-between items-center pb-3 border-b border-border">
           <Skeleton className="h-5 w-44 rounded-md" />

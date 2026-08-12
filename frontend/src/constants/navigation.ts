@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// constants/navigation.ts
-// Sidebar navigation configurations and route maps.
-// ─────────────────────────────────────────────────────────────────────────────
 
 import {
   LayoutDashboard,

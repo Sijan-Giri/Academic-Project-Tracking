@@ -51,7 +51,7 @@ export default function MySchedulesPage() {
           return (
             <Card key={s.id} className="overflow-hidden border border-border shadow-md hover:border-brand transition-all rounded-2xl bg-card">
               <CardContent className="p-0">
-                {/* Header Banner */}
+                {}
                 <div className="bg-secondary/40 px-6 py-4 border-b border-border flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <span className="px-3 py-1 rounded-full bg-brand-subtle text-brand border border-brand text-xs font-bold uppercase tracking-wider">
@@ -76,9 +76,9 @@ export default function MySchedulesPage() {
                   )}
                 </div>
 
-                {/* Main Content Body */}
+                {}
                 <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Left Column: Project Details & Date */}
+                  {}
                   <div className="lg:col-span-2 space-y-4">
                     <div className="flex items-start gap-4">
                       <div className="bg-brand-subtle border border-brand rounded-xl p-3.5 text-center shrink-0 min-w-[76px]">
@@ -98,7 +98,7 @@ export default function MySchedulesPage() {
                       </div>
                     </div>
 
-                    {/* Online Meeting / Location Banner */}
+                    {}
                     {isOnline && meetingUrl ? (
                       <div className="rounded-xl border border-brand bg-brand-subtle p-4 space-y-3">
                         <div className="flex items-center justify-between">
@@ -150,7 +150,7 @@ export default function MySchedulesPage() {
                       </div>
                     )}
 
-                    {/* Notes if provided */}
+                    {}
                     {s.notes && (
                       <div className="text-xs text-muted-foreground bg-secondary/20 p-3 rounded-lg border border-border font-normal">
                         <strong>Coordinator Notes:</strong> {s.notes}
@@ -158,7 +158,7 @@ export default function MySchedulesPage() {
                     )}
                   </div>
 
-                  {/* Right Column: Panel Members & Actions */}
+                  {}
                   <div className="space-y-4 border-t lg:border-t-0 lg:border-l border-border lg:pl-6 pt-4 lg:pt-0 flex flex-col justify-between">
                     <div>
                       <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
@@ -190,7 +190,7 @@ export default function MySchedulesPage() {
                       )}
                     </div>
 
-                    {/* Action Button depending on User Role */}
+                    {}
                     <div className="pt-3 border-t border-border space-y-3">
                       {(user?.role === 'PANEL' || user?.role === 'FACULTY' || user?.role === 'COORDINATOR' || user?.role === 'ADMIN') && !s.isCompleted && (
                         <Button

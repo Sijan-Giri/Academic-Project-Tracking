@@ -73,13 +73,13 @@ export default function MyProjectPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {}
       <PageHeader
         title={project.title || "Project Details"}
         subtitle={`Domain: ${project.domain || 'General'} • Team: ${project.team?.name || 'Assigned Roster'}`}
       />
 
-      {/* Cancelled / Rejected Banner */}
+      {}
       {(project.status === 'CANCELLED' || project.status === 'ABSTRACT_REJECTED') && (
         <div className="rounded-xl bg-danger-subtle border border-danger text-danger-md p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
           <div className="flex items-start gap-3">
@@ -100,7 +100,7 @@ export default function MyProjectPage() {
         </div>
       )}
 
-      {/* Pending Status Banners */}
+      {}
       {project.status === 'ABSTRACT_SUBMITTED' && (
         <div className="rounded-xl bg-info-subtle border border-info text-info-md p-5 flex items-center gap-3 shadow-xs">
           <div className="w-10 h-10 rounded-lg bg-info-subtle flex items-center justify-center text-info shrink-0">
@@ -139,7 +139,7 @@ export default function MyProjectPage() {
         </div>
       )}
 
-      {/* Top Overview Card */}
+      {}
       <div className="rounded-xl border border-border bg-card p-6 shadow-xs transition-colors duration-200">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-6">
           <div className="space-y-2 max-w-3xl">
@@ -180,7 +180,7 @@ export default function MyProjectPage() {
           )}
         </div>
 
-        {/* Keywords */}
+        {}
         {project.keywords && project.keywords.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
             {project.keywords.map((kw: string) => (
@@ -191,7 +191,7 @@ export default function MyProjectPage() {
           </div>
         )}
 
-        {/* Abstract Box */}
+        {}
         <div className="rounded-lg bg-secondary/50 p-4 border border-border border-l-4 border-l-indigo-600 dark:border-l-indigo-500">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 flex items-center gap-1.5">
             <FileText className="w-4 h-4 text-brand" /> Abstract & Summary
@@ -211,9 +211,9 @@ export default function MyProjectPage() {
         </div>
       </div>
 
-      {/* Guide & Team Cards Grid */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Faculty Guide Card */}
+        {}
         <div className="rounded-xl border border-border bg-card p-6 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -260,7 +260,7 @@ export default function MyProjectPage() {
           </div>
         </div>
 
-        {/* Team Members Card */}
+        {}
         <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
@@ -299,7 +299,7 @@ export default function MyProjectPage() {
         </div>
       </div>
 
-      {/* Lifecycle Progress Card */}
+      {}
       <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
         <h3 className="text-base font-semibold text-foreground mb-4">Evaluation Stage Progress</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -331,7 +331,7 @@ export default function MyProjectPage() {
         </div>
       </div>
 
-      {/* Evaluation Results Card */}
+      {}
       <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
           <div className="flex items-center gap-3">
@@ -422,7 +422,7 @@ export default function MyProjectPage() {
         )}
       </div>
 
-      {/* Quick Action Navigation Grid */}
+      {}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Button
           variant="outline"

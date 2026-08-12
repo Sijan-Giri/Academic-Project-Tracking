@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label } from '@/components'; import { Download, FileSpreadsheet, ShieldAlert } from 'lucide-react'; 
 import { FormatSelector } from './FormatSelector';
 import { downloadReport } from '@/api';
@@ -24,7 +24,7 @@ export default function ReportsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Card 1 */}
+        {}
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle className="text-xl text-indigo-600 dark:text-brand">Department Summary</CardTitle>
@@ -56,7 +56,7 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
 
-        {/* Card 2 */}
+        {}
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle className="text-xl text-indigo-600 dark:text-brand">Project Status Report</CardTitle>
@@ -88,7 +88,7 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
 
-        {/* Card 3 */}
+        {}
         <Card className="dark:bg-red-500/5 dark:border-red-500/20 bg-danger-subtle border-danger flex flex-col">
           <CardHeader>
             <div className="flex items-center gap-2 mb-1">
@@ -122,7 +122,7 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
 
-        {/* Card 4 */}
+        {}
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle className="text-xl text-indigo-600 dark:text-brand">Evaluation Marks</CardTitle>
@@ -154,7 +154,7 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
 
-        {/* Card 5 */}
+        {}
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle className="text-xl text-neutral-md">Audit Log Export</CardTitle>

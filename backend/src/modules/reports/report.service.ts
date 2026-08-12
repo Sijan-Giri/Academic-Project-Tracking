@@ -31,7 +31,7 @@ export const reportService = {
     });
   },
 
-  async getDefaultersData(semesterId?: string, departmentId?: string) {
+  async getDefaultersData(_semesterId?: string, _departmentId?: string) {
     const filters: any = {
       deadline: { lt: new Date() },
       status: { notIn: ['APPROVED', 'SUBMITTED'] }
@@ -43,7 +43,7 @@ export const reportService = {
     });
   },
 
-  async getEvaluationMarksData(semesterId?: string, reviewStageId?: string) {
+  async getEvaluationMarksData(_semesterId?: string, reviewStageId?: string) {
     const filters: any = {};
     if (reviewStageId) filters.reviewStageId = reviewStageId;
     

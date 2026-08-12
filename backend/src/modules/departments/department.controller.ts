@@ -3,7 +3,7 @@ import { AuthRequest } from '../../shared/types';
 import * as deptService from './department.service';
 import { sendSuccess } from '../../shared/utils';
 
-export const getDepartments = async (req: AuthRequest, res: Response) => {
+export const getDepartments = async (_req: AuthRequest, res: Response) => {
   const data = await deptService.getDepartments();
   sendSuccess(res, data);
 };

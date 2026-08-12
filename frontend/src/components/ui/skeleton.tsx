@@ -5,9 +5,6 @@ export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   shimmer?: boolean;
 }
 
-/**
- * Base Skeleton component with high-performance linear shimmer animation.
- */
 function Skeleton({ className, shimmer = true, ...props }: SkeletonProps) {
   return (
     <div
@@ -21,9 +18,6 @@ function Skeleton({ className, shimmer = true, ...props }: SkeletonProps) {
   );
 }
 
-/**
- * Realistic Text Skeleton that mimics multi-line paragraphs or titles with varying line widths.
- */
 export function SkeletonText({
   lines = 3,
   className,
@@ -46,23 +40,14 @@ export function SkeletonText({
   );
 }
 
-/**
- * Circle Skeleton for user avatars, icon badges, and status dots.
- */
 export function SkeletonCircle({ size = 'w-9 h-9', className }: { size?: string; className?: string }) {
   return <Skeleton className={cn('rounded-full shrink-0', size, className)} />;
 }
 
-/**
- * Pill/Badge Skeleton matching UI badges.
- */
 export function SkeletonBadge({ width = 'w-20', className }: { width?: string; className?: string }) {
   return <Skeleton className={cn('h-5 rounded-md shrink-0', width, className)} />;
 }
 
-/**
- * Rectangular Block Skeleton for cards, buttons, and input fields.
- */
 export function SkeletonBlock({
   height = 'h-10',
   width = 'w-full',
@@ -77,9 +62,6 @@ export function SkeletonBlock({
   return <Skeleton className={cn(height, width, radius, className)} />;
 }
 
-/**
- * Table Row Skeleton matching real data table rows.
- */
 export function SkeletonRow({ cols = 4, className }: { cols?: number; className?: string }) {
   return (
     <div className={cn('flex items-center gap-4 py-3.5 px-4 border-b border-border/60', className)}>

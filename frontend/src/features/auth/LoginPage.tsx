@@ -16,10 +16,9 @@ export default function LoginPage() {
     let isMounted = true;
 
     async function checkSessionOnMount() {
-      // If session expired flag is set in URL, don't attempt auto-login
+      
       if (isSessionExpired) return;
 
-      // If access token already exists in memory, send user to dashboard immediately
       const state = useAuthStore.getState();
       if (state.accessToken && state.user) {
         if (isMounted) {
@@ -29,11 +28,10 @@ export default function LoginPage() {
       }
 
       try {
-        // Step 1: Call refresh API to verify if access token can be created from session
+        
         const refreshRes = await refreshToken();
         const token = refreshRes?.accessToken;
 
-        // Step 2: If there is access token, store it, call getMe, and send user to dashboard
         if (token) {
           useAuthStore.getState().setAccessToken(token);
           const meData: any = await getMe();
@@ -47,7 +45,7 @@ export default function LoginPage() {
           }
         }
       } catch (_) {
-        // No valid token found, user must log in
+        
       }
     }
 

@@ -37,7 +37,6 @@ export const evaluationService = {
     const percentage = maxTotalMarks > 0 ? (totalMarks / maxTotalMarks) * 100 : 0;
     const grade = getGrade(percentage);
 
-    // Helper notification & completion trigger
     const notifyEvaluationResults = async () => {
       try {
         const stage = await prisma.reviewStage.findUnique({ where: { id: data.reviewStageId } });
@@ -171,7 +170,6 @@ export const evaluationService = {
 
     const criteria = await prisma.evaluationCriteria.findMany({ where: { reviewStageId: evaluation.reviewStageId } });
     
-    // Update scores and totalMarks
     let totalMarks = 0;
     let maxTotalMarks = 0;
     
@@ -213,8 +211,6 @@ export const evaluationService = {
 
     await createAuditLog({ action: AuditAction.MARKS_LOCK, entityType: 'Evaluation', entityId: id, userId });
 
-    // Need to notify the project team conceptually
-    // For brevity, we just return
     return locked;
   },
 

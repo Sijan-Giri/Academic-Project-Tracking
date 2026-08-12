@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────
-// Review, Evaluation & Schedule types
-// ─────────────────────────────────────────────
 
 import type { User, FacultyProfile } from './user.types';
 import type { Project } from './project.types';
@@ -13,8 +10,6 @@ export type ReviewStageType =
   | 'REVIEW_3'
   | 'PRE_SUBMISSION'
   | 'FINAL_SUBMISSION';
-
-// ── Criteria & Evaluation ─────────────────────
 
 export interface EvaluationCriteria {
   id: string;
@@ -48,8 +43,6 @@ export interface Evaluation {
   scores?: EvaluationScore[];
 }
 
-// ── Review Stage ──────────────────────────────
-
 export interface ReviewStageTemplate {
   id: string;
   name: string;
@@ -72,8 +65,6 @@ export interface ReviewStage {
   isActive: boolean;
   criteria?: EvaluationCriteria[];
 }
-
-// ── Schedule & Panel ──────────────────────────
 
 export interface PanelAssignment {
   id: string;

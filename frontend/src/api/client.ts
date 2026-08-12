@@ -35,7 +35,6 @@ export function handleSessionExpired(notifyUser = true) {
   }
 }
 
-// Attach in-memory Access Token to outgoing requests
 api.interceptors.request.use(
   (config) => {
     const token = useAuthStore.getState().accessToken;
@@ -47,7 +46,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: handle 401 unauthenticated requests
 api.interceptors.response.use(
   (response) => response,
   async (error) => {

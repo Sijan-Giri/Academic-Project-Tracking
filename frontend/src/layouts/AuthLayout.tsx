@@ -6,9 +6,9 @@ interface AuthLayoutProps { children: ReactNode; }
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="flex min-h-screen surface-dark">
-      {/* Left Panel */}
+      {}
       <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-indigo-900 via-violet-900 to-slate-900 p-12 text-white lg:flex">
-        {/* Floating shapes */}
+        {}
         <div className="absolute -left-20 -top-20 h-96 w-96 rounded-full bg-brand-subtle blur-3xl" />
         <div className="absolute -bottom-20 -right-20 h-96 w-96 rounded-full bg-purple-subtle blur-3xl" />
         
@@ -46,7 +46,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         </div>
       </div>
 
-      {/* Right Panel */}
+      {}
       <div className="flex w-full flex-col items-center justify-center p-8 lg:w-1/2">
         <div className="w-full max-w-md space-y-8">
           <div className="flex items-center justify-center space-x-3 lg:hidden mb-8">

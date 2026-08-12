@@ -1,7 +1,6 @@
 import { PROJECT_STATUS_CONFIG, MILESTONE_STATUS_CONFIG, TEAM_STATUS_CONFIG, cn } from '@/lib';
 import { Badge } from '@/components/ui';
 
-
 interface StatusBadgeProps {
   status: string;
   type: 'project' | 'milestone' | 'team';

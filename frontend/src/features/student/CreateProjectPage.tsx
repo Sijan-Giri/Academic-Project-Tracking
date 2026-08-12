@@ -79,13 +79,13 @@ export default function CreateProjectPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {}
       <PageHeader
         title="Create Project Proposal"
         subtitle="Submit your capstone project proposal details."
       />
 
-      {/* Team Validation Status Banner */}
+      {}
       {!isTeamApproved ? (
         <div className="rounded-xl border border-warning bg-warning-subtle p-6 space-y-3 shadow-xs">
           <div className="flex items-center gap-3">

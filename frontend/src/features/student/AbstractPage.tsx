@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAbstract } from '@/hooks';
 
-
 export default function AbstractPage() {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
@@ -50,13 +49,13 @@ export default function AbstractPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <PageHeader
         title="Project Abstract Proposal"
         subtitle="Detailed abstract summary, coordinator review feedback, and status."
       />
 
-      {/* Main Metadata Banner Card */}
+      {}
       <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
           <div>
@@ -83,7 +82,7 @@ export default function AbstractPage() {
           </Button>
         </div>
 
-        {/* Keywords */}
+        {}
         {project.keywords && project.keywords.length > 0 && (
           <div className="flex flex-wrap gap-2 pt-2">
             {project.keywords.map((kw: string) => (
@@ -95,7 +94,7 @@ export default function AbstractPage() {
         )}
       </div>
 
-      {/* Review Status Banners */}
+      {}
       {isRejectedOrRevision && (
         <div className="rounded-lg bg-warning-subtle border border-warning text-amber-900 dark:text-warning p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
           <div className="flex items-start gap-3">
@@ -140,7 +139,7 @@ export default function AbstractPage() {
         </div>
       )}
 
-      {/* Abstract Content Box */}
+      {}
       <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
         <div className="flex items-center justify-between border-b border-border pb-4 mb-4">
           <h3 className="text-base font-semibold text-foreground flex items-center gap-2">

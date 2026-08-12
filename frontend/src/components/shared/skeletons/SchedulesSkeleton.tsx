@@ -1,10 +1,9 @@
 import { Skeleton } from '@/components/ui';
 
-
 export function SchedulesSkeleton() {
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <div className="flex items-center justify-between">
         <div className="space-y-2">
           <Skeleton className="h-7 w-48" />
@@ -12,7 +11,7 @@ export function SchedulesSkeleton() {
         </div>
         <Skeleton className="h-9 w-36 rounded-lg" />
       </div>
-      {/* Cards */}
+      {}
       {[1, 2, 3].map((i) => (
         <div key={i} className="rounded-xl border border-border bg-card p-6 space-y-4">
           <div className="flex items-center justify-between">

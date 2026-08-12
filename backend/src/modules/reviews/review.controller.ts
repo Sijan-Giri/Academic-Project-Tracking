@@ -3,7 +3,7 @@ import { reviewService } from './review.service';
 import { createTemplateSchema, updateTemplateSchema, createReviewStageSchema, updateReviewStageSchema, createCriteriaSchema, updateCriteriaSchema } from './review.schema';
 
 export const reviewController = {
-  getTemplates: async (req: Request, res: Response, next: NextFunction) => {
+  getTemplates: async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const templates = await reviewService.getTemplates();
       res.json(templates);

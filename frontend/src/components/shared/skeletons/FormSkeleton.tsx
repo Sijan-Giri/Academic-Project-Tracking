@@ -1,9 +1,7 @@
-import React from 'react';
 import { Card, Skeleton, SkeletonBlock } from '@/components/ui';
 
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
-/** Form skeleton matching CreateProjectPage, ProfilePage, EvaluationFormPage. */
 export function FormSkeleton() {
   return (
     <div className="space-y-6 transition-opacity duration-200 animate-in fade-in-50">

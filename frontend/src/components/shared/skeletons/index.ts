@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// components/shared/skeletons/index.ts
-// Barrel re-export for all skeleton loading components.
-// Usage: import { DashboardSkeleton, TableSkeleton } from '@/components/shared/skeletons';
-// ─────────────────────────────────────────────────────────────────────────────
 
 export { PageHeaderSkeleton } from './PageHeaderSkeleton';
 export { DashboardSkeleton } from './DashboardSkeleton';
@@ -18,4 +13,3 @@ export { PageSkeleton } from './PageSkeleton';
 export { SchedulesSkeleton } from './SchedulesSkeleton';
 export { ReviewStagesSkeleton } from './ReviewStagesSkeleton';
 export { SettingsSkeleton } from './SettingsSkeleton';
-

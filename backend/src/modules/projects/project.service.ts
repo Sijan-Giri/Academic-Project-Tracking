@@ -75,7 +75,6 @@ export const createProject = async (data: any, userId: string) => {
     return updatedProject;
   }
 
-  // Auto-resolve semesterId from team if omitted or empty
   const targetSemesterId = projectFields.semesterId || team.semesterId;
   if (!targetSemesterId) throw new ValidationError('Semester ID could not be determined');
 
@@ -213,7 +212,6 @@ export const submitAbstract = async (id: string, userId: string) => {
     newValue: ProjectStatus.ABSTRACT_SUBMITTED,
   });
 
-  // Notify coordinators concurrently
   const coordinators = await prisma.user.findMany({ where: { role: 'COORDINATOR' } });
   await Promise.all(
     coordinators.map((coord) =>

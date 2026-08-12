@@ -4,8 +4,6 @@ import { Bell, CheckCheck, ChevronRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Button, Popover, PopoverContent, PopoverTrigger, ScrollArea } from '@/components/ui';
 
-
-
 import { NotificationDropdownSkeleton } from '@/components/shared/Skeletons';
 import { cn } from '@/lib';
 import type { Notification } from '@/types';
@@ -60,7 +58,7 @@ export default function NotificationDropdown() {
       </PopoverTrigger>
 
       <PopoverContent align="end" className="w-80 sm:w-96 p-0 bg-card border-border text-foreground shadow-xl rounded-2xl overflow-hidden">
-        {/* Header */}
+        {}
         <div className="p-4 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h3 className="font-bold text-foreground text-base">Notifications</h3>
@@ -82,7 +80,7 @@ export default function NotificationDropdown() {
           )}
         </div>
 
-        {/* Filter Tabs */}
+        {}
         <div className="flex border-b border-border bg-secondary/30 px-3 py-1.5 gap-2">
           <Button
             variant="ghost"
@@ -112,7 +110,7 @@ export default function NotificationDropdown() {
           </Button>
         </div>
 
-        {/* Notification Items List */}
+        {}
         <ScrollArea className="h-96">
           {isLoading ? (
             <NotificationDropdownSkeleton count={4} />
@@ -155,7 +153,6 @@ export default function NotificationDropdown() {
           )}
         </ScrollArea>
 
-        {/* Footer */}
         <div className="p-3 border-t border-border bg-secondary/30 text-center">
           <Button
             variant="ghost"

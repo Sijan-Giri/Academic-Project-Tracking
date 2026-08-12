@@ -3,12 +3,12 @@ import { AuthRequest } from '../../shared/types';
 import * as settingsService from './settings.service';
 import { sendSuccess } from '../../shared/utils';
 
-export const getAllSettings = async (req: AuthRequest, res: Response) => {
+export const getAllSettings = async (_req: AuthRequest, res: Response) => {
   const data = await settingsService.getAllSettings();
   sendSuccess(res, data);
 };
 
-export const getPublicSettings = async (req: AuthRequest, res: Response) => {
+export const getPublicSettings = async (_req: AuthRequest, res: Response) => {
   const data = await settingsService.getPublicSettings();
   sendSuccess(res, data);
 };

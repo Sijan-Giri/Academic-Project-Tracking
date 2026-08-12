@@ -40,7 +40,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {}
       <PageHeader
         title="Notifications & Activity Log"
         subtitle="Stay updated with review stage deadlines, guide allocations, and team invitations."
@@ -55,7 +55,7 @@ export default function NotificationsPage() {
         }
       />
 
-      {/* Filter Toolbar */}
+      {}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-border bg-card shadow-xs">
         <div className="flex items-center gap-4 w-full sm:w-auto">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -86,7 +86,7 @@ export default function NotificationsPage() {
         </span>
       </div>
 
-      {/* Notifications Cards Container */}
+      {}
       <div className="space-y-3">
         {isLoading ? (
           <div className="space-y-3">

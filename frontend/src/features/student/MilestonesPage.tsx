@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib';
 import { useMilestones } from '@/hooks';
 
-
 export default function MilestonesPage() {
   const navigate = useNavigate();
   const [selectedMilestone, setSelectedMilestone] = useState<any>(null);
@@ -42,7 +41,7 @@ export default function MilestonesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <PageHeader
         title="Milestone Deliverables"
         subtitle="Track required milestone documents, deadlines, and upload submission files."
@@ -121,7 +120,7 @@ export default function MilestonesPage() {
                   </div>
                 </div>
 
-                {/* Requirements & Deadline Info */}
+                {}
                 <div className="mt-4 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2 text-muted-foreground font-normal">
                     <Calendar className="w-4 h-4 text-brand" />
@@ -150,7 +149,7 @@ export default function MilestonesPage() {
         </div>
       )}
 
-      {/* Upload Deliverables Modal */}
+      {}
       {selectedMilestone && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
           <div className="w-full max-w-lg rounded-xl border border-border bg-card p-6 shadow-xl space-y-5 animate-in fade-in zoom-in-95">

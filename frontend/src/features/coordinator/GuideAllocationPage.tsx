@@ -59,7 +59,7 @@ export default function GuideAllocationPage() {
       <PageHeader title="Guide Allocation" subtitle="Assign faculty mentors to academic projects and manage current allocations." />
 
       <div className="space-y-6">
-        {/* Direct Guide Assignment Card */}
+        {}
         <div className="bg-card border border-border rounded-xl p-6 shadow-xs space-y-4 max-w-lg">
           <h3 className="text-foreground font-semibold text-base">Assign Faculty Mentor</h3>
           <div className="space-y-1.5">
@@ -105,7 +105,7 @@ export default function GuideAllocationPage() {
           </Button>
         </div>
 
-        {/* Existing Active Assignments Table */}
+        {}
         <div className="bg-card border border-border rounded-xl shadow-xs overflow-hidden">
           <div className="px-5 py-4 border-b border-border">
             <h3 className="text-foreground font-semibold text-base">Current Active Guide Assignments</h3>

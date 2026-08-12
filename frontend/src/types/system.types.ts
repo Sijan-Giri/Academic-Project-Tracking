@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────
-// System / Academic infrastructure types
-// ─────────────────────────────────────────────
 
 export type ScheduleMode = 'ONLINE' | 'OFFLINE';
 

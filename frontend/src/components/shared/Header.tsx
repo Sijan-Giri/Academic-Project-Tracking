@@ -2,8 +2,6 @@ import { Menu, Sun, Moon, User as UserIcon, Settings as SettingsIcon, LogOut as 
 import { useSidebar } from '@/layouts/DashboardLayout';
 import { Avatar, AvatarFallback, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui';
 
-
-
 import { cn } from '@/lib';
 import { ROUTES } from '@/constants';
 import { getPageTitle } from '@/utils';
@@ -36,7 +34,7 @@ export default function Header({ className }: HeaderProps) {
       </div>
 
       <div className="flex items-center space-x-3 shrink-0">
-        {/* Theme Switcher Toggle Button */}
+        {}
         <Button
           variant="ghost"
           size="icon"
@@ -53,7 +51,7 @@ export default function Header({ className }: HeaderProps) {
 
         <NotificationDropdown />
 
-        {/* User Profile Dropdown */}
+        {}
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 border border-slate-200 dark:border-white/10">

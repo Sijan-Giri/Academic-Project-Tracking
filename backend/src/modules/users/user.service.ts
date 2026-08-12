@@ -168,7 +168,7 @@ export const getUserActivity = async (id: string) => {
   });
 };
 
-export const bulkImportStudents = async (rows: any[], departmentId: string, batchId: string) => {
+export const bulkImportStudents = async (rows: any[], _departmentId: string, batchId: string) => {
   const errors: string[] = [];
   let count = 0;
   const hashedPassword = await hashPassword('Password@123');

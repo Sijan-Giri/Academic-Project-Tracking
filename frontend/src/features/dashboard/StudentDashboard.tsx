@@ -24,7 +24,6 @@ export default function StudentDashboard() {
   const milestones = currentProject?.milestones || [];
   const inProgressMilestone = milestones.find((m: any) => m.status === 'IN_PROGRESS' || m.status === 'NOT_STARTED');
 
-  // Combine project milestone deadlines and semester review stage deadlines
   const combinedDeadlines = [
     ...milestones.map((m: any) => ({ id: m.id, name: m.name, deadline: m.deadline, status: m.status })),
     ...reviewStages
@@ -32,7 +31,6 @@ export default function StudentDashboard() {
       .map((rs: any) => ({ id: rs.id, name: rs.name, deadline: rs.deadline, status: 'NOT_STARTED' })),
   ];
 
-  // Remove duplicates by name and sort by deadline date
   const uniqueDeadlineMap = new Map();
   combinedDeadlines.forEach((item: any) => {
     if (!uniqueDeadlineMap.has(item.name) && item.deadline) {
@@ -48,7 +46,7 @@ export default function StudentDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {}
       <PageHeader
         title={`Welcome back, ${authUser?.name || 'Student'}`}
         subtitle={
@@ -67,7 +65,7 @@ export default function StudentDashboard() {
         }
       />
 
-      {/* Dynamic Key Performance Cards Grid */}
+      {}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Project Title"
@@ -97,7 +95,7 @@ export default function StudentDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* Project Lifecycle Card */}
+          {}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-4">
               <div>
@@ -171,7 +169,7 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
 
-          {/* Dynamic Team Card */}
+          {}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-4">
               <div>
@@ -215,7 +213,7 @@ export default function StudentDashboard() {
           </Card>
         </div>
 
-        {/* Side Info Cards */}
+        {}
         <div className="space-y-6">
           <Card>
             <CardHeader className="border-b border-border pb-4">

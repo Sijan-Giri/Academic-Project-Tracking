@@ -1,9 +1,7 @@
-import React from 'react';
 import { Card, CardContent, Skeleton, SkeletonBadge, SkeletonRow } from '@/components/ui';
 
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
-/** Submissions page skeleton matching SubmissionsPage layout exactly. */
 export function SubmissionsSkeleton() {
   return (
     <div className="space-y-6 transition-opacity duration-200 animate-in fade-in-50">

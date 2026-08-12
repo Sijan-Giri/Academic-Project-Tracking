@@ -96,7 +96,6 @@ export const deleteFile = async (fileId: string, requestingUserId: string, reque
   const file = await prisma.file.findUnique({ where: { id: fileId } });
   if (!file) throw new NotFoundError('File not found');
 
-  // Allow: ADMIN, COORDINATOR, or the user who uploaded the file
   const isOwner = file.uploadedById === requestingUserId;
   const isPrivileged = ['ADMIN', 'COORDINATOR'].includes(requestingRole);
   if (!isOwner && !isPrivileged) {

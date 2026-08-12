@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────
-// Project, Team, Milestone & Submission types
-// ─────────────────────────────────────────────
 
 import type { User, StudentProfile, FacultyProfile } from './user.types';
 
@@ -24,8 +21,6 @@ export type MilestoneStatus =
   | 'REVISION_NEEDED';
 
 export type TeamStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
-
-// ── File / Submission ─────────────────────────
 
 export interface FileRecord {
   id: string;
@@ -59,8 +54,6 @@ export interface Milestone {
   submissions?: Submission[];
 }
 
-// ── Guide ─────────────────────────────────────
-
 export interface GuideAssignment {
   id: string;
   projectId: string;
@@ -69,10 +62,6 @@ export interface GuideAssignment {
   isActive: boolean;
   facultyProfile?: FacultyProfile & { user: User };
 }
-
-
-
-// ── Team / Project ────────────────────────────
 
 export interface TeamMember {
   id: string;

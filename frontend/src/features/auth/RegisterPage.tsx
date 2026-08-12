@@ -37,7 +37,7 @@ export default function RegisterPage() {
         <p className="text-dark-muted">Create your faculty account to get started</p>
       </div>
 
-      {/* Info Notice */}
+      {}
       <div className="flex items-start gap-3 p-3.5 mb-6 rounded-xl bg-brand-subtle border border-brand text-brand">
         <Info className="w-4 h-4 shrink-0 mt-0.5 text-brand" />
         <p className="text-xs leading-relaxed">
@@ -47,7 +47,7 @@ export default function RegisterPage() {
       </div>
 
       <form onSubmit={handleSubmit(d => mutate({ ...d, role: 'FACULTY' }))} className="space-y-4">
-        {/* Full Name */}
+        
         <div className="space-y-1.5">
           <Label className="label-dark">Full Name</Label>
           <div className="relative">
@@ -57,7 +57,6 @@ export default function RegisterPage() {
           {errors.name && <p className="text-danger text-xs">{errors.name.message}</p>}
         </div>
 
-        {/* Email */}
         <div className="space-y-1.5">
           <Label className="label-dark">Institutional Email Address</Label>
           <div className="relative">
@@ -67,7 +66,6 @@ export default function RegisterPage() {
           {errors.email && <p className="text-danger text-xs">{errors.email.message}</p>}
         </div>
 
-        {/* Password */}
         <div className="space-y-1.5">
           <Label className="label-dark">Password</Label>
           <div className="relative">
@@ -80,7 +78,6 @@ export default function RegisterPage() {
           {errors.password && <p className="text-danger text-xs">{errors.password.message}</p>}
         </div>
 
-        {/* Faculty-specific Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label className="label-dark">Faculty ID <span className="text-dark-muted">(Optional)</span></Label>

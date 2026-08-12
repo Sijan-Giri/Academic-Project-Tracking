@@ -9,8 +9,6 @@ const router = Router();
 
 router.use(authenticate);
 
-// ── Named routes MUST come before /:id param to avoid route collision ─────
-// Any authenticated user can update their own profile
 router.put('/profile', userController.updateProfile);
 
 router.get('/', requireRoles('ADMIN', 'COORDINATOR'), userController.getUsers);

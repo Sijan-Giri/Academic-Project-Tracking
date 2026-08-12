@@ -82,7 +82,7 @@ export default function SchedulesPage() {
         }
       />
 
-      {/* Filter Bar */}
+      {}
       <div className="flex items-center gap-4 bg-card border border-border p-4 rounded-xl shadow-xs max-w-xs">
         <Select value={stageFilter} onValueChange={v => setStageFilter(v === 'ALL' ? '' : v)}>
           <SelectTrigger className="input-field" id="schedule-stage-filter">
@@ -97,7 +97,7 @@ export default function SchedulesPage() {
         </Select>
       </div>
 
-      {/* Schedules List */}
+      {}
       {isLoading ? (
         <SchedulesSkeleton />
       ) : schedules.length === 0 ? (
@@ -166,7 +166,7 @@ export default function SchedulesPage() {
         </div>
       )}
 
-      {/* Modal: Schedule Presentation */}
+      {}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="bg-card border-border text-foreground max-w-lg">
           <DialogHeader><DialogTitle className="text-base font-semibold">Schedule Review Presentation</DialogTitle></DialogHeader>
@@ -219,7 +219,7 @@ export default function SchedulesPage() {
               />
             </div>
 
-            {/* Panel Evaluators Selection */}
+            {}
             <div className="space-y-2 pt-2 border-t border-border">
               <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Assign Panel Evaluators</Label>
               <div className="max-h-36 overflow-y-auto space-y-2 border border-border rounded-lg p-3 bg-secondary/30">
@@ -248,7 +248,7 @@ export default function SchedulesPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirm */}
+      {}
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={o => !o && setDeleteId(null)}

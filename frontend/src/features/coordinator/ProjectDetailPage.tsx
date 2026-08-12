@@ -56,7 +56,7 @@ export default function ProjectDetailPage() {
         </Button>
       </div>
 
-      {/* Header card with status changer */}
+      {}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-6 rounded-xl border border-border shadow-xs">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -75,7 +75,7 @@ export default function ProjectDetailPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {/* Status Change selector for Coordinator & Admin */}
+          {}
           {isCoordinatorOrAdmin && (
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
@@ -146,7 +146,7 @@ export default function ProjectDetailPage() {
             </Card>
 
             <div className="space-y-6">
-              {/* Team Details */}
+              {}
               <Card>
                 <CardHeader className="border-b border-border pb-3">
                   <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -170,7 +170,7 @@ export default function ProjectDetailPage() {
                 </CardContent>
               </Card>
 
-              {/* Guide Details */}
+              {}
               <Card>
                 <CardHeader className="border-b border-border pb-3">
                   <CardTitle className="text-base font-semibold flex items-center gap-2">

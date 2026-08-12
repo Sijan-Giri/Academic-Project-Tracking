@@ -80,7 +80,6 @@ export default function ProfilePage() {
   const updateProfileMut = { mutate: updateProfileMutate, isPending: isUpdatingProfile };
   const changePasswordMut = { mutate: changePasswordMutate, isPending: isChangingPassword };
 
-  // Early return for loading AFTER all hooks are called
   if (isLoading) {
     return <FormSkeleton />;
   }
@@ -90,13 +89,13 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <PageHeader
         title="Account Profile & Security"
         subtitle="Manage your personal information, department records, and account password."
       />
 
-      {/* Top Profile Identity Banner */}
+      {}
       <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
           <div className="w-16 h-16 rounded-xl bg-indigo-600 text-white font-extrabold text-2xl flex items-center justify-center shrink-0">
@@ -215,7 +214,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Right Column: Academic & System Profile Metadata */}
+        {}
         <div className="space-y-6">
           <div className="rounded-xl border border-border bg-card p-6 shadow-xs space-y-2">
             <h3 className="text-sm font-semibold text-foreground border-b border-border pb-3 flex items-center gap-2">

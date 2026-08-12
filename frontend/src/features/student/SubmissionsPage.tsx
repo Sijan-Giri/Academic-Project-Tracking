@@ -1,4 +1,4 @@
-import { useState } from 'react'; import { FileText, FolderGit2, Calendar, Download, Trash2, Loader2 } from 'lucide-react'; 
+import { useState } from 'react'; import { FileText, FolderGit2, Calendar, Download, Trash2 } from 'lucide-react'; 
 import { PageHeader, ConfirmDialog, Button, SubmissionsSkeleton } from '@/components';
 import toast from 'react-hot-toast';
 import { useSubmissions } from '@/hooks';
@@ -12,7 +12,6 @@ export default function SubmissionsPage() {
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Confirm dialog state
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
 
@@ -58,7 +57,7 @@ export default function SubmissionsPage() {
         subtitle="Review, download, and manage all uploaded project milestone deliverables and version history."
       />
 
-      {/* Delete Confirm Modal */}
+      {}
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={(v) => { if (!deletingId) setConfirmOpen(v); }}
@@ -72,7 +71,7 @@ export default function SubmissionsPage() {
       />
 
       <div className="rounded-xl border border-border bg-card shadow-xs overflow-hidden">
-        {/* Header */}
+        {}
         <div className="p-5 border-b border-border flex items-center justify-between">
           <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
             <FolderGit2 className="w-5 h-5 text-brand" />
@@ -102,7 +101,7 @@ export default function SubmissionsPage() {
 
               return (
                 <div key={sub.id} className="p-5 hover:bg-secondary/30 transition-colors space-y-3">
-                  {/* Submission header */}
+                  {}
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3 flex-wrap">
                       <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-brand-subtle text-brand border border-brand">
@@ -120,7 +119,7 @@ export default function SubmissionsPage() {
                     )}
                   </div>
 
-                  {/* File list */}
+                  {}
                   {fileList.length === 0 ? (
                     <p className="text-xs text-muted-foreground pl-1 font-normal">No files attached.</p>
                   ) : (
@@ -143,7 +142,7 @@ export default function SubmissionsPage() {
                             </span>
                           ) : null}
 
-                          {/* Download */}
+                          {}
                           <Button
                             variant="ghost"
                             size="icon"
@@ -155,7 +154,7 @@ export default function SubmissionsPage() {
                             <Download className="w-3.5 h-3.5" />
                           </Button>
 
-                          {/* Delete */}
+                          {}
                           <Button
                             variant="ghost"
                             size="icon"

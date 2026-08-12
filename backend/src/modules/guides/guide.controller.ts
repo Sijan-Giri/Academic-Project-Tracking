@@ -12,12 +12,12 @@ export const removeGuideAssignmentHandler = async (req: AuthRequest, res: Respon
   res.json(assignment);
 };
 
-export const getAvailableGuidesHandler = async (req: AuthRequest, res: Response) => {
+export const getAvailableGuidesHandler = async (_req: AuthRequest, res: Response) => {
   const guides = await guideService.getAvailableGuides();
   res.json(guides);
 };
 
-export const getGuideAssignmentsHandler = async (req: AuthRequest, res: Response) => {
+export const getGuideAssignmentsHandler = async (_req: AuthRequest, res: Response) => {
   const assignments = await guideService.getGuideAssignments();
   res.json(assignments);
 };

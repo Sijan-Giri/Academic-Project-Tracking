@@ -3,7 +3,7 @@ import { AuthRequest } from '../../shared/types';
 import * as academicYearService from './academic-year.service';
 import { sendSuccess } from '../../shared/utils';
 
-export const getAcademicYears = async (req: AuthRequest, res: Response) => {
+export const getAcademicYears = async (_req: AuthRequest, res: Response) => {
   const data = await academicYearService.getAcademicYears();
   sendSuccess(res, data);
 };

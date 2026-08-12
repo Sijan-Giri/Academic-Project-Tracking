@@ -134,7 +134,7 @@ export default function TeamApprovalsPage() {
         subtitle="Review, approve, or reject student teams for your department."
       />
 
-      {/* Filter Tabs */}
+      {}
       <div className="flex items-center gap-2 border-b border-border pb-4">
         {TEAM_STATUS_TABS.map((tab) => {
           const isActive = statusFilter === tab.value;
@@ -160,7 +160,7 @@ export default function TeamApprovalsPage() {
         <DataTable columns={columns} data={teamsList} isLoading={isLoading} />
       </div>
 
-      {/* Reject Confirmation Dialog */}
+      {}
       <ConfirmDialog
         open={!!rejectItem}
         onOpenChange={(open) => !open && setRejectItem(null)}
@@ -182,7 +182,7 @@ export default function TeamApprovalsPage() {
         </div>
       </ConfirmDialog>
 
-      {/* Team Details Modal */}
+      {}
       <Dialog open={!!viewTeam} onOpenChange={(open) => !open && setViewTeam(null)}>
         <DialogContent className="bg-card border-border text-foreground sm:max-w-[550px]">
           <DialogHeader>

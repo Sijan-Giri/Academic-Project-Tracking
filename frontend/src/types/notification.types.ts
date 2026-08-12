@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────
-// Notification & Announcement types
-// ─────────────────────────────────────────────
 
 export type NotificationType =
   | 'DEADLINE_REMINDER'

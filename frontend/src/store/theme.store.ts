@@ -12,7 +12,7 @@ const getInitialTheme = (): Theme => {
   if (typeof window === 'undefined') return 'dark';
   const saved = localStorage.getItem('apts-theme') as Theme;
   if (saved === 'dark' || saved === 'light') return saved;
-  return 'dark'; // Default theme
+  return 'dark'; 
 };
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
@@ -34,7 +34,6 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
   },
 }));
 
-// Apply initial class immediately on script run
 if (typeof window !== 'undefined') {
   const initial = getInitialTheme();
   if (initial === 'dark') {

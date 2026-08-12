@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// components/ui/index.ts
-// Barrel re-export for all shadcn/ui primitives.
-// Usage: import { Button, Badge, Dialog } from '@/components/ui';
-// ─────────────────────────────────────────────────────────────────────────────
 
 export * from './alert-dialog';
 export * from './alert';

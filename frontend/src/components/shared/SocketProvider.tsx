@@ -13,7 +13,6 @@ export default function SocketProvider({ children }: { children: React.ReactNode
 
     const socket = connectSocket(accessToken);
 
-    // ── Real-Time Notification Listeners ────────────────────────────────────
     const handleNewNotification = (data: any) => {
       toast(data.title || 'New Notification', {
         icon: '🔔',
@@ -29,7 +28,6 @@ export default function SocketProvider({ children }: { children: React.ReactNode
       queryClient.setQueryData(['unread-count'], data.count);
     };
 
-    // ── Real-Time Announcement Listeners ────────────────────────────────────
     const handleNewAnnouncement = (data: any) => {
       toast(`Announcement: ${data.title}`, {
         icon: '📢',
@@ -40,7 +38,6 @@ export default function SocketProvider({ children }: { children: React.ReactNode
       queryClient.invalidateQueries({ queryKey: ['coordinator-announcements'] });
     };
 
-    // ── Real-Time Team & Invitation Listeners ────────────────────────────────
     const handleTeamUpdated = () => {
       queryClient.invalidateQueries({ queryKey: ['my-team'] });
       queryClient.invalidateQueries({ queryKey: ['teams-list'] });
@@ -57,7 +54,6 @@ export default function SocketProvider({ children }: { children: React.ReactNode
       queryClient.invalidateQueries({ queryKey: ['my-team'] });
     };
 
-    // ── Real-Time Project Status Listeners ──────────────────────────────────
     const handleProjectUpdated = () => {
       queryClient.invalidateQueries({ queryKey: ['my-projects'] });
       queryClient.invalidateQueries({ queryKey: ['coordinator-projects'] });
@@ -70,7 +66,6 @@ export default function SocketProvider({ children }: { children: React.ReactNode
       queryClient.invalidateQueries({ queryKey: ['coordinator-announcements'] });
     };
 
-    // Register event listeners
     socket.on('notification:new', handleNewNotification);
     socket.on('notification:unread_count', handleUnreadCount);
     socket.on('announcement:new', handleNewAnnouncement);

@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// constants/options.ts
-// Centralized option arrays, select options, and category maps used in forms & filters.
-// ─────────────────────────────────────────────────────────────────────────────
 
 export const DOMAINS = [
   'Web Development',

@@ -6,7 +6,6 @@ import { format } from 'date-fns';
 import { useAuthStore } from '@/store';
 import { useEvaluationForm } from '@/hooks';
 
-
 export default function EvaluationFormPage() {
   const { scheduleId } = useParams();
   const navigate = useNavigate();
@@ -94,7 +93,7 @@ export default function EvaluationFormPage() {
         </div>
       )}
 
-      {/* Project Info Header */}
+      {}
       <Card>
         <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -112,7 +111,7 @@ export default function EvaluationFormPage() {
         </CardContent>
       </Card>
 
-      {/* Rubric Table */}
+      {}
       <Card>
         <CardHeader className="border-b border-border pb-3">
           <CardTitle className="text-base font-semibold">Evaluation Rubric & Scoring</CardTitle>

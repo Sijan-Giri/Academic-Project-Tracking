@@ -31,7 +31,7 @@ export const authController = {
     }
   },
 
-  logoutHandler: async (req: Request, res: Response) => {
+  logoutHandler: async (_req: Request, res: Response) => {
     res.clearCookie('access_token');
     res.clearCookie('refresh_token');
     res.status(204).send();

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { AuthRequest } from '../../shared/types';
 import { scheduleService } from './schedule.service';
 import { createScheduleSchema, updateScheduleSchema, addPanelSchema, attendanceSchema } from './schedule.schema';
@@ -72,8 +72,7 @@ export const scheduleController = {
 
   markAttendance: async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      // Allow passing facultyProfileId in body or assume it's for current user. Here we take from body or query if flexible.
-      // Or typically PANEL member marks their own. Let's take from body.
+      
       const { isPresent } = attendanceSchema.parse(req.body);
       const { facultyProfileId } = req.body; 
       const assignment = await scheduleService.markAttendance(req.params.id, facultyProfileId, isPresent);

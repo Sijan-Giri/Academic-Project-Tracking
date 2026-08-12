@@ -16,18 +16,17 @@ export default function RoleGuard({ allowedRoles }: RoleGuardProps) {
     let isMounted = true;
 
     async function initSession() {
-      // If we already have in-memory auth state, finish loading
+      
       if (isAuthenticated && user && accessToken) {
         if (isMounted) setLoading(false);
         return;
       }
 
       try {
-        // Step 1: Call refresh token API
+        
         const refreshData = await refreshToken();
         const newAccessToken = refreshData?.accessToken;
 
-        // Step 2: Check if there is accessToken
         if (!newAccessToken) {
           if (isMounted) {
             clearAuth();
@@ -35,10 +34,8 @@ export default function RoleGuard({ allowedRoles }: RoleGuardProps) {
           return;
         }
 
-        // Step 3: Save token in memory
         setAccessToken(newAccessToken);
 
-        // Step 4: Call getMe API
         const meData: any = await getMe();
         const userObj = meData?.user || meData?.data || meData;
 
@@ -50,7 +47,7 @@ export default function RoleGuard({ allowedRoles }: RoleGuardProps) {
           }
         }
       } catch (error) {
-        // If refresh fails or 401, clear auth state and trigger session expired redirect
+        
         if (isMounted) {
           handleSessionExpired();
         }

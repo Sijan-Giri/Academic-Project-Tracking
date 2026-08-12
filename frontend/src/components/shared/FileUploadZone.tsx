@@ -4,7 +4,6 @@ import { UploadCloud, X, File as FileIcon } from 'lucide-react';
 import { cn } from '@/lib';
 import { Button } from '@/components/ui';
 
-
 interface FileUploadZoneProps {
   accept?: Accept;
   maxSize?: number;

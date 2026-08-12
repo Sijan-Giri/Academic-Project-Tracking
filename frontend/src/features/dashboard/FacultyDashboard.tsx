@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { BookOpen, Calendar, CheckSquare, Clock, ArrowRight } from 'lucide-react';
@@ -17,7 +16,6 @@ export default function FacultyDashboard() {
     return <DashboardSkeleton />;
   }
 
-  // Stats
   const stats = {
     guided: guidedProjects.length,
     schedules: schedules.length,
@@ -44,7 +42,7 @@ export default function FacultyDashboard() {
         }
       />
 
-      {/* Row 1 — Stats */}
+      {}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard title="Guided Projects" value={stats.guided} icon={<BookOpen className="text-brand h-4 w-4" />} />
         <StatsCard title="Upcoming Schedules" value={stats.schedules} icon={<Calendar className="text-brand h-4 w-4" />} />
@@ -52,7 +50,7 @@ export default function FacultyDashboard() {
         <StatsCard title="Pending Reviews" value={stats.pendingReviews} icon={<Clock className="text-warning h-4 w-4" />} />
       </div>
 
-      {/* Row 2 — Charts + Schedules */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardHeader className="border-b border-border pb-3">
@@ -102,7 +100,7 @@ export default function FacultyDashboard() {
         </Card>
       </div>
 
-      {/* Row 3 — Recent Guided Projects */}
+      {}
       <Card>
         <CardHeader className="border-b border-border pb-3 flex flex-row items-center justify-between">
           <CardTitle className="text-base font-semibold">Guided Projects Roster</CardTitle>

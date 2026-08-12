@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// hooks/useNotifications.ts
-// Custom hook to fetch and manage the current user's notifications.
-// Encapsulates query key, query function, count, and read-state mutations.
-// Used in: NotificationDropdown, NotificationsPage
-// ─────────────────────────────────────────────────────────────────────────────
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; 
 import type { Notification } from '@/types';
@@ -22,10 +16,6 @@ export interface UseNotificationsReturn {
   markAllRead: () => void;
 }
 
-/**
- * Hook to fetch notifications and expose read-state mutation helpers.
- * Accepts options.enabled (default true) to conditionally trigger API calls only when needed.
- */
 export function useNotifications(options?: { enabled?: boolean }): UseNotificationsReturn {
   const queryClient = useQueryClient();
   const enabled = options?.enabled ?? true;

@@ -1,8 +1,5 @@
-import React from 'react';
 import { Skeleton } from '@/components/ui';
 
-
-/** Skeleton matching the PageHeader component layout. */
 export function PageHeaderSkeleton() {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">

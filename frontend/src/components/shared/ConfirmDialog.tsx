@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Dialog, DialogContent } from '@/components/ui';
 
-
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import { cn } from '@/lib';
 

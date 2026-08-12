@@ -1,15 +1,13 @@
-import React from 'react';
 import { Card, Skeleton, SkeletonBadge, SkeletonBlock, SkeletonCircle } from '@/components/ui';
 
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
-/** MyTeam page skeleton matching MyTeamPage layout exactly. */
 export function MyTeamSkeleton() {
   return (
     <div className="space-y-6 transition-opacity duration-200 animate-in fade-in-50">
       <PageHeaderSkeleton />
 
-      {/* Top Banner Card */}
+      {}
       <Card className="p-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-2">
@@ -23,7 +21,7 @@ export function MyTeamSkeleton() {
         </div>
       </Card>
 
-      {/* 2-Column Grid */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 p-6 space-y-4">
           <div className="flex justify-between items-center pb-3 border-b border-border">

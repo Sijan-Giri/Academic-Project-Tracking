@@ -3,7 +3,7 @@ import { ValidationError, NotFoundError, ForbiddenError } from '../../shared/err
 import * as auditService from '../audit/audit.service';
 import * as notificationService from '../notifications/notification.service';
 import { TeamStatus, AuditAction, Role } from '@prisma/client';
-import { emitToUser, emitToRole, emitToTeam, broadcastEvent } from '../../config/socket';
+import { emitToUser, broadcastEvent } from '../../config/socket';
 
 export const createTeam = async (data: { name: string; semesterId?: string }, userId: string) => {
   const profile = await prisma.studentProfile.findUnique({ where: { userId } });
@@ -155,7 +155,6 @@ export const inviteMember = async (teamId: string, studentIdRollNumber: string, 
 
   if (!invitedStudent) throw new NotFoundError('Student with this roll number not found');
 
-  // Check if the student is already a member of any team in this semester
   const alreadyInTeam = await prisma.teamMember.findFirst({
     where: {
       studentProfileId: invitedStudent.id,
@@ -164,7 +163,6 @@ export const inviteMember = async (teamId: string, studentIdRollNumber: string, 
   });
   if (alreadyInTeam) throw new ValidationError('This student is already in a team for this semester');
 
-  // Check for an existing pending invitation
   const existingInvite = await prisma.teamInvitation.findUnique({
     where: { teamId_studentProfileId: { teamId, studentProfileId: invitedStudent.id } },
   });
@@ -172,12 +170,10 @@ export const inviteMember = async (teamId: string, studentIdRollNumber: string, 
     throw new ValidationError('This student already has a pending invitation to this team');
   }
 
-  // Check max team size (counting only confirmed members, not pending invitations)
   const maxTeamSetting = await prisma.settings.findFirst({ where: { key: 'maxTeamSize' } });
   const maxTeamSize = maxTeamSetting ? parseInt(maxTeamSetting.value, 10) || 4 : 4;
   if (team.members.length >= maxTeamSize) throw new ValidationError(`Team is full (max ${maxTeamSize} members)`);
 
-  // Create the invitation (upsert in case a previous declined invite exists)
   const invitation = await prisma.teamInvitation.upsert({
     where: { teamId_studentProfileId: { teamId, studentProfileId: invitedStudent.id } },
     update: { status: 'PENDING', invitedById: profile.id, respondedAt: null, createdAt: new Date() },
@@ -193,12 +189,10 @@ export const inviteMember = async (teamId: string, studentIdRollNumber: string, 
     },
   });
 
-  // Real-time socket emission
   try {
     emitToUser(invitedStudent.userId, 'invitation:new', invitation);
   } catch (_) {}
 
-  // Notify the invited student
   await notificationService.sendNotification(
     invitedStudent.userId,
     'Team Invitation',
@@ -223,7 +217,6 @@ export const acceptInvitation = async (invitationId: string, userId: string) => 
   if (invitation.status !== 'PENDING') throw new ValidationError('This invitation has already been responded to');
   if (invitation.team.status === TeamStatus.REJECTED) throw new ValidationError('This team was rejected and cannot accept members');
 
-  // Re-check they are not already in a team for this semester
   const alreadyInTeam = await prisma.teamMember.findFirst({
     where: {
       studentProfileId: profile.id,
@@ -232,12 +225,10 @@ export const acceptInvitation = async (invitationId: string, userId: string) => 
   });
   if (alreadyInTeam) throw new ValidationError('You are already in a team for this semester');
 
-  // Re-check team size
   const maxTeamSetting = await prisma.settings.findFirst({ where: { key: 'maxTeamSize' } });
   const maxTeamSize = maxTeamSetting ? parseInt(maxTeamSetting.value, 10) || 4 : 4;
   if (invitation.team.members.length >= maxTeamSize) throw new ValidationError(`Team is full (max ${maxTeamSize} members)`);
 
-  // Add as member, mark invitation accepted, and set team status back to PENDING for coordinator re-approval
   const [updatedInvitation, newMember, updatedTeam] = await prisma.$transaction([
     prisma.teamInvitation.update({
       where: { id: invitationId },
@@ -253,7 +244,6 @@ export const acceptInvitation = async (invitationId: string, userId: string) => 
     }),
   ]);
 
-  // Notify all team members
   await Promise.all(updatedTeam.members.map(async (member) => {
     try {
       emitToUser(member.studentProfile.userId, 'team:updated', updatedTeam);
@@ -268,7 +258,6 @@ export const acceptInvitation = async (invitationId: string, userId: string) => 
     }
   }));
 
-  // Notify coordinators that team composition changed and is pending approval
   const coordinators = await prisma.user.findMany({
     where: { role: { in: ['COORDINATOR', 'ADMIN'] }, isActive: true },
   });
@@ -309,7 +298,6 @@ export const declineInvitation = async (invitationId: string, userId: string) =>
     data: { status: 'DECLINED', respondedAt: new Date() },
   });
 
-  // Notify the leader
   const leaderMember = await prisma.teamMember.findFirst({
     where: { teamId: invitation.teamId, isLeader: true },
     include: { studentProfile: { include: { user: true } } },
@@ -347,7 +335,7 @@ export const getMyInvitations = async (userId: string) => {
 };
 
 export const getTeamInvitations = async (teamId: string, userId: string) => {
-  // Leader can see all invitations for their team
+  
   const profile = await prisma.studentProfile.findUnique({ where: { userId } });
   if (!profile) throw new ValidationError('User does not have a student profile');
 
@@ -538,10 +526,9 @@ export const deleteTeam = async (id: string, userId: string) => {
   if (!team) throw new NotFoundError('Team not found');
 
   await prisma.$transaction(async (tx) => {
-    // Delete pending team invitations
+    
     await tx.teamInvitation.deleteMany({ where: { teamId: id } });
 
-    // If there is an associated project, clean up related entities
     if (team.project) {
       const projectId = team.project.id;
       const milestones = await tx.milestone.findMany({ where: { projectId } });
@@ -598,4 +585,4 @@ export const deleteTeam = async (id: string, userId: string) => {
 
   return { message: 'Team deleted successfully' };
 };
-
+

@@ -1,4 +1,3 @@
-import React from 'react';
 import { BarChart, Bar, PieChart, Pie, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend } from 'recharts';
 import { Users, GraduationCap, Briefcase, Building, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -52,7 +51,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Row 1: Metrics */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard label="Total Students" value={studentCount} icon={GraduationCap} />
         <StatsCard label="Faculty Members" value={facultyCount} icon={Briefcase} />
@@ -60,7 +59,7 @@ export default function AdminDashboard() {
         <StatsCard label="Departments" value={deptCount} icon={Building} />
       </div>
 
-      {/* Row 2: Charts */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader><CardTitle className="text-base font-semibold">Projects by Department</CardTitle></CardHeader>
@@ -97,7 +96,7 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      {/* Row 3: Audit Logs Table */}
+      {}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base font-semibold">Recent Audit Logs</CardTitle>

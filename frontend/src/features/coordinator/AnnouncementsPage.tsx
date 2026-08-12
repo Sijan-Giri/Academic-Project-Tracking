@@ -52,7 +52,6 @@ export default function CoordinatorAnnouncementsPage() {
     } catch (_) {}
   };
 
-  // Early return for skeleton rendering AFTER all hooks are called
   if (isLoading) {
     return <CardsGridSkeleton cards={6} />;
   }
@@ -83,7 +82,7 @@ export default function CoordinatorAnnouncementsPage() {
         }
       />
 
-      {/* Announcements Grid */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {announcementList.length > 0 ? (
           announcementList.map((item: any) => {
@@ -133,7 +132,7 @@ export default function CoordinatorAnnouncementsPage() {
         )}
       </div>
 
-      {/* Create Announcement Modal */}
+      {}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="bg-card border-border text-foreground sm:max-w-[550px]">
           <DialogHeader>
@@ -158,7 +157,7 @@ export default function CoordinatorAnnouncementsPage() {
               {errors.content && <p className="text-xs text-danger font-medium">{errors.content.message}</p>}
             </div>
 
-            {/* Target Filters */}
+            {}
             <div className="space-y-3 pt-2 border-t border-border">
               <Label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Target Department (Optional)</Label>
               <div className="flex flex-wrap gap-2">
@@ -193,7 +192,7 @@ export default function CoordinatorAnnouncementsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation */}
+      {}
       <ConfirmDialog
         open={!!deleteItem}
         onOpenChange={(open) => !open && setDeleteItem(null)}

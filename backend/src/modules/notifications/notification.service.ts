@@ -14,14 +14,12 @@ export const sendNotification = async (
     data: { userId, title, message, type, relatedProjectId },
   });
 
-  // Real-time socket emission
   try {
     const unreadCount = await prisma.notification.count({ where: { userId, isRead: false } });
     emitToUser(userId, 'notification:new', notification);
     emitToUser(userId, 'notification:unread_count', { count: unreadCount });
   } catch (_) {}
 
-  // Also send email if user has email (non-blocking)
   try {
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true } });
     if (user) {

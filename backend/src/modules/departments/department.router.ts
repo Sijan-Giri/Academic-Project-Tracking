@@ -7,12 +7,10 @@ import { createDepartmentSchema, updateDepartmentSchema } from './department.sch
 
 const router = Router();
 
-// Public routes for selection (Registration, etc.)
 router.get('/', deptController.getDepartments);
 router.get('/:id', deptController.getDepartmentById);
 router.get('/:id/batches', deptController.getDepartmentBatches);
 
-// Protected routes
 router.post('/', authenticate, requireRoles('ADMIN'), validate(createDepartmentSchema), deptController.createDepartment);
 router.put('/:id', authenticate, requireRoles('ADMIN'), validate(updateDepartmentSchema), deptController.updateDepartment);
 router.delete('/:id', authenticate, requireRoles('ADMIN'), deptController.deleteDepartment);

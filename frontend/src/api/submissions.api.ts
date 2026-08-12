@@ -10,15 +10,9 @@ export const getSubmissions = async (params?: any) =>
 export const getSubmission = async (id: string) =>
   (await api.get<ApiResponse<Submission>>(`/submissions/${id}`)).data;
 
-/**
- * Download a file by its ID.
- * Uses /api/files/:id/download (filesRouter is mounted at /api/files in app.ts).
- * Falls back to using originalName passed from the UI if the header is missing.
- */
 export const downloadFile = async (fileId: string, fallbackName?: string) => {
   const response = await api.get(`/files/${fileId}/download`, { responseType: 'blob' });
 
-  // Try to extract filename from Content-Disposition header
   const disposition = response.headers['content-disposition'];
   let filename = fallbackName || 'download';
   if (disposition) {
@@ -38,9 +32,5 @@ export const downloadFile = async (fileId: string, fallbackName?: string) => {
   window.URL.revokeObjectURL(url);
 };
 
-/**
- * Delete a file by its ID.
- * Uses /api/files/:id (filesRouter is mounted at /api/files in app.ts).
- */
 export const deleteFile = async (fileId: string) =>
   (await api.delete<ApiResponse<void>>(`/files/${fileId}`)).data;

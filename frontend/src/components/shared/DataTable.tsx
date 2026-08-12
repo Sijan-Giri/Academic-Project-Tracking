@@ -80,7 +80,7 @@ export default function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      {/* Search Input Bar */}
+      {}
       <div className="flex items-center justify-between gap-4">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -92,13 +92,13 @@ export default function DataTable<TData, TValue>({
           />
         </div>
 
-        {/* Rows Count Info */}
+        {}
         <div className="text-xs text-muted-foreground font-medium">
           Showing {table.getRowModel().rows.length} of {tableData.length} entries
         </div>
       </div>
 
-      {/* Table Container */}
+      {}
       <div className="rounded-xl border border-border bg-card shadow-xs overflow-hidden">
         <Table>
           <TableHeader className="bg-secondary/40">
@@ -153,7 +153,7 @@ export default function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      {/* TanStack Table Pagination Controls */}
+      {}
       <div className="flex items-center justify-between text-xs text-muted-foreground font-medium pt-2">
         <div className="flex items-center space-x-2">
           <span>Rows per page:</span>

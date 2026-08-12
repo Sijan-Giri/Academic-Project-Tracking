@@ -1,7 +1,6 @@
 import prisma from '../../config/database';
 import { NotFoundError } from '../../shared/errors';
 import { createAuditLog } from '../audit/audit.service';
-import { ReviewStageType } from '@prisma/client';
 import { sendNotification } from '../notifications/notification.service';
 
 const notifyStageDeadline = async (stage: any, isUpdate = false) => {
@@ -159,10 +158,8 @@ export const reviewService = {
 
     const stage = await prisma.reviewStage.create({ data: cleanData });
 
-    // Sync project milestones for all projects in this semester
     await syncMilestonesForStage(stage);
 
-    // Broadcast deadline notifications to students and faculty in department/semester
     notifyStageDeadline(stage, false).catch(err => console.error('Deadline notification error:', err));
 
     return stage;

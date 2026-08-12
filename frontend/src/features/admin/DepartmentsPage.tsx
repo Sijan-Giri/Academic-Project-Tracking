@@ -16,7 +16,7 @@ const departmentSchema = z.object({
 
 type DepartmentFormValues = z.infer<typeof departmentSchema>;
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export default function DepartmentsPage() {
   const [createOpen, setCreateOpen] = useState(false);

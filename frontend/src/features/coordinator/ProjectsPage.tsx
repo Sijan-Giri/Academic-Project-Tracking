@@ -91,7 +91,7 @@ export default function ProjectsPage() {
         subtitle="Manage and track all student projects across your academic department."
       />
 
-      {/* Filter / Search Bar */}
+      {}
       <div className="flex flex-col md:flex-row gap-4 items-center bg-card p-4 rounded-xl border border-border shadow-xs">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
