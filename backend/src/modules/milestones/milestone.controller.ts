@@ -3,7 +3,11 @@ import { AuthRequest } from '../../shared/types';
 import * as milestoneService from './milestone.service';
 
 export const getMilestonesHandler = async (req: AuthRequest, res: Response) => {
-  const milestones = await milestoneService.getMilestones(req.query.projectId as string);
+  const milestones = await milestoneService.getMilestones(
+    req.query.projectId as string,
+    req.user?.userId,
+    req.user?.role
+  );
   res.json({ success: true, data: { items: milestones, total: milestones.length } });
 };
 

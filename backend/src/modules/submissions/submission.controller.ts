@@ -9,20 +9,24 @@ export const createSubmissionHandler = async (req: AuthRequest, res: Response) =
 };
 
 export const getSubmissionsHandler = async (req: AuthRequest, res: Response) => {
-  const submissions = await submissionService.getSubmissions({
-    milestoneId: req.query.milestoneId as string,
-    projectId: req.query.projectId as string,
-  });
+  const submissions = await submissionService.getSubmissions(
+    {
+      milestoneId: req.query.milestoneId as string,
+      projectId: req.query.projectId as string,
+    },
+    req.user!.userId,
+    req.user!.role
+  );
   res.json(submissions);
 };
 
 export const getSubmissionHandler = async (req: AuthRequest, res: Response) => {
-  const submission = await submissionService.getSubmissionById(req.params.id);
+  const submission = await submissionService.getSubmissionById(req.params.id, req.user!.userId, req.user!.role);
   res.json(submission);
 };
 
 export const downloadFileHandler = async (req: AuthRequest, res: Response) => {
-  const file = await submissionService.getFileStream(req.params.id);
+  const file = await submissionService.getFileStream(req.params.id, req.user!.userId, req.user!.role);
   const absPath = require('path').resolve(file.storagePath);
   res.download(absPath, file.originalName);
 };

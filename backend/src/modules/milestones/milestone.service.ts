@@ -4,8 +4,24 @@ import * as auditService from '../audit/audit.service';
 import * as notificationService from '../notifications/notification.service';
 import { AuditAction, MilestoneStatus } from '@prisma/client';
 
-export const getMilestones = async (projectId?: string) => {
-  const where = projectId ? { projectId } : {};
+export const getMilestones = async (projectId?: string, userId?: string, role?: string) => {
+  let where: any = {};
+  if (projectId) {
+    where.projectId = projectId;
+  } else if (role === 'STUDENT' && userId) {
+    const studentProfile = await prisma.studentProfile.findUnique({ where: { userId } });
+    if (!studentProfile) return [];
+    where = {
+      project: {
+        team: {
+          members: {
+            some: { studentProfileId: studentProfile.id }
+          }
+        }
+      }
+    };
+  }
+
   const milestones = await prisma.milestone.findMany({
     where,
     include: { submissions: { include: { files: true } } },
