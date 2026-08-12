@@ -1,5 +1,6 @@
 import React from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/ui';
+
 
 /** Skeleton matching the PageHeader component layout. */
 export function PageHeaderSkeleton() {

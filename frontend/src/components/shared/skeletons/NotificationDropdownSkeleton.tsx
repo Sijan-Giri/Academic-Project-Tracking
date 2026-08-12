@@ -1,4 +1,5 @@
-import { Skeleton, SkeletonCircle, SkeletonBadge } from '@/components/ui/skeleton';
+import { Skeleton, SkeletonBadge, SkeletonCircle } from '@/components/ui';
+
 
 export function NotificationDropdownSkeleton({ count = 4 }: { count?: number }) {
   return (

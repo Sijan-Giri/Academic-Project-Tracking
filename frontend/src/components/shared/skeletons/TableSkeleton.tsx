@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton, SkeletonBlock, SkeletonBadge, SkeletonRow } from '@/components/ui/skeleton';
+import { Card, CardContent, Skeleton, SkeletonBadge, SkeletonBlock, SkeletonRow } from '@/components/ui';
+
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
 /** DataTable skeleton matching ProjectsPage, UsersPage, TeamApprovalsPage, etc. */

@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'; import { GraduationCap, LogOut } from 'lucide-react'; import { useAuthStore } from '@/store'; 
 import { cn } from '@/lib';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui';
+
 import { NAV_ITEMS } from '@/constants';
 import type { Role } from '@/types';
 import { useSidebar } from '@/layouts/DashboardLayout';

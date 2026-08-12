@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Skeleton, SkeletonText, SkeletonBadge, SkeletonBlock } from '@/components/ui/skeleton';
+import { Card, Skeleton, SkeletonBadge, SkeletonBlock, SkeletonText } from '@/components/ui';
+
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
 /** Cards grid skeleton matching GuidedProjectsPage, AnnouncementsPage, MyTeamPage. */

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Skeleton, SkeletonCircle, SkeletonBadge, SkeletonBlock } from '@/components/ui/skeleton';
+import { Card, Skeleton, SkeletonBadge, SkeletonBlock, SkeletonCircle } from '@/components/ui';
+
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
 /** Milestones page skeleton matching MilestonesPage layout exactly. */

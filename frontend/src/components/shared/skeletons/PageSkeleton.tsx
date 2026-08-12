@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Skeleton, SkeletonCircle, SkeletonRow } from '@/components/ui/skeleton';
+import { Card, CardContent, CardHeader, Skeleton, SkeletonCircle, SkeletonRow } from '@/components/ui';
+
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
 /** Generic page skeleton fallback displayed during page transitions and lazy loading. */

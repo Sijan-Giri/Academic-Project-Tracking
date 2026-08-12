@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton, SkeletonBadge, SkeletonRow } from '@/components/ui/skeleton';
+import { Card, CardContent, Skeleton, SkeletonBadge, SkeletonRow } from '@/components/ui';
+
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
 /** Submissions page skeleton matching SubmissionsPage layout exactly. */

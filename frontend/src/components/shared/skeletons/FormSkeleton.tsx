@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Skeleton, SkeletonBlock } from '@/components/ui/skeleton';
+import { Card, Skeleton, SkeletonBlock } from '@/components/ui';
+
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
 /** Form skeleton matching CreateProjectPage, ProfilePage, EvaluationFormPage. */

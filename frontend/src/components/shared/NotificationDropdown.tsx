@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, CheckCheck, ChevronRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button, Popover, PopoverContent, PopoverTrigger, ScrollArea } from '@/components/ui';
+
+
+
 import { NotificationDropdownSkeleton } from '@/components/shared/Skeletons';
 import { cn } from '@/lib';
 import type { Notification } from '@/types';

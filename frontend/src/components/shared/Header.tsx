@@ -1,15 +1,9 @@
 import { Menu, Sun, Moon, User as UserIcon, Settings as SettingsIcon, LogOut as LogOutIcon } from 'lucide-react'; import { useLocation, useNavigate } from 'react-router-dom'; import NotificationDropdown from '@/components/shared/NotificationDropdown'; import { useAuthStore } from '@/store'; import { useTheme, useMyProjects, useMyTeam } from '@/hooks'; 
 import { useSidebar } from '@/layouts/DashboardLayout';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui';
+
+
+
 import { cn } from '@/lib';
 import { ROUTES } from '@/constants';
 import { getPageTitle } from '@/utils';

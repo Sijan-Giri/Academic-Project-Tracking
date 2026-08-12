@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Skeleton, SkeletonText, SkeletonCircle, SkeletonBadge, SkeletonBlock } from '@/components/ui/skeleton';
+import { Card, Skeleton, SkeletonBadge, SkeletonBlock, SkeletonCircle, SkeletonText } from '@/components/ui';
+
 
 /** Project Detail skeleton matching ProjectDetailPage and MyProjectPage. */
 export function ProjectDetailSkeleton() {

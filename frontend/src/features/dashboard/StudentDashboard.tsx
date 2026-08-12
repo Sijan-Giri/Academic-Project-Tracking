@@ -1,4 +1,3 @@
-import React from 'react';
 import { CheckCircle2, Circle, Clock, Calendar, Users, FileText, ArrowRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';

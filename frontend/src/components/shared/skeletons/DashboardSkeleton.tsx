@@ -1,7 +1,6 @@
 import React from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { SkeletonCircle, SkeletonRow } from '@/components/ui/skeleton';
+import { Card, CardContent, CardHeader, Skeleton, SkeletonCircle, SkeletonRow } from '@/components/ui';
+
 import { PageHeaderSkeleton } from './PageHeaderSkeleton';
 
 /** Dashboard skeleton matching StudentDashboard, CoordinatorDashboard, AdminDashboard, and FacultyDashboard. */
