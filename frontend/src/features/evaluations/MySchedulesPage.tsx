@@ -192,7 +192,7 @@ export default function MySchedulesPage() {
 
                     {}
                     <div className="pt-3 border-t border-border space-y-3">
-                      {(user?.role === 'PANEL' || user?.role === 'FACULTY' || user?.role === 'COORDINATOR' || user?.role === 'ADMIN') && !s.isCompleted && (
+                      {(user?.role === 'PANEL' || user?.role === 'COORDINATOR' || user?.role === 'ADMIN') && !s.isCompleted && (
                         <Button
                           className="btn-primary w-full text-xs font-semibold py-2.5"
                           onClick={() => navigate(`/evaluations/${s.id}`)}

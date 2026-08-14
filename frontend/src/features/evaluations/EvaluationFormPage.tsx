@@ -65,6 +65,16 @@ export default function EvaluationFormPage() {
     } catch (_) {}
   };
 
+  if (user?.role === 'FACULTY') {
+    return (
+      <div className="bg-card border border-border p-8 rounded-xl text-center space-y-4 max-w-lg mx-auto mt-12 shadow-sm">
+        <h2 className="text-lg font-bold text-foreground">Access Restricted</h2>
+        <p className="text-sm text-muted-foreground font-normal">Faculty members are not authorized to evaluate presentations. Only assigned Panel members and Coordinators evaluate presentation schedules.</p>
+        <Button onClick={() => navigate('/my-schedules')} className="btn-primary">Back to Schedules</Button>
+      </div>
+    );
+  }
+
   if (!schedule) return <FormSkeleton />;
 
   const dateVal = schedule.scheduledAt || (schedule as any).date;

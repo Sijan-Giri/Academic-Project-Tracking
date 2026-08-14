@@ -100,6 +100,9 @@ export const router = createBrowserRouter([
         
         { element: <RoleGuard allowedRoles={['PANEL', 'FACULTY', 'ADMIN', 'STUDENT', 'COORDINATOR']} />, children: [
           { path: '/my-schedules', element: wrap(<MySchedulesPage />, <SchedulesSkeleton />) },
+        ]},
+
+        { element: <RoleGuard allowedRoles={['PANEL', 'COORDINATOR', 'ADMIN']} />, children: [
           { path: '/evaluations/:scheduleId', element: wrap(<EvaluationFormPage />, <FormSkeleton />) },
         ]},
         

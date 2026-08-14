@@ -1,7 +1,9 @@
-import { useState } from 'react'; import { useNavigate } from 'react-router-dom'; import { useQuery } from '@tanstack/react-query'; import { FileText, CheckCircle2, Clock, ExternalLink, ShieldAlert, GraduationCap, ChevronRight, UserCheck, FolderGit2, Crown, FileCode2, Github, AlertTriangle, FolderPlus, Award, MessageSquare, Star } from 'lucide-react'; import { Button, StatusBadge, PageHeader, ProjectDetailSkeleton } from '@/components'; import { cn } from '@/lib';
- import { useMyProjects } from '@/hooks'; 
-import { unwrapList } from '@/utils';
-import { getEvaluations } from '@/api';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FileText, CheckCircle2, Clock, ExternalLink, ShieldAlert, GraduationCap, ChevronRight, UserCheck, FolderGit2, Crown, FileCode2, Github, AlertTriangle, FolderPlus } from 'lucide-react';
+import { Button, StatusBadge, PageHeader, ProjectDetailSkeleton } from '@/components';
+import { cn } from '@/lib';
+import { useMyProjects } from '@/hooks';
 
 const STAGES = [
   { id: 'DRAFT', name: 'Draft Proposal' },
@@ -19,14 +21,6 @@ export default function MyProjectPage() {
   const { projects, isLoading } = useMyProjects();
 
   const project = projects[0] || null;
-
-  const { data: rawEvaluations } = useQuery({
-    queryKey: ['project-evaluations', project?.id],
-    queryFn: () => getEvaluations({ projectId: project?.id }),
-    enabled: Boolean(project?.id),
-  });
-
-  const evaluations = unwrapList<any>(rawEvaluations);
 
   if (isLoading) {
     return <ProjectDetailSkeleton />;
@@ -133,7 +127,7 @@ export default function MyProjectPage() {
               </span>
             </h4>
             <p className="text-xs mt-1 opacity-90 font-normal">
-              Your project is currently under evaluation by the panel and coordinator. Official marks and status will be posted upon review completion.
+              Your project is currently under review by the panel and coordinator. Official status will be updated upon review completion.
             </p>
           </div>
         </div>
@@ -331,96 +325,7 @@ export default function MyProjectPage() {
         </div>
       </div>
 
-      {}
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-5">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center">
-              <Award className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
-                Evaluation Results & Panel Feedback
-                <span className="px-2.5 py-0.5 rounded-full bg-success-subtle text-success-md border border-success text-xs font-bold">
-                  {evaluations.length} {evaluations.length === 1 ? 'Record' : 'Records'}
-                </span>
-              </h3>
-              <p className="text-xs text-muted-foreground font-normal">Official marks, rubrics, and feedback submitted by review panel evaluators.</p>
-            </div>
-          </div>
-        </div>
 
-        {evaluations.length === 0 ? (
-          <div className="p-8 text-center bg-secondary/30 rounded-xl border border-dashed border-border space-y-2">
-            <Star className="w-8 h-8 text-muted-foreground mx-auto opacity-50" />
-            <p className="text-xs font-semibold text-foreground">No Evaluation Marks Logged Yet</p>
-            <p className="text-[11px] text-muted-foreground max-w-sm mx-auto font-normal">
-              Your presentation scores and evaluator feedback will appear here as soon as panel members finalize your review.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {evaluations.map((ev: any) => {
-              const evalUser = ev.evaluator?.user?.name || ev.evaluator?.name || 'Panel Evaluator';
-              const stageName = ev.reviewStage?.name || 'Review Presentation';
-              const scoresList: any[] = ev.scores || [];
-
-              return (
-                <div key={ev.id} className="rounded-xl border border-border bg-secondary/20 p-5 space-y-4 hover:border-brand transition-all">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <span className="px-3 py-1 rounded-full bg-brand-subtle text-brand border border-brand text-xs font-bold uppercase tracking-wider">
-                        {stageName}
-                      </span>
-                      <span className="text-xs text-muted-foreground font-normal">
-                        Evaluated by: <strong className="text-foreground">{evalUser}</strong>
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <span className="text-xs uppercase tracking-wider text-muted-foreground font-bold block">Score</span>
-                        <span className="text-lg font-black text-foreground tracking-tight">{ev.totalMarks || 0} pts</span>
-                      </div>
-                      <div className="px-3 py-1 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-black text-base shadow-sm">
-                        {ev.grade || 'F'}
-                      </div>
-                    </div>
-                  </div>
-
-                  {ev.feedback && (
-                    <div className="rounded-lg bg-card/60 p-3.5 border border-border text-xs text-foreground space-y-1">
-                      <span className="text-muted-foreground font-semibold flex items-center gap-1.5 uppercase text-[10px] tracking-wider">
-                        <MessageSquare className="w-3.5 h-3.5 text-indigo-400" /> Panel Feedback:
-                      </span>
-                      <p className="italic font-normal pl-5 text-slate-300">"{ev.feedback}"</p>
-                    </div>
-                  )}
-
-                  {scoresList.length > 0 && (
-                    <div className="space-y-2 pt-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">Rubric Score Breakdown</span>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                        {scoresList.map((s: any) => (
-                           <div key={s.id} className="p-2.5 rounded-lg bg-card/80 border border-border text-xs flex justify-between items-start gap-2">
-                             <div>
-                               <p className="font-semibold text-foreground">{s.criteria?.name || 'Criterion'}</p>
-                               {s.remarks && <p className="text-[10px] text-muted-foreground italic mt-0.5">{s.remarks}</p>}
-                             </div>
-                             <span className="font-bold text-indigo-400 shrink-0 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">
-                               {s.marks} marks
-                             </span>
-                           </div>
-                         ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
 
       {}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
