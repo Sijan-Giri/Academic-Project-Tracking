@@ -66,6 +66,10 @@ export default function SocketProvider({ children }: { children: React.ReactNode
       queryClient.invalidateQueries({ queryKey: ['coordinator-announcements'] });
     };
 
+    const handleChatUpdated = () => {
+      queryClient.invalidateQueries({ queryKey: ['chat-conversations'] });
+    };
+
     socket.on('notification:new', handleNewNotification);
     socket.on('notification:unread_count', handleUnreadCount);
     socket.on('announcement:new', handleNewAnnouncement);
@@ -73,6 +77,7 @@ export default function SocketProvider({ children }: { children: React.ReactNode
     socket.on('team:updated', handleTeamUpdated);
     socket.on('invitation:new', handleNewInvitation);
     socket.on('project:updated', handleProjectUpdated);
+    socket.on('chat:conversation_updated', handleChatUpdated);
 
     return () => {
       socket.off('notification:new', handleNewNotification);
@@ -82,6 +87,7 @@ export default function SocketProvider({ children }: { children: React.ReactNode
       socket.off('team:updated', handleTeamUpdated);
       socket.off('invitation:new', handleNewInvitation);
       socket.off('project:updated', handleProjectUpdated);
+      socket.off('chat:conversation_updated', handleChatUpdated);
     };
   }, [isAuthenticated, accessToken, queryClient]);
 

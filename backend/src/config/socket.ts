@@ -59,13 +59,11 @@ export const initSocket = (httpServer: HttpServer): Server => {
 
   io.on('connection', (socket: AuthenticatedSocket) => {
     if (socket.userId) {
-      const userRoom = `user:${socket.userId}`;
-      socket.join(userRoom);
+      socket.join(`user:${socket.userId}`);
     }
 
     if (socket.role) {
-      const roleRoom = `role:${socket.role}`;
-      socket.join(roleRoom);
+      socket.join(`role:${socket.role}`);
     }
 
     socket.on('join:team', (teamId: string) => {
@@ -77,6 +75,46 @@ export const initSocket = (httpServer: HttpServer): Server => {
     socket.on('leave:team', (teamId: string) => {
       if (teamId) {
         socket.leave(`team:${teamId}`);
+      }
+    });
+
+    socket.on('join:conversation', async (conversationId: string) => {
+      if (!socket.userId) {
+        socket.emit('chat:error', { code: 'UNAUTHORIZED', message: 'Not authenticated' });
+        return;
+      }
+
+      if (socket.role === 'ADMIN') {
+        socket.emit('chat:error', { code: 'FORBIDDEN', message: 'Admin users cannot access conversations' });
+        console.warn(`[Socket] Admin user ${socket.userId} attempted join:conversation ${conversationId}`);
+        return;
+      }
+
+      if (!conversationId) {
+        socket.emit('chat:error', { code: 'BAD_REQUEST', message: 'conversationId is required' });
+        return;
+      }
+
+      try {
+        const { isParticipant } = await import('../modules/chat/chat.service');
+        const allowed = await isParticipant(conversationId, socket.userId);
+
+        if (!allowed) {
+          socket.emit('chat:error', { code: 'FORBIDDEN', message: 'Not a participant in this conversation' });
+          console.warn(`[Socket] Unauthorized join:conversation by user ${socket.userId} for conversation ${conversationId}`);
+          return;
+        }
+
+        socket.join(`conversation:${conversationId}`);
+      } catch (err: any) {
+        socket.emit('chat:error', { code: 'INTERNAL_ERROR', message: 'Failed to join conversation' });
+        console.error(`[Socket] join:conversation error for user ${socket.userId}:`, err?.message);
+      }
+    });
+
+    socket.on('leave:conversation', (conversationId: string) => {
+      if (conversationId) {
+        socket.leave(`conversation:${conversationId}`);
       }
     });
   });

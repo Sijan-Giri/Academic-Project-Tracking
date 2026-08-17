@@ -1,6 +1,8 @@
 export * from './useAuth';
 export * from './useTheme';
 export * from './useDebounce';
+export * from './useBoolean';
+export * from './useDocumentTitle';
 export * from './useLogin';
 export * from './useRegister';
 export * from './useProfile';
@@ -36,3 +38,4 @@ export * from './useSubmissions';
 export * from './useNotifications';
 export * from './useAnnouncements';
 export * from './useDashboard';
+export * from './useChat';

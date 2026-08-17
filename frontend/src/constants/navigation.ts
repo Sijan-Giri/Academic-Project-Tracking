@@ -12,6 +12,7 @@ import {
   Bell,
   UserCircle2,
   Megaphone,
+  MessageSquare,
 } from 'lucide-react';
 import type { Role } from '@/types';
 
@@ -49,6 +50,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'Submissions', icon: ClipboardList, path: '/my-project/submissions', roles: ['STUDENT'] },
 
   { label: 'Notifications', icon: Bell, path: '/notifications', roles: ['FACULTY', 'PANEL', 'STUDENT'] },
+  { label: 'Messages', icon: MessageSquare, path: '/chat', roles: ['COORDINATOR', 'FACULTY', 'PANEL', 'STUDENT'] },
   { label: 'Reports', icon: FileText, path: '/reports', roles: ['ADMIN', 'COORDINATOR'] },
   { label: 'Settings', icon: Settings, path: '/admin/settings', roles: ['ADMIN'] },
   { label: 'Audit Log', icon: ClipboardList, path: '/admin/audit', roles: ['ADMIN'] },

@@ -43,6 +43,7 @@ const NotificationsPage = lazy(() => import('@/features/notifications/Notificati
 const AnnouncementsPage = lazy(() => import('@/features/notifications/AnnouncementsPage'));
 const ReportsPage = lazy(() => import('@/features/reports/ReportsPage'));
 const ProfilePage = lazy(() => import('@/features/profile/ProfilePage'));
+const ChatPage = lazy(() => import('@/features/chat/ChatPage'));
 const NotFoundPage = lazy(() => import('@/features/NotFoundPage'));
 
 const wrap = (component: React.ReactNode, skeleton: React.ReactNode = <PageSkeleton />) => (
@@ -113,6 +114,11 @@ export const router = createBrowserRouter([
           { path: '/my-project/abstract', element: wrap(<AbstractPage />, <AbstractSkeleton />) },
           { path: '/my-project/milestones', element: wrap(<MilestonesPage />, <MilestonesSkeleton />) },
           { path: '/my-project/submissions', element: wrap(<StudentSubmissionsPage />, <SubmissionsSkeleton />) },
+        ]},
+
+        { element: <RoleGuard allowedRoles={['COORDINATOR', 'FACULTY', 'PANEL', 'STUDENT']} />, children: [
+          { path: '/chat', element: wrap(<ChatPage />, <TableSkeleton rows={5} cols={3} />) },
+          { path: '/chat/:conversationId', element: wrap(<ChatPage />, <TableSkeleton rows={5} cols={3} />) },
         ]},
       ],
     }],

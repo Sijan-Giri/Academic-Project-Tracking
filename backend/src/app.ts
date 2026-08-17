@@ -28,6 +28,7 @@ import notificationsRouter from './modules/notifications/notification.router';
 import announcementsRouter from './modules/announcements/announcement.router';
 import reportsRouter from './modules/reports/report.router';
 import settingsRouter from './modules/settings/settings.router';
+import chatRouter from './modules/chat/chat.router';
 
 const app = express();
 
@@ -87,6 +88,7 @@ app.use('/api/announcements', announcementsRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/audit', auditRouter);
+app.use('/api/chat', chatRouter);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 

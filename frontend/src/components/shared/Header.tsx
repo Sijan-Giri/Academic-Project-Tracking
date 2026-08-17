@@ -1,7 +1,10 @@
-import { Menu, Sun, Moon, User as UserIcon, Settings as SettingsIcon, LogOut as LogOutIcon } from 'lucide-react'; import { useLocation, useNavigate } from 'react-router-dom'; import NotificationDropdown from '@/components/shared/NotificationDropdown'; import { useAuthStore } from '@/store'; import { useTheme, useMyProjects, useMyTeam } from '@/hooks'; 
+import { Menu, Sun, Moon, User as UserIcon, Settings as SettingsIcon, LogOut as LogOutIcon, MessageSquare } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import NotificationDropdown from '@/components/shared/NotificationDropdown';
+import { useAuthStore } from '@/store';
+import { useTheme, useMyProjects, useMyTeam, useUnreadChatCount } from '@/hooks';
 import { useSidebar } from '@/layouts/DashboardLayout';
 import { Avatar, AvatarFallback, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui';
-
 import { cn } from '@/lib';
 import { ROUTES } from '@/constants';
 import { getPageTitle } from '@/utils';
@@ -17,8 +20,10 @@ export default function Header({ className }: HeaderProps) {
   const navigate = useNavigate();
 
   const isStudent = user?.role === 'STUDENT';
+  const isNonAdmin = user && user.role !== 'ADMIN';
   const { currentProject } = useMyProjects(isStudent);
   const { team: currentTeam } = useMyTeam(isStudent);
+  const { unreadCount: unreadChatCount } = useUnreadChatCount({ enabled: !!isNonAdmin });
 
   const pageTitle = getPageTitle(location.pathname, user, currentProject?.title, currentTeam?.name);
 
@@ -34,7 +39,6 @@ export default function Header({ className }: HeaderProps) {
       </div>
 
       <div className="flex items-center space-x-3 shrink-0">
-        {}
         <Button
           variant="ghost"
           size="icon"
@@ -49,9 +53,25 @@ export default function Header({ className }: HeaderProps) {
           )}
         </Button>
 
+        {isNonAdmin && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(ROUTES.CHAT)}
+            className="relative text-foreground hover:bg-secondary/60 transition-colors rounded-lg"
+            title="Messages"
+          >
+            <MessageSquare className="h-5 w-5" />
+            {unreadChatCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex min-w-[18px] h-[18px] px-1 items-center justify-center rounded-full bg-danger-solid text-[10px] font-extrabold text-white shadow-xs ring-2 ring-background animate-pulse">
+                {unreadChatCount > 99 ? '99+' : unreadChatCount}
+              </span>
+            )}
+          </Button>
+        )}
+
         <NotificationDropdown />
 
-        {}
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 border border-slate-200 dark:border-white/10">

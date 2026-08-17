@@ -9,6 +9,8 @@ export const ROUTES = {
   NOTIFICATIONS: '/notifications',
   ANNOUNCEMENTS: '/announcements',
   REPORTS: '/reports',
+  CHAT: '/chat',
+  CHAT_CONVERSATION: (id: string) => `/chat/${id}`,
 
   MY_PROJECT: '/my-project',
   MY_PROJECT_CREATE: '/my-project/create',

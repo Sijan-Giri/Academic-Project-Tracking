@@ -99,6 +99,8 @@ model User {
   evaluationsLocked Evaluation[] @relation("LockedBy")
   guideAssignments GuideAssignment[]
   teamsApproved    Team[] @relation("ApprovedBy")
+  conversationParticipants ConversationParticipant[]
+  sentMessages     Message[]
 }
 
 model Department {
@@ -514,4 +516,45 @@ model Settings {
   description String?
   updatedById String?
   updatedAt   DateTime @updatedAt
+}
+
+model Conversation {
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+  lastMessageAt DateTime?
+
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@index([lastMessageAt(sort: Desc)])
+}
+
+model ConversationParticipant {
+  id             String    @id @default(uuid())
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+  @@index([conversationId])
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String
+  senderId       String
+  content        String
+  createdAt      DateTime @default(now())
+  isEdited       Boolean  @default(false)
+  isDeleted      Boolean  @default(false)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id])
+
+  @@index([conversationId, createdAt(sort: Desc)])
+  @@index([senderId])
 }

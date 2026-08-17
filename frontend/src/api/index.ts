@@ -17,3 +17,4 @@ export * from './notifications.api';
 export * from './announcements.api';
 export * from './reports.api';
 export * from './settings.api';
+export * from './chat.api';

@@ -1,0 +1,12 @@
+export * as AdminModule from './admin';
+export * as AuthModule from './auth';
+export * as ChatModule from './chat';
+export * as CoordinatorModule from './coordinator';
+export * as DashboardModule from './dashboard';
+export * as EvaluationsModule from './evaluations';
+export * as FacultyModule from './faculty';
+export * as NotificationsModule from './notifications';
+export * as ProfileModule from './profile';
+export * as ReportsModule from './reports';
+export * as StudentModule from './student';
+export { default as NotFoundPage } from './NotFoundPage';
