@@ -10,7 +10,7 @@ export const THEME_CONFIG = {
     '2xl': '1.5rem',
   },
   typography: {
-    fontFamily: 'Inter, system-ui, sans-serif',
+    fontFamily: '"DM Sans", Inter, system-ui, sans-serif',
   },
 };
 
