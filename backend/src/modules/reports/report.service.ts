@@ -1,27 +1,50 @@
 import prisma from '../../config/database';
 import PDFDocument from 'pdfkit';
 import ExcelJS from 'exceljs';
+import cache from '../../lib/cache';
 
 export const reportService = {
-  async getDeptSummaryData(semesterId?: string, departmentId?: string) {
-    const filters: any = {};
-    if (semesterId) filters.semesterId = semesterId;
-    if (departmentId) filters.departmentId = departmentId;
+  async getDeptSummaryData(semesterId?: string, departmentId?: string): Promise<{ totalProjects: number, byStatus: Record<string, number>, byDomain: Record<string, number>, guideAssigned: number }> {
+    const cacheKey = `dept-summary:${semesterId ?? 'all'}:${departmentId ?? 'all'}`;
+    const cached = cache.get<any>(cacheKey);
+    if (cached) return cached;
 
-    const projects = await prisma.project.findMany({ where: filters, include: { team: true, guideAssignment: true } });
-    
+    const baseWhere: any = {};
+    if (semesterId) baseWhere.semesterId = semesterId;
+    // departmentId filter goes through team -> semester -> batch -> department
+    // Keep original filter behavior for departmentId since it traverses relations
+    if (departmentId) baseWhere.departmentId = departmentId;
+
+    // Single SQL GROUP BY for status distribution — no JS aggregation
+    const [byStatusRaw, byDomainRaw, guideAssignedCount, totalCount] = await Promise.all([
+      prisma.project.groupBy({
+        by: ['status'],
+        where: baseWhere,
+        _count: { status: true },
+      }),
+      prisma.project.groupBy({
+        by: ['domain'],
+        where: baseWhere,
+        _count: { domain: true },
+      }),
+      prisma.guideAssignment.count({
+        where: {
+          isActive: true,
+          ...(semesterId ? { project: { semesterId } } : {}),
+        },
+      }),
+      prisma.project.count({ where: baseWhere }),
+    ]);
+
     const byStatus: Record<string, number> = {};
+    byStatusRaw.forEach((r) => { byStatus[r.status] = r._count.status; });
+
     const byDomain: Record<string, number> = {};
-    let guideAssigned = 0;
+    byDomainRaw.forEach((r) => { byDomain[r.domain || 'Unspecified'] = r._count.domain; });
 
-    projects.forEach(p => {
-      byStatus[p.status] = (byStatus[p.status] || 0) + 1;
-      const d = p.domain || 'Unspecified';
-      byDomain[d] = (byDomain[d] || 0) + 1;
-      if (p.guideAssignment) guideAssigned++;
-    });
-
-    return { totalProjects: projects.length, byStatus, byDomain, guideAssigned };
+    const result = { totalProjects: totalCount, byStatus, byDomain, guideAssigned: guideAssignedCount };
+    cache.set(cacheKey, result, 60_000); // 60-second TTL
+    return result;
   },
 
   async getProjectStatusData(filters: any) {

@@ -145,7 +145,14 @@ export const emitToTeam = (teamId: string, event: string, data: any) => {
   io.to(`team:${teamId}`).emit(event, data);
 };
 
-export const broadcastEvent = (event: string, data: any) => {
+// Targeted broadcast — emits to a specific room or falls back to a semantic channel.
+// For project events, the caller should pass the relevant room identifier.
+export const broadcastEvent = (event: string, data: any, room?: string) => {
   if (!io) return;
-  io.emit(event, data);
+  if (room) {
+    io.to(room).emit(event, data);
+  } else {
+    // Fallback: emit to coordinator and admin roles only (not every user)
+    io.to('role:COORDINATOR').to('role:ADMIN').emit(event, data);
+  }
 };

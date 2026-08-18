@@ -8,6 +8,7 @@ import path from 'path';
 import { env } from './config/env';
 import { errorHandler } from './middleware/error.middleware';
 import { globalLimiter, authLimiter, uploadLimiter } from './middleware/rate-limit.middleware';
+import compression from 'compression';
 
 import authRouter from './modules/auth/auth.router';
 import auditRouter from './modules/audit/audit.router';
@@ -54,7 +55,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Cookie'],
 }));
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-app.use(morgan('dev'));
+app.use(compression()); // gzip/brotli compression for all responses
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
@@ -67,6 +69,20 @@ app.use('/api/auth/refresh', authLimiter);
 
 app.use('/api/auth/bulk-import', uploadLimiter);
 app.use('/api/submissions', uploadLimiter);
+
+// Cache-Control for rarely-changing reference data
+const REFERENCE_DATA_ROUTES = [
+  '/api/departments',
+  '/api/academic-years',
+  '/api/semesters',
+  '/api/batches',
+];
+app.use((req, res, next) => {
+  if (req.method === 'GET' && REFERENCE_DATA_ROUTES.some(r => req.path.startsWith(r))) {
+    res.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=60');
+  }
+  next();
+});
 
 app.use('/api/auth', authRouter);
 app.use('/api/departments', departmentsRouter);

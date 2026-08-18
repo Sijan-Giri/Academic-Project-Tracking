@@ -4,10 +4,24 @@ import DashboardLayout from '@/layouts/DashboardLayout';
 import AuthLayout from '@/layouts/AuthLayout';
 import RoleGuard from '@/layouts/RoleGuard';
 
-import { DashboardSkeleton, TableSkeleton, ProjectDetailSkeleton, FormSkeleton, MyTeamSkeleton, AbstractSkeleton, MilestonesSkeleton, SubmissionsSkeleton, SchedulesSkeleton, ReviewStagesSkeleton, SettingsSkeleton, PageSkeleton, CardsGridSkeleton } from '@/components';
+import {
+  DashboardSkeleton,
+  TableSkeleton,
+  ProjectDetailSkeleton,
+  FormSkeleton,
+  MyTeamSkeleton,
+  AbstractSkeleton,
+  MilestonesSkeleton,
+  SubmissionsSkeleton,
+  SchedulesSkeleton,
+  ReviewStagesSkeleton,
+  SettingsSkeleton,
+  PageSkeleton,
+  CardsGridSkeleton,
+} from '@/components/shared/Skeletons';
 
-import LoginPage from '@/features/auth/LoginPage';
-import RegisterPage from '@/features/auth/RegisterPage';
+const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
+const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'));
 
 const DashboardIndex = lazy(() => import('@/features/dashboard/DashboardIndex'));
 

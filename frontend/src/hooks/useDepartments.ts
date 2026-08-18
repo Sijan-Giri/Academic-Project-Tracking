@@ -9,6 +9,7 @@ export function useDepartments() {
   const { data: rawData, isLoading } = useQuery({
     queryKey: ['departments'],
     queryFn: getDepartments,
+    staleTime: 10 * 60 * 1000,
   });
 
   const departments = unwrapList<Department>(rawData);

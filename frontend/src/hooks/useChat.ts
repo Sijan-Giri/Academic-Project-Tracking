@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import {
   getMyConversations,
@@ -17,6 +17,8 @@ export const CONVERSATIONS_KEY = ['chat-conversations'] as const;
 export const MESSAGES_KEY = (conversationId: string) => ['chat-messages', conversationId] as const;
 export const CHATTABLE_USERS_KEY = (search?: string) => ['chat-users', search ?? ''] as const;
 
+// ─── Conversations ────────────────────────────────────────────────────────────
+
 export function useConversations(options?: { enabled?: boolean }) {
   const queryClient = useQueryClient();
   const enabled = options?.enabled ?? true;
@@ -24,6 +26,8 @@ export function useConversations(options?: { enabled?: boolean }) {
   const { data: conversations = [], isLoading } = useQuery({
     queryKey: CONVERSATIONS_KEY,
     queryFn: getMyConversations,
+    staleTime: 30_000,          // 30 s — socket handles live updates
+    gcTime: 5 * 60 * 1000,
     enabled,
   });
 
@@ -50,65 +54,70 @@ export function useUnreadChatCount(options?: { enabled?: boolean }) {
   return { unreadCount, isLoading };
 }
 
+// ─── Messages ─────────────────────────────────────────────────────────────────
+
 export function useMessages(conversationId: string | null) {
   const queryClient = useQueryClient();
-  const [liveMessages, setLiveMessages] = useState<ChatMessage[]>([]);
   const joinedRef = useRef<string | null>(null);
 
-  const { data: historicMessages = [], isLoading } = useQuery({
+  const { data: messages = [], isLoading } = useQuery({
     queryKey: MESSAGES_KEY(conversationId ?? ''),
     queryFn: () => getMessages(conversationId!),
     enabled: !!conversationId,
+    staleTime: 5 * 60 * 1000,   // 5 min — socket keeps messages fresh in real-time
+    gcTime: 10 * 60 * 1000,
   });
 
-  useEffect(() => {
-    setLiveMessages([]);
-  }, [conversationId]);
-
+  // ── Socket room management + event listeners ──────────────────────────────
   useEffect(() => {
     if (!conversationId) return;
     const socket = getSocket();
     if (!socket) return;
 
     const joinRoom = () => {
-      if (conversationId) {
-        socket.emit('join:conversation', conversationId);
-        joinedRef.current = conversationId;
+      if (joinedRef.current && joinedRef.current !== conversationId) {
+        socket.emit('leave:conversation', joinedRef.current);
       }
+      socket.emit('join:conversation', conversationId);
+      joinedRef.current = conversationId;
     };
 
-    if (joinedRef.current !== conversationId) {
-      if (joinedRef.current) socket.emit('leave:conversation', joinedRef.current);
-      joinRoom();
-    } else {
-      joinRoom();
-    }
+    joinRoom();
 
+    // Append new message directly into cache — zero extra network requests
     const handleMessage = (msg: ChatMessage) => {
-      if (msg.conversationId === conversationId) {
-        setLiveMessages((prev) => {
-          if (prev.some((m) => m.id === msg.id)) return prev;
+      if (msg.conversationId !== conversationId) return;
+
+      queryClient.setQueryData<ChatMessage[]>(
+        MESSAGES_KEY(conversationId),
+        (prev = []) => {
+          if (prev.some((m) => m.id === msg.id)) return prev;   // deduplicate
           return [...prev, msg];
-        });
-        queryClient.invalidateQueries({ queryKey: MESSAGES_KEY(conversationId) });
-      }
+        }
+      );
+
+      // Update conversation list sidebar (unread count + last message preview)
       queryClient.invalidateQueries({ queryKey: CONVERSATIONS_KEY });
     };
 
     const handleConvoUpdated = (data: { conversationId: string; message?: ChatMessage }) => {
-      if (data.conversationId === conversationId) {
-        if (data.message) {
-          handleMessage(data.message);
-        } else {
-          queryClient.invalidateQueries({ queryKey: MESSAGES_KEY(conversationId) });
-        }
+      if (data.conversationId === conversationId && data.message) {
+        handleMessage(data.message);
+      } else {
+        queryClient.invalidateQueries({ queryKey: CONVERSATIONS_KEY });
       }
-      queryClient.invalidateQueries({ queryKey: CONVERSATIONS_KEY });
     };
 
+    // Soft-delete a message directly in cache — zero extra network requests
     const handleDeleted = ({ messageId }: { messageId: string }) => {
-      setLiveMessages((prev) =>
-        prev.map((m) => m.id === messageId ? { ...m, isDeleted: true, content: 'This message was deleted' } : m)
+      queryClient.setQueryData<ChatMessage[]>(
+        MESSAGES_KEY(conversationId),
+        (prev = []) =>
+          prev.map((m) =>
+            m.id === messageId
+              ? { ...m, isDeleted: true, content: 'This message was deleted' }
+              : m
+          )
       );
     };
 
@@ -133,6 +142,7 @@ export function useMessages(conversationId: string | null) {
     };
   }, [conversationId, queryClient]);
 
+  // Mark conversation as read when opened
   useEffect(() => {
     if (conversationId) {
       markConversationRead(conversationId).catch(() => {});
@@ -140,35 +150,38 @@ export function useMessages(conversationId: string | null) {
     }
   }, [conversationId, queryClient]);
 
-  const allMessages = [
-    ...historicMessages.filter(
-      (h) => !liveMessages.some((l) => l.id === h.id)
-    ),
-    ...liveMessages,
-  ];
-
+  // ── Send message mutation ─────────────────────────────────────────────────
   const sendMut = useMutation({
     mutationFn: (content: string) => sendChatMessage(conversationId!, content),
     onSuccess: (newMsg) => {
       if (newMsg) {
-        setLiveMessages((prev) => {
-          if (prev.some((m) => m.id === newMsg.id)) return prev;
-          return [...prev, newMsg];
-        });
+        // Optimistically add own sent message to cache immediately
+        queryClient.setQueryData<ChatMessage[]>(
+          MESSAGES_KEY(conversationId ?? ''),
+          (prev = []) => {
+            if (prev.some((m) => m.id === newMsg.id)) return prev;
+            return [...prev, newMsg];
+          }
+        );
       }
       queryClient.invalidateQueries({ queryKey: CONVERSATIONS_KEY });
-      queryClient.invalidateQueries({ queryKey: MESSAGES_KEY(conversationId ?? '') });
     },
     onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to send message'),
   });
 
+  // ── Delete message mutation ───────────────────────────────────────────────
   const deleteMut = useMutation({
     mutationFn: (messageId: string) => deleteChatMessage(messageId),
     onSuccess: (_, messageId) => {
-      setLiveMessages((prev) =>
-        prev.map((m) => m.id === messageId ? { ...m, isDeleted: true, content: 'This message was deleted' } : m)
+      queryClient.setQueryData<ChatMessage[]>(
+        MESSAGES_KEY(conversationId ?? ''),
+        (prev = []) =>
+          prev.map((m) =>
+            m.id === messageId
+              ? { ...m, isDeleted: true, content: 'This message was deleted' }
+              : m
+          )
       );
-      queryClient.invalidateQueries({ queryKey: MESSAGES_KEY(conversationId ?? '') });
     },
     onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to delete message'),
   });
@@ -179,7 +192,7 @@ export function useMessages(conversationId: string | null) {
   );
 
   return {
-    messages: allMessages,
+    messages: messages as ChatMessage[],
     isLoading,
     send,
     isSending: sendMut.isPending,
@@ -187,10 +200,14 @@ export function useMessages(conversationId: string | null) {
   };
 }
 
+// ─── Chattable users search ───────────────────────────────────────────────────
+
 export function useChattableUsers(search: string) {
   return useQuery({
     queryKey: CHATTABLE_USERS_KEY(search),
     queryFn: () => getChattableUsers(search || undefined),
     enabled: search.length >= 1,
+    staleTime: 60_000,   // 1 min — user list is stable
+    gcTime: 5 * 60 * 1000,
   });
 }

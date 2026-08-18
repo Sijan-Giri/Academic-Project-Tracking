@@ -65,8 +65,6 @@ enum NotificationType {
   GENERAL
 }
 
-
-
 enum AuditAction {
   CREATE
   UPDATE
@@ -89,18 +87,18 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  studentProfile   StudentProfile?
-  facultyProfile   FacultyProfile?
-  notifications    Notification[]
-  announcements    Announcement[]
-  auditLogs        AuditLog[]
-  submittedFiles   File[]
-  submissions      Submission[]
-  evaluationsLocked Evaluation[] @relation("LockedBy")
-  guideAssignments GuideAssignment[]
-  teamsApproved    Team[] @relation("ApprovedBy")
+  studentProfile           StudentProfile?
+  facultyProfile           FacultyProfile?
+  notifications            Notification[]
+  announcements            Announcement[]
+  auditLogs                AuditLog[]
+  submittedFiles           File[]
+  submissions              Submission[]
+  evaluationsLocked        Evaluation[]              @relation("LockedBy")
+  guideAssignments         GuideAssignment[]
+  teamsApproved            Team[]                    @relation("ApprovedBy")
   conversationParticipants ConversationParticipant[]
-  sentMessages     Message[]
+  sentMessages             Message[]
 }
 
 model Department {
@@ -112,9 +110,9 @@ model Department {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
 
-  batches          Batch[]
-  facultyProfiles  FacultyProfile[]
-  reviewStages     ReviewStage[]
+  batches         Batch[]
+  facultyProfiles FacultyProfile[]
+  reviewStages    ReviewStage[]
 }
 
 model AcademicYear {
@@ -129,15 +127,15 @@ model AcademicYear {
 }
 
 model Batch {
-  id             String   @id @default(uuid())
+  id             String  @id @default(uuid())
   departmentId   String
   academicYearId String
   name           String
-  isActive       Boolean  @default(true)
+  isActive       Boolean @default(true)
 
-  department     Department   @relation(fields: [departmentId], references: [id])
-  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
-  semesters      Semester[]
+  department      Department       @relation(fields: [departmentId], references: [id])
+  academicYear    AcademicYear     @relation(fields: [academicYearId], references: [id])
+  semesters       Semester[]
   studentProfiles StudentProfile[]
 
   @@unique([departmentId, academicYearId])
@@ -157,21 +155,26 @@ model Semester {
   projects     Project[]
   reviewStages ReviewStage[]
   teams        Team[]
+
+  @@index([batchId])
 }
 
 model StudentProfile {
-  id               String  @id @default(uuid())
-  userId           String  @unique
-  studentId        String  @unique
-  batchId          String
+  id                String  @id @default(uuid())
+  userId            String  @unique
+  studentId         String  @unique
+  batchId           String
   currentSemesterId String?
-  phone            String?
+  phone             String?
 
-  user             User             @relation(fields: [userId], references: [id])
-  batch            Batch            @relation(fields: [batchId], references: [id])
-  teamMembers      TeamMember[]
+  user                User             @relation(fields: [userId], references: [id])
+  batch               Batch            @relation(fields: [batchId], references: [id])
+  teamMembers         TeamMember[]
   invitationsReceived TeamInvitation[]
   invitationsSent     TeamInvitation[] @relation("InvitedByProfile")
+
+  @@index([batchId])
+  @@index([currentSemesterId])
 }
 
 model FacultyProfile {
@@ -183,11 +186,13 @@ model FacultyProfile {
   specialization String?
   phone          String?
 
-  user             User               @relation(fields: [userId], references: [id])
-  department       Department         @relation(fields: [departmentId], references: [id])
+  user             User              @relation(fields: [userId], references: [id])
+  department       Department        @relation(fields: [departmentId], references: [id])
   guideAssignments GuideAssignment[]
   panelAssignments PanelAssignment[]
   evaluations      Evaluation[]
+
+  @@index([departmentId])
 }
 
 model Team {
@@ -200,8 +205,8 @@ model Team {
   rejectionReason String?
   createdAt       DateTime   @default(now())
 
-  semester Semester     @relation(fields: [semesterId], references: [id])
-  approvedBy User?      @relation("ApprovedBy", fields: [approvedById], references: [id])
+  semester    Semester         @relation(fields: [semesterId], references: [id])
+  approvedBy  User?            @relation("ApprovedBy", fields: [approvedById], references: [id])
   members     TeamMember[]
   invitations TeamInvitation[]
   project     Project?
@@ -221,6 +226,7 @@ model TeamMember {
   studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id])
 
   @@unique([teamId, studentProfileId])
+  @@index([studentProfileId])
 }
 
 enum InvitationStatus {
@@ -244,6 +250,8 @@ model TeamInvitation {
   invitedBy      StudentProfile @relation("InvitedByProfile", fields: [invitedById], references: [id])
 
   @@unique([teamId, studentProfileId])
+  @@index([studentProfileId])
+  @@index([invitedById])
 }
 
 model Project {
@@ -310,10 +318,10 @@ model ReviewStage {
   deadline     DateTime?
   isActive     Boolean         @default(true)
 
-  semester   Semester              @relation(fields: [semesterId], references: [id])
-  department Department            @relation(fields: [departmentId], references: [id])
-  schedules  ReviewSchedule[]
-  criteria   EvaluationCriteria[]
+  semester    Semester             @relation(fields: [semesterId], references: [id])
+  department  Department           @relation(fields: [departmentId], references: [id])
+  schedules   ReviewSchedule[]
+  criteria    EvaluationCriteria[]
   evaluations Evaluation[]
 
   @@index([semesterId])
@@ -353,7 +361,7 @@ model PanelAssignment {
 }
 
 model EvaluationCriteria {
-  id            String   @id @default(uuid())
+  id            String  @id @default(uuid())
   reviewStageId String
   name          String
   description   String?
@@ -362,6 +370,8 @@ model EvaluationCriteria {
 
   reviewStage ReviewStage       @relation(fields: [reviewStageId], references: [id])
   scores      EvaluationScore[]
+
+  @@index([reviewStageId])
 }
 
 // NOTE: DB-level marks lock should be enforced by a trigger.
@@ -376,18 +386,18 @@ model EvaluationCriteria {
 // CREATE TRIGGER evaluation_lock_check BEFORE UPDATE ON evaluations FOR EACH ROW EXECUTE FUNCTION check_evaluation_locked();
 
 model Evaluation {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   projectId     String
   reviewStageId String
   evaluatorId   String
   totalMarks    Decimal?
   grade         String?
   feedback      String?
-  isLocked      Boolean  @default(false)
+  isLocked      Boolean   @default(false)
   lockedAt      DateTime?
   lockedById    String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   project     Project           @relation(fields: [projectId], references: [id])
   reviewStage ReviewStage       @relation(fields: [reviewStageId], references: [id])
@@ -412,6 +422,7 @@ model EvaluationScore {
   criteria   EvaluationCriteria @relation(fields: [criteriaId], references: [id])
 
   @@unique([evaluationId, criteriaId])
+  @@index([criteriaId])
 }
 
 model Milestone {
@@ -432,6 +443,7 @@ model Milestone {
   @@index([projectId])
   @@index([status])
   @@index([projectId, status])
+  @@index([reviewStageId])
 }
 
 model Submission {
@@ -445,6 +457,9 @@ model Submission {
   milestone   Milestone @relation(fields: [milestoneId], references: [id])
   submittedBy User      @relation(fields: [submittedById], references: [id])
   files       File[]
+
+  @@index([milestoneId])
+  @@index([submittedById])
 }
 
 model File {
@@ -461,6 +476,10 @@ model File {
   submission Submission? @relation(fields: [submissionId], references: [id])
   project    Project?    @relation(fields: [projectId], references: [id])
   uploadedBy User        @relation(fields: [uploadedById], references: [id])
+
+  @@index([submissionId])
+  @@index([projectId])
+  @@index([uploadedById])
 }
 
 model Notification {
@@ -488,6 +507,8 @@ model Announcement {
   createdAt   DateTime @default(now())
 
   createdBy User @relation(fields: [createdById], references: [id])
+
+  @@index([createdById])
 }
 
 model AuditLog {

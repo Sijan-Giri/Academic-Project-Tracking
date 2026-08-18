@@ -10,11 +10,13 @@ export function useSemesters() {
   const { data: rawSemesters, isLoading: loadingSemesters } = useQuery({
     queryKey: ['semesters'],
     queryFn: () => getSemesters(),
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: rawBatches } = useQuery({
     queryKey: ['batches'],
     queryFn: () => getBatches(),
+    staleTime: 10 * 60 * 1000,
   });
 
   const semesters = unwrapList<Semester>(rawSemesters);

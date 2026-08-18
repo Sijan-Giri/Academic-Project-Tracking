@@ -9,6 +9,7 @@ export function useReviewTemplates() {
   const { data: rawTemplates, isLoading } = useQuery({
     queryKey: ['review-templates'],
     queryFn: getTemplates,
+    staleTime: 10 * 60 * 1000,
   });
 
   const templates = unwrapList<ReviewStageTemplate>(rawTemplates);

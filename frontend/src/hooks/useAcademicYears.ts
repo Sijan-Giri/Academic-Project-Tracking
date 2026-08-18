@@ -9,6 +9,7 @@ export function useAcademicYears() {
   const { data: rawData, isLoading } = useQuery({
     queryKey: ['academic-years'],
     queryFn: getAcademicYears,
+    staleTime: 10 * 60 * 1000,
   });
 
   const academicYears = unwrapList<AcademicYear>(rawData);

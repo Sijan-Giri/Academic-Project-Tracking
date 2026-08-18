@@ -22,9 +22,10 @@ const notifyStageDeadline = async (stage: any, isUpdate = false) => {
       select: { id: true },
     });
 
-    for (const u of users) {
-      await sendNotification(u.id, title, message, 'DEADLINE_REMINDER');
-    }
+    // Run all notifications concurrently instead of sequentially
+    await Promise.all(
+      users.map((u) => sendNotification(u.id, title, message, 'DEADLINE_REMINDER'))
+    );
   } catch (err) {
     console.error('Failed to dispatch stage deadline notifications:', err);
   }
@@ -34,36 +35,55 @@ const syncMilestonesForStage = async (stage: any) => {
   try {
     const projects = await prisma.project.findMany({
       where: { semesterId: stage.semesterId },
+      select: { id: true },
     });
 
-    for (const project of projects) {
-      const existingMilestone = await prisma.milestone.findFirst({
-        where: { projectId: project.id, reviewStageId: stage.id },
-      });
+    if (projects.length === 0) return;
 
-      if (existingMilestone) {
-        await prisma.milestone.update({
-          where: { id: existingMilestone.id },
-          data: {
-            name: stage.name,
-            deadline: stage.deadline ? new Date(stage.deadline) : undefined,
-            order: stage.order,
-          } as any,
-        });
-      } else {
-        await prisma.milestone.create({
-          data: {
-            projectId: project.id,
-            reviewStageId: stage.id,
-            name: stage.name,
-            description: `Review stage milestone: ${stage.name}`,
-            deadline: stage.deadline ? new Date(stage.deadline) : undefined,
-            order: stage.order,
-            status: 'NOT_STARTED',
-            requiredDocuments: ['Project Report (PDF)', 'Slide Deck (PPTX/PDF)'],
-          } as any,
-        });
-      }
+    const projectIds = projects.map((p) => p.id);
+
+    // Single query: find all milestones that already exist for this stage
+    const existingMilestones = await prisma.milestone.findMany({
+      where: { reviewStageId: stage.id, projectId: { in: projectIds } },
+      select: { id: true, projectId: true },
+    });
+
+    const existingByProjectId = new Map(existingMilestones.map((m) => [m.projectId, m.id]));
+
+    const toUpdate = projectIds.filter((id) => existingByProjectId.has(id));
+    const toCreate = projectIds.filter((id) => !existingByProjectId.has(id));
+
+    // Batch update all existing milestones in one query
+    if (toUpdate.length > 0) {
+      await prisma.milestone.updateMany({
+        where: {
+          reviewStageId: stage.id,
+          projectId: { in: toUpdate },
+        },
+        data: {
+          name: stage.name,
+          deadline: stage.deadline ? new Date(stage.deadline) : undefined,
+          order: stage.order,
+        } as any,
+      });
+    }
+
+    // Batch create new milestones
+    if (toCreate.length > 0) {
+      await prisma.milestone.createMany({
+        data: toCreate.map((projectId) => ({
+          projectId,
+          reviewStageId: stage.id,
+          name: stage.name,
+          description: `Review stage milestone: ${stage.name}`,
+          deadline: stage.deadline ? new Date(stage.deadline) : undefined,
+          order: stage.order,
+          status: 'NOT_STARTED' as any,
+          requiredDocuments: ['Project Report (PDF)', 'Slide Deck (PPTX/PDF)'],
+          updatedAt: new Date(),
+        } as any)),
+        skipDuplicates: true,
+      });
     }
   } catch (err) {
     console.error('Failed to sync milestones for review stage:', err);

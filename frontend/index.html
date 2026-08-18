@@ -4,11 +4,35 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>APTS — Academic Project Tracking System</title>
+    <meta name="description" content="Academic Project Tracking System — manage projects, teams, milestones and evaluations." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preload" href="/fonts/DMSans-VariableFont_opsz,wght.ttf" as="font" type="font/ttf" crossorigin />
   </head>
-  <body>
-    <div id="root"></div>
+  <body class="bg-slate-900 text-slate-100">
+    <div id="root">
+      <style>
+        .app-boot-loader {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #0f1117;
+        }
+        .app-boot-spinner {
+          width: 32px;
+          height: 32px;
+          border: 3px solid rgba(255, 255, 255, 0.08);
+          border-top-color: #6366f1;
+          border-radius: 50%;
+          animation: boot-spin 0.75s linear infinite;
+        }
+        @keyframes boot-spin {
+          to { transform: rotate(360deg); }
+        }
+      </style>
+      <div class="app-boot-loader">
+        <div class="app-boot-spinner"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

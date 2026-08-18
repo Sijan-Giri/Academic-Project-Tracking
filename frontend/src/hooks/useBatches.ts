@@ -10,16 +10,19 @@ export function useBatches() {
   const { data: rawBatches, isLoading: loadingBatches } = useQuery({
     queryKey: ['batches'],
     queryFn: () => getBatches(),
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: rawDepts } = useQuery({
     queryKey: ['departments'],
     queryFn: getDepartments,
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: rawYears } = useQuery({
     queryKey: ['academic-years'],
     queryFn: getAcademicYears,
+    staleTime: 10 * 60 * 1000,
   });
 
   const batches = unwrapList<Batch>(rawBatches);

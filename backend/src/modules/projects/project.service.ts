@@ -12,24 +12,35 @@ const populateProjectMilestones = async (projectId: string, semesterId: string) 
       orderBy: { order: 'asc' },
     });
 
-    for (const stage of reviewStages) {
-      const existing = await prisma.milestone.findFirst({
-        where: { projectId, reviewStageId: stage.id },
+    if (reviewStages.length === 0) return;
+
+    // Single query to find which milestones already exist
+    const existing = await prisma.milestone.findMany({
+      where: {
+        projectId,
+        reviewStageId: { in: reviewStages.map((s) => s.id) },
+      },
+      select: { reviewStageId: true },
+    });
+    const existingIds = new Set(existing.map((m) => m.reviewStageId));
+
+    // Batch create only the ones that are missing
+    const toCreate = reviewStages.filter((s) => !existingIds.has(s.id));
+    if (toCreate.length > 0) {
+      await prisma.milestone.createMany({
+        data: toCreate.map((s) => ({
+          projectId,
+          reviewStageId: s.id,
+          name: s.name,
+          description: `Review stage milestone: ${s.name}`,
+          deadline: s.deadline ? new Date(s.deadline) : undefined,
+          order: s.order,
+          status: 'NOT_STARTED' as any,
+          requiredDocuments: ['Project Report (PDF)', 'Slide Deck (PPTX/PDF)'],
+          updatedAt: new Date(),
+        } as any)),
+        skipDuplicates: true,
       });
-      if (!existing) {
-        await prisma.milestone.create({
-          data: {
-            projectId,
-            reviewStageId: stage.id,
-            name: stage.name,
-            description: `Review stage milestone: ${stage.name}`,
-            deadline: stage.deadline ? new Date(stage.deadline) : undefined,
-            order: stage.order,
-            status: 'NOT_STARTED',
-            requiredDocuments: ['Project Report (PDF)', 'Slide Deck (PPTX/PDF)'],
-          } as any,
-        });
-      }
     }
   } catch (err) {
     console.error('Failed to populate milestones for new project:', err);
@@ -302,7 +313,7 @@ export const updateProjectStatus = async (id: string, status: ProjectStatus, use
   });
 
   try {
-    broadcastEvent('project:updated', updatedProject);
+    broadcastEvent('project:updated', updatedProject, `team:${updatedProject.teamId}`);
   } catch (_) {}
 
   return updatedProject;
